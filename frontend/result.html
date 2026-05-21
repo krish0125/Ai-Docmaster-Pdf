@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View processing results - OCR text, AI summaries, and analysis">
+    <title>Results | AI DocMaster</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body style="background: var(--bg-primary);">
+    <div class="result-page">
+        <header class="result-header-bar">
+            <a href="dashboard.html" class="btn-back-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back to Dashboard
+            </a>
+            <h1 id="resultTitle">Processing Result</h1>
+        </header>
+
+        <div class="result-container">
+            <!-- Dynamic content loaded via URL params -->
+            <div class="result-content" id="resultContent">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading results...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const type = params.get('type');
+            const data = params.get('data');
+            const container = document.getElementById('resultContent');
+            const title = document.getElementById('resultTitle');
+
+            if (!type && !data) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                        <h3>No Results to Display</h3>
+                        <p>Process a document first from the dashboard.</p>
+                        <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+                    </div>
+                `;
+                return;
+            }
+
+            try {
+                const resultData = data ? JSON.parse(decodeURIComponent(data)) : {};
+
+                switch (type) {
+                    case 'ocr':
+                        title.textContent = 'OCR Result';
+                        container.innerHTML = `
+                            <div class="result-card">
+                                <div class="result-header-info">
+                                    <h3>Extracted Text</h3>
+                                    <div class="result-meta">
+                                        <span class="badge badge-info">${resultData.word_count || '—'} words</span>
+                                        <span class="badge badge-success">Confidence: ${resultData.confidence || 'N/A'}</span>
+                                    </div>
+                                </div>
+                                <pre class="result-text" id="resultText">${resultData.text || 'No text extracted'}</pre>
+                                <div class="result-actions">
+                                    <button class="btn btn-primary btn-sm" onclick="copyResult()">Copy Text</button>
+                                    <button class="btn btn-outline btn-sm" onclick="downloadResult('ocr_result.txt')">Download .txt</button>
+                                </div>
+                            </div>
+                        `;
+                        break;
+
+                    case 'summary':
+                        title.textContent = 'AI Summary';
+                        container.innerHTML = `
+                            <div class="result-card">
+                                <h3>Generated Summary</h3>
+                                <div class="result-text summary-content" id="resultText">${resultData.summary || 'No summary available'}</div>
+                                <div class="result-actions">
+                                    <button class="btn btn-primary btn-sm" onclick="copyResult()">Copy</button>
+                                    <button class="btn btn-outline btn-sm" onclick="downloadResult('summary.txt')">Download</button>
+                                </div>
+                            </div>
+                        `;
+                        break;
+
+                    case 'analyze':
+                        title.textContent = 'Resume Analysis';
+                        container.innerHTML = `
+                            <div class="result-card">
+                                <div class="ats-display">
+                                    <div class="ats-big-score">${resultData.ats_score || 0}<span>/100</span></div>
+                                    <p>ATS Compatibility Score</p>
+                                </div>
+                                ${resultData.skills_found ? `<div class="section"><h4>Skills Found</h4><div class="tags">${resultData.skills_found.map(s => `<span class="tag success">${s}</span>`).join('')}</div></div>` : ''}
+                                ${resultData.suggestions ? `<div class="section"><h4>Suggestions</h4><ul>${resultData.suggestions.map(s => `<li>${s}</li>`).join('')}</ul></div>` : ''}
+                                <div class="result-actions">
+                                    <button class="btn btn-primary btn-sm" onclick="copyResult()">Copy Report</button>
+                                </div>
+                            </div>
+                        `;
+                        break;
+
+                    default:
+                        container.innerHTML = `
+                            <div class="result-card">
+                                <pre class="result-text" id="resultText">${JSON.stringify(resultData, null, 2)}</pre>
+                                <div class="result-actions">
+                                    <button class="btn btn-primary btn-sm" onclick="copyResult()">Copy</button>
+                                </div>
+                            </div>
+                        `;
+                }
+            } catch (e) {
+                container.innerHTML = `<div class="empty-state"><h3>Error Loading Results</h3><p>${e.message}</p><a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a></div>`;
+            }
+        });
+
+        function copyResult() {
+            const text = document.getElementById('resultText')?.textContent;
+            if (text) {
+                navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard!', 'success'));
+            }
+        }
+
+        function downloadResult(filename) {
+            const text = document.getElementById('resultText')?.textContent;
+            if (text) {
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = filename;
+                document.body.appendChild(a); a.click(); a.remove();
+                URL.revokeObjectURL(url);
+            }
+        }
+    </script>
+</body>
+</html>

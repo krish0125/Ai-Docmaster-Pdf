@@ -1,0 +1,16 @@
+flask
+flask-cors
+flask-jwt-extended
+pymongo[srv]
+pypdf
+pdfplumber
+opencv-python
+pytesseract
+transformers
+torch
+google-genai>=1
+python-dotenv
+bcrypt
+Pillow
+numpy
+werkzeug
