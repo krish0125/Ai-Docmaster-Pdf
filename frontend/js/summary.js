@@ -48,13 +48,14 @@ async function handleSummary() {
     try {
         const data = await uploadFileWithProgress('/ai/summary', formData, () => {});
         if (data) {
+            const resData = data.result || data;
             let displayContent = '';
-            const summary = data.summary || data.text || 'No summary generated';
+            const summary = resData.summary || resData.text || 'No summary generated';
 
-            if (mode === 'bullets' && data.bullets) {
-                displayContent = `<ul class="bullet-list">${data.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>`;
-            } else if (mode === 'exam_notes' && data.notes) {
-                displayContent = `<div class="exam-notes">${formatExamNotes(data.notes)}</div>`;
+            if (mode === 'bullets' && resData.bullets) {
+                displayContent = `<ul class="bullet-list">${resData.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>`;
+            } else if (mode === 'exam_notes' && resData.notes) {
+                displayContent = `<div class="exam-notes">${formatExamNotes(resData.notes)}</div>`;
             } else {
                 displayContent = `<p class="summary-text">${escapeHtml(summary)}</p>`;
             }
@@ -66,7 +67,7 @@ async function handleSummary() {
                     <h4>${modeLabels[mode] || 'Summary'}</h4>
                     <div class="result-meta">
                         <span class="badge badge-primary">${mode}</span>
-                        <span class="badge badge-info">${data.word_count || '—'} words</span>
+                        <span class="badge badge-info">${resData.word_count || '—'} words</span>
                     </div>
                 </div>
                 <div class="result-text-area" id="summaryTextOutput">

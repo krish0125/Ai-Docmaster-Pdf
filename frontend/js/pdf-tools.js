@@ -155,17 +155,18 @@ async function handleSplit() {
 
     try {
         const data = await uploadFileWithProgress('/pdf/split', formData, () => {});
-        if (data && data.files) {
+        const parts = data && (data.parts || data.files);
+        if (data && parts) {
             resultDiv.innerHTML = `
                 <div class="result-card success">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00E676" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                     <div>
                         <h4>PDF Split Successfully!</h4>
-                        <p>Created ${data.files.length} file(s)</p>
+                        <p>Created ${parts.length} file(s)</p>
                     </div>
                 </div>
                 <div class="download-list">
-                    ${data.files.map((f, i) => `
+                    ${parts.map((f, i) => `
                         <a href="${API_BASE}${f.download_url}" class="btn btn-outline btn-sm" download>
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                             Part ${i + 1}
@@ -229,18 +230,19 @@ async function handleCompress() {
     try {
         const data = await uploadFileWithProgress('/pdf/compress', formData, () => {});
         if (data) {
-            const reduction = data.reduction_percent || 0;
+            const stats = data.stats || data;
+            const reduction = stats.reduction_percent || 0;
             resultDiv.innerHTML = `
                 <div class="result-card success">
                     <div class="compress-stats">
                         <div class="stat-item">
                             <span class="stat-label">Original</span>
-                            <span class="stat-value">${formatFileSize(data.original_size)}</span>
+                            <span class="stat-value">${formatFileSize(stats.original_size)}</span>
                         </div>
                         <div class="stat-arrow">→</div>
                         <div class="stat-item">
                             <span class="stat-label">Compressed</span>
-                            <span class="stat-value">${formatFileSize(data.compressed_size)}</span>
+                            <span class="stat-value">${formatFileSize(stats.compressed_size)}</span>
                         </div>
                         <div class="stat-item highlight">
                             <span class="stat-label">Reduced</span>

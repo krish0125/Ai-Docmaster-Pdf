@@ -10,385 +10,592 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        /* Flashcards 3D Flipping Card CSS Styling */
+        .flashcard-wrapper {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 500px;
+            height: 280px;
+            margin: 2rem auto;
+            cursor: pointer;
+        }
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flashcard-inner.flipped {
+            transform: rotateY(180deg);
+        }
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .flashcard-front {
+            background: linear-gradient(135deg, #1b2030, #131722);
+            color: #ffffff;
+        }
+        .flashcard-back {
+            background: linear-gradient(135deg, #131722, #1b2030);
+            color: var(--primary);
+            transform: rotateY(180deg);
+        }
+        .flashcard-badge {
+            position: absolute;
+            top: 1.2rem;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .flashcard-back .flashcard-badge {
+            background: rgba(108, 99, 255, 0.1);
+            color: var(--primary);
+            border: 1px solid rgba(108, 99, 255, 0.2);
+        }
+        .flashcard-content {
+            font-size: 1.25rem;
+            line-height: 1.6;
+            font-weight: 500;
+            margin: 0;
+            word-break: break-word;
+        }
+        .flashcard-hint {
+            position: absolute;
+            bottom: 1.2rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .flashcard-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            margin: 1.5rem auto 0;
+        }
+        .flashcard-progress {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+    </style>
 </head>
 <body>
-    <!-- Sidebar Overlay (mobile) -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-    <!-- Sidebar Navigation -->
-    <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-logo">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><circle cx="12" cy="14" r="2"/><path d="M12 12v-1.5a1.5 1.5 0 0 1 3 0"/></svg>
-                <span class="logo-text">AI DocMaster</span>
+    <!-- Dashboard Layout Wrapper -->
+    <div class="dashboard-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><circle cx="12" cy="14" r="2"/><path d="M12 12v-1.5a1.5 1.5 0 0 1 3 0"/></svg>
+                    <span class="logo-text">AI DocMaster</span>
+                </div>
             </div>
-        </div>
 
-        <nav class="sidebar-nav">
-            <a href="#" class="nav-item active" data-section="dashboard-home" id="navDashboard">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                <span>Dashboard</span>
-            </a>
-
-            <div class="nav-group">
-                <a href="#" class="nav-item nav-group-toggle" id="pdfToolsToggle">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                    <span>PDF Tools</span>
-                    <svg class="nav-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item sidebar-link active" data-section="dashboard-home" id="navDashboard">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span>Dashboard</span>
                 </a>
-                <div class="nav-submenu">
-                    <a href="#" class="nav-item sub" data-section="merge-tool">
-                        <span>Merge PDFs</span>
+
+                <div class="nav-group">
+                    <a href="#" class="nav-item sidebar-link nav-group-toggle" id="pdfToolsToggle">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        <span>PDF Tools</span>
+                        <svg class="nav-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                     </a>
-                    <a href="#" class="nav-item sub" data-section="split-tool">
-                        <span>Split PDF</span>
-                    </a>
-                    <a href="#" class="nav-item sub" data-section="compress-tool">
-                        <span>Compress PDF</span>
-                    </a>
-                </div>
-            </div>
-
-            <a href="#" class="nav-item" data-section="ocr-tool">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4v4H7z"/><path d="M7 13h10"/><path d="M7 17h10"/></svg>
-                <span>OCR Extract</span>
-            </a>
-
-            <a href="#" class="nav-item" data-section="summary-tool">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                <span>AI Summary</span>
-            </a>
-
-            <a href="#" class="nav-item" data-section="chat">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                <span>Chat with PDF</span>
-            </a>
-
-            <a href="#" class="nav-item" data-section="resume-tool">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                <span>Resume Analyzer</span>
-            </a>
-
-            <a href="#" class="nav-item" data-section="files-section">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                <span>My Files</span>
-            </a>
-
-            <div class="nav-divider"></div>
-
-            <a href="#" class="nav-item" id="logoutBtn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                <span>Logout</span>
-            </a>
-        </nav>
-    </aside>
-
-    <!-- Main Content -->
-    <main class="main-content">
-        <!-- Top Bar -->
-        <header class="topbar">
-            <button class="sidebar-toggle" id="sidebarToggle">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-            </button>
-            <div class="topbar-right">
-                <div class="user-menu">
-                    <div class="user-avatar" id="userAvatar">U</div>
-                    <span class="user-name" id="userName">User</span>
-                </div>
-            </div>
-        </header>
-
-        <!-- Dashboard Home -->
-        <section class="tool-section active" id="dashboard-home" style="display:block;">
-            <div class="section-header">
-                <h1>Welcome back, <span id="welcomeName">User</span>! 👋</h1>
-                <p class="text-secondary">Here's what's happening with your documents.</p>
-            </div>
-
-            <!-- Stats Cards -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(108,99,255,0.15); color: var(--primary);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-number" id="statFiles">0</span>
-                        <span class="stat-label">Total Files</span>
+                    <div class="nav-submenu sidebar-submenu">
+                        <a href="#" class="nav-item sidebar-link sub" data-section="merge-tool">
+                            <span>Merge PDFs</span>
+                        </a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="split-tool">
+                            <span>Split PDF</span>
+                        </a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="compress-tool">
+                            <span>Compress PDF</span>
+                        </a>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(0,212,255,0.15); color: var(--accent);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/><path d="M5.66 0H14a2 2 0 0 1 2 2v3.34"/></svg>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-number" id="statPdfs">0</span>
-                        <span class="stat-label">PDFs Processed</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(0,230,118,0.15); color: var(--success);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4v4H7z"/></svg>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-number" id="statOcr">0</span>
-                        <span class="stat-label">OCR Scans</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: rgba(255,214,0,0.15); color: var(--warning);">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    </div>
-                    <div class="stat-info">
-                        <span class="stat-number" id="statChats">0</span>
-                        <span class="stat-label">AI Chats</span>
-                    </div>
-                </div>
-            </div>
 
-            <!-- Tool Cards -->
-            <h2 class="section-subtitle">Quick Tools</h2>
-            <div class="tools-grid">
-                <div class="tool-card" data-tool="merge-tool">
-                    <div class="tool-icon" style="background: linear-gradient(135deg, #6C63FF, #4834d4);"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34"/></svg></div>
-                    <h3>Merge PDFs</h3>
-                    <p>Combine multiple PDF files into one document</p>
-                </div>
-                <div class="tool-card" data-tool="split-tool">
-                    <div class="tool-icon" style="background: linear-gradient(135deg, #00D4FF, #0097e6);"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg></div>
-                    <h3>Split PDF</h3>
-                    <p>Extract specific pages from your PDF</p>
-                </div>
-                <div class="tool-card" data-tool="compress-tool">
-                    <div class="tool-icon" style="background: linear-gradient(135deg, #00E676, #00c853);"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg></div>
-                    <h3>Compress PDF</h3>
-                    <p>Reduce file size without losing quality</p>
-                </div>
-                <div class="tool-card" data-tool="ocr-tool">
-                    <div class="tool-icon" style="background: linear-gradient(135deg, #FF6B6B, #ee5a24);"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4v4H7z"/><path d="M7 13h10"/><path d="M7 17h10"/></svg></div>
-                    <h3>OCR Extract</h3>
-                    <p>Convert images to editable text</p>
-                </div>
-                <div class="tool-card" data-tool="summary-tool">
-                    <div class="tool-icon" style="background: linear-gradient(135deg, #a55eea, #8854d0);"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
-                    <h3>AI Summary</h3>
-                    <p>Generate smart summaries from PDFs</p>
-                </div>
-                <div class="tool-card" data-tool="chat">
-                    <div class="tool-icon" style="background: linear-gradient(135deg, #FFD600, #f0932b);"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
-                    <h3>Chat with PDF</h3>
-                    <p>Ask questions about your documents</p>
-                </div>
-                <div class="tool-card" data-tool="resume-tool">
-                    <div class="tool-icon" style="background: linear-gradient(135deg, #fd79a8, #e84393);"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-                    <h3>Resume Analyzer</h3>
-                    <p>Get ATS score and improvement tips</p>
-                </div>
-                <div class="tool-card" data-tool="summary-tool">
-                    <div class="tool-icon" style="background: linear-gradient(135deg, #74b9ff, #0984e3);"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div>
-                    <h3>Notes Generator</h3>
-                    <p>Create study notes from documents</p>
-                </div>
-            </div>
+                <a href="#" class="nav-item sidebar-link" data-section="ocr-tool">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4v4H7z"/><path d="M7 13h10"/><path d="M7 17h10"/></svg>
+                    <span>OCR Extract</span>
+                </a>
 
-            <!-- Recent Files -->
-            <h2 class="section-subtitle">Recent Files</h2>
-            <div class="recent-files-card">
-                <div id="recentFilesList">
-                    <div class="empty-state"><p>Loading files...</p></div>
-                </div>
-            </div>
-        </section>
+                <a href="#" class="nav-item sidebar-link" data-section="summary-tool">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                    <span>AI Summary</span>
+                </a>
 
-        <!-- ════════ MERGE TOOL ════════ -->
-        <section class="tool-section" id="merge-tool" style="display:none;">
-            <div class="section-header">
-                <button class="btn-back" onclick="showSection('dashboard-home')">← Back</button>
-                <h2>Merge PDFs</h2>
-                <p class="text-secondary">Combine multiple PDF files into a single document</p>
-            </div>
-            <div class="tool-content">
-                <div class="dropzone" id="mergeDropzone">
-                    <input type="file" id="mergeFileInput" accept=".pdf" multiple hidden>
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    <h3>Drop PDF files here</h3>
-                    <p class="text-muted">or click to browse • Add 2+ PDFs to merge</p>
-                </div>
-                <div id="mergeFileList"></div>
-                <div class="tool-actions">
-                    <button class="btn btn-primary" id="mergeBtn" onclick="handleMerge()" disabled>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34"/></svg>
-                        Merge PDFs
+                <a href="#" class="nav-item sidebar-link" data-section="chat">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    <span>Chat with PDF</span>
+                </a>
+
+                <a href="#" class="nav-item sidebar-link" data-section="resume-tool">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <span>Resume Analyzer</span>
+                </a>
+
+                <a href="#" class="nav-item sidebar-link" data-section="flashcards-tool">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10M7 12h10M7 17h10"/></svg>
+                    <span>Flashcard Maker</span>
+                </a>
+
+                <a href="#" class="nav-item sidebar-link" data-section="files-section">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    <span>My Files</span>
+                </a>
+
+                <div class="nav-divider"></div>
+
+                <a href="#" class="nav-item sidebar-link" id="logoutBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                    <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <button class="sidebar-toggle" id="sidebarToggle">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                     </button>
+                    <div class="topbar-welcome">Welcome back, <span id="welcomeNameTopbar">User</span>! 👋</div>
                 </div>
-                <div id="mergeResult" style="display:none;"></div>
-            </div>
-        </section>
-
-        <!-- ════════ SPLIT TOOL ════════ -->
-        <section class="tool-section" id="split-tool" style="display:none;">
-            <div class="section-header">
-                <button class="btn-back" onclick="showSection('dashboard-home')">← Back</button>
-                <h2>Split PDF</h2>
-                <p class="text-secondary">Extract specific pages from a PDF document</p>
-            </div>
-            <div class="tool-content">
-                <div class="dropzone" id="splitDropzone">
-                    <input type="file" id="splitFileInput" accept=".pdf" hidden>
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-                    <h3>Drop a PDF file here</h3>
-                    <p class="text-muted">or click to browse</p>
-                </div>
-                <div id="splitFileInfo"></div>
-                <div id="splitOptions" style="display:none;">
-                    <div class="form-group">
-                        <label for="splitPages">Page Ranges</label>
-                        <input type="text" id="splitPages" class="form-input" placeholder="e.g., 1-3, 5, 7-10">
-                        <small class="text-muted">Separate ranges with commas. Example: 1-3, 5, 7-10</small>
+                <div class="topbar-right">
+                    <div class="user-menu">
+                        <div class="user-avatar" id="userAvatar">U</div>
+                        <span class="user-name" id="userName">User</span>
                     </div>
-                    <button class="btn btn-primary" id="splitBtn" onclick="handleSplit()">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-                        Split PDF
-                    </button>
                 </div>
-                <div id="splitResult" style="display:none;"></div>
-            </div>
-        </section>
+            </header>
 
-        <!-- ════════ COMPRESS TOOL ════════ -->
-        <section class="tool-section" id="compress-tool" style="display:none;">
-            <div class="section-header">
-                <button class="btn-back" onclick="showSection('dashboard-home')">← Back</button>
-                <h2>Compress PDF</h2>
-                <p class="text-secondary">Reduce your PDF file size</p>
-            </div>
-            <div class="tool-content">
-                <div class="dropzone" id="compressDropzone">
-                    <input type="file" id="compressFileInput" accept=".pdf" hidden>
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="1.5"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-                    <h3>Drop a PDF file here</h3>
-                    <p class="text-muted">or click to browse</p>
-                </div>
-                <div id="compressFileInfo"></div>
-                <div class="tool-actions">
-                    <button class="btn btn-primary" id="compressBtn" onclick="handleCompress()" disabled>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-                        Compress PDF
-                    </button>
-                </div>
-                <div id="compressResult" style="display:none;"></div>
-            </div>
-        </section>
-
-        <!-- ════════ OCR TOOL ════════ -->
-        <section class="tool-section" id="ocr-tool" style="display:none;">
-            <div class="section-header">
-                <button class="btn-back" onclick="showSection('dashboard-home')">← Back</button>
-                <h2>OCR Text Extraction</h2>
-                <p class="text-secondary">Extract text from images and scanned PDFs</p>
-            </div>
-            <div class="tool-content">
-                <div class="dropzone" id="ocrDropzone">
-                    <input type="file" id="ocrFileInput" accept=".png,.jpg,.jpeg,.pdf" hidden>
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#FF6B6B" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4v4H7z"/><path d="M7 13h10"/><path d="M7 17h10"/></svg>
-                    <h3>Drop an image or PDF here</h3>
-                    <p class="text-muted">Supports PNG, JPG, JPEG, and scanned PDFs</p>
-                </div>
-                <div id="ocrPreview" style="display:none;"></div>
-                <div id="ocrFileInfo"></div>
-                <div class="tool-actions">
-                    <button class="btn btn-primary" id="ocrBtn" onclick="handleOcr()" disabled>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4v4H7z"/><path d="M7 13h10"/><path d="M7 17h10"/></svg>
-                        Extract Text
-                    </button>
-                </div>
-                <div id="ocrResult" style="display:none;"></div>
-            </div>
-        </section>
-
-        <!-- ════════ SUMMARY TOOL ════════ -->
-        <section class="tool-section" id="summary-tool" style="display:none;">
-            <div class="section-header">
-                <button class="btn-back" onclick="showSection('dashboard-home')">← Back</button>
-                <h2>AI Summary Generator</h2>
-                <p class="text-secondary">Generate intelligent summaries from your PDFs</p>
-            </div>
-            <div class="tool-content">
-                <div class="dropzone" id="summaryDropzone">
-                    <input type="file" id="summaryFileInput" accept=".pdf" hidden>
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#a55eea" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                    <h3>Drop a PDF file here</h3>
-                    <p class="text-muted">or click to browse</p>
-                </div>
-                <div id="summaryFileInfo"></div>
-                <div id="summaryOptions" style="display:none;">
-                    <div class="form-group">
-                        <label for="summaryMode">Summary Type</label>
-                        <select id="summaryMode" class="form-input">
-                            <option value="brief">Brief Summary</option>
-                            <option value="detailed">Detailed Summary</option>
-                            <option value="bullets">Bullet Points</option>
-                            <option value="exam_notes">Exam Notes</option>
-                        </select>
+            <div class="dashboard-content">
+                <!-- Dashboard Home -->
+                <section class="tool-section active" id="dashboard-home" style="display:block;">
+                    <div class="welcome-banner">
+                        <h1>Welcome back, <span id="welcomeName">User</span>! 👋</h1>
+                        <p>Here's what's happening with your documents.</p>
                     </div>
-                    <button class="btn btn-primary" id="summaryBtn" onclick="handleSummary()">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                        Generate Summary
-                    </button>
-                </div>
-                <div id="summaryResult" style="display:none;"></div>
-            </div>
-        </section>
 
-        <!-- ════════ RESUME ANALYZER ════════ -->
-        <section class="tool-section" id="resume-tool" style="display:none;">
-            <div class="section-header">
-                <button class="btn-back" onclick="showSection('dashboard-home')">← Back</button>
-                <h2>Resume Analyzer</h2>
-                <p class="text-secondary">Get ATS compatibility score and improvement suggestions</p>
-            </div>
-            <div class="tool-content">
-                <div class="dropzone" id="resumeDropzone">
-                    <input type="file" id="resumeFileInput" accept=".pdf" hidden>
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fd79a8" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <h3>Drop your resume PDF here</h3>
-                    <p class="text-muted">or click to browse</p>
-                </div>
-                <div id="resumeFileInfo"></div>
-                <div id="resumeOptions" style="display:none;">
-                    <div class="form-group">
-                        <label for="targetRole">Target Role (Optional)</label>
-                        <input type="text" id="targetRole" class="form-input" placeholder="e.g., Software Engineer, Data Scientist">
+                    <!-- Stats Cards -->
+                    <div class="stats-cards">
+                        <div class="stat-card-dash">
+                            <div class="stat-card-icon purple">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            </div>
+                            <div class="stat-card-info">
+                                <h3 id="statFiles">0</h3>
+                                <p>Total Files</p>
+                            </div>
+                        </div>
+                        <div class="stat-card-dash">
+                            <div class="stat-card-icon cyan">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/><path d="M5.66 0H14a2 2 0 0 1 2 2v3.34"/></svg>
+                            </div>
+                            <div class="stat-card-info">
+                                <h3 id="statPdfs">0</h3>
+                                <p>PDFs Processed</p>
+                            </div>
+                        </div>
+                        <div class="stat-card-dash">
+                            <div class="stat-card-icon green">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4v4H7z"/></svg>
+                            </div>
+                            <div class="stat-card-info">
+                                <h3 id="statOcr">0</h3>
+                                <p>OCR Scans</p>
+                            </div>
+                        </div>
+                        <div class="stat-card-dash">
+                            <div class="stat-card-icon yellow">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            </div>
+                            <div class="stat-card-info">
+                                <h3 id="statChats">0</h3>
+                                <p>AI Chats</p>
+                            </div>
+                        </div>
                     </div>
-                    <button class="btn btn-primary" id="resumeBtn" onclick="handleResumeAnalysis()">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        Analyze Resume
-                    </button>
-                </div>
-                <div id="resumeResult" style="display:none;"></div>
-            </div>
-        </section>
 
-        <!-- ════════ MY FILES ════════ -->
-        <section class="tool-section" id="files-section" style="display:none;">
-            <div class="section-header">
-                <button class="btn-back" onclick="showSection('dashboard-home')">← Back</button>
-                <h2>My Files</h2>
-                <p class="text-secondary">Manage your uploaded documents</p>
-            </div>
-            <div class="tool-content">
-                <div id="allFilesList">
-                    <div class="empty-state"><p>Loading...</p></div>
+                    <!-- Tool Cards -->
+                    <h2 class="section-subtitle">Quick Tools</h2>
+                    <div class="tools-grid">
+                        <div class="tool-card" data-tool="merge-tool">
+                            <div class="tool-card-icon purple">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34"/></svg>
+                            </div>
+                            <h3>Merge PDFs</h3>
+                            <p>Combine multiple PDF files into one document</p>
+                            <div class="tool-card-arrow">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </div>
+                        </div>
+                        <div class="tool-card" data-tool="split-tool">
+                            <div class="tool-card-icon cyan">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                            </div>
+                            <h3>Split PDF</h3>
+                            <p>Extract specific pages from your PDF</p>
+                            <div class="tool-card-arrow">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </div>
+                        </div>
+                        <div class="tool-card" data-tool="compress-tool">
+                            <div class="tool-card-icon green">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                            </div>
+                            <h3>Compress PDF</h3>
+                            <p>Reduce file size without losing quality</p>
+                            <div class="tool-card-arrow">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </div>
+                        </div>
+                        <div class="tool-card" data-tool="ocr-tool">
+                            <div class="tool-card-icon red">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4v4H7z"/><path d="M7 13h10"/><path d="M7 17h10"/></svg>
+                            </div>
+                            <h3>OCR Extract</h3>
+                            <p>Convert images to editable text</p>
+                            <div class="tool-card-arrow">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </div>
+                        </div>
+                        <div class="tool-card" data-tool="summary-tool" data-summary-mode="brief">
+                            <div class="tool-card-icon purple">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                            </div>
+                            <h3>AI Summary</h3>
+                            <p>Generate smart summaries from PDFs</p>
+                            <div class="tool-card-arrow">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </div>
+                        </div>
+                        <div class="tool-card" data-tool="chat">
+                            <div class="tool-card-icon yellow">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            </div>
+                            <h3>Chat with PDF</h3>
+                            <p>Ask questions about your documents</p>
+                            <div class="tool-card-arrow">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </div>
+                        </div>
+                        <div class="tool-card" data-tool="resume-tool">
+                            <div class="tool-card-icon pink">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </div>
+                            <h3>Resume Analyzer</h3>
+                            <p>Get ATS score and improvement tips</p>
+                            <div class="tool-card-arrow">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </div>
+                        </div>
+                        <div class="tool-card" data-tool="summary-tool" data-summary-mode="exam_notes">
+                            <div class="tool-card-icon teal">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            </div>
+                            <h3>Notes Generator</h3>
+                            <p>Create study notes from documents</p>
+                            <div class="tool-card-arrow">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </div>
+                        </div>
+                        <div class="tool-card" data-tool="flashcards-tool">
+                            <div class="tool-card-icon red">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10M7 12h10M7 17h10"/></svg>
+                            </div>
+                            <h3>Flashcard Maker</h3>
+                            <p>Generate study flashcards from documents</p>
+                            <div class="tool-card-arrow">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Files -->
+                    <h2 class="section-subtitle">Recent Files</h2>
+                <div class="card">
+                    <div id="recentFilesList" class="file-list">
+                        <div class="empty-state"><p>Loading files...</p></div>
+                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+
+            <!-- ════════ MERGE TOOL ════════ -->
+            <section class="tool-section" id="merge-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="tool-panel-title">
+                        <h2>Merge PDFs</h2>
+                        <p>Combine multiple PDF files into a single document</p>
+                    </div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="mergeDropzone">
+                        <input type="file" id="mergeFileInput" accept=".pdf" multiple hidden>
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        <h3 class="dropzone-title">Drop PDF files here</h3>
+                        <p class="dropzone-subtitle">or click to browse • Add 2+ PDFs to merge</p>
+                    </div>
+                    <div id="mergeFileList"></div>
+                    <div class="tool-actions">
+                        <button class="btn btn-primary" id="mergeBtn" onclick="handleMerge()" disabled>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2m5.66 0H14a2 2 0 0 1 2 2v3.34"/></svg>
+                            Merge PDFs
+                        </button>
+                    </div>
+                    <div id="mergeResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- ════════ SPLIT TOOL ════════ -->
+            <section class="tool-section" id="split-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="tool-panel-title">
+                        <h2>Split PDF</h2>
+                        <p>Extract specific pages from a PDF document</p>
+                    </div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="splitDropzone">
+                        <input type="file" id="splitFileInput" accept=".pdf" hidden>
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                        <h3 class="dropzone-title">Drop a PDF file here</h3>
+                        <p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="splitFileInfo"></div>
+                    <div id="splitOptions" style="display:none;">
+                        <div class="form-group">
+                            <label for="splitPages" class="form-label">Page Ranges</label>
+                            <input type="text" id="splitPages" class="form-input" placeholder="e.g., 1-3, 5, 7-10">
+                            <small class="form-hint">Separate ranges with commas. Example: 1-3, 5, 7-10</small>
+                        </div>
+                        <button class="btn btn-primary" id="splitBtn" onclick="handleSplit()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                            Split PDF
+                        </button>
+                    </div>
+                    <div id="splitResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- ════════ COMPRESS TOOL ════════ -->
+            <section class="tool-section" id="compress-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="tool-panel-title">
+                        <h2>Compress PDF</h2>
+                        <p>Reduce your PDF file size</p>
+                    </div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="compressDropzone">
+                        <input type="file" id="compressFileInput" accept=".pdf" hidden>
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                        <h3 class="dropzone-title">Drop a PDF file here</h3>
+                        <p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="compressFileInfo"></div>
+                    <div class="tool-actions">
+                        <button class="btn btn-primary" id="compressBtn" onclick="handleCompress()" disabled>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                            Compress PDF
+                        </button>
+                    </div>
+                    <div id="compressResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- ════════ OCR TOOL ════════ -->
+            <section class="tool-section" id="ocr-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="tool-panel-title">
+                        <h2>OCR Text Extraction</h2>
+                        <p>Extract text from images and scanned PDFs</p>
+                    </div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="ocrDropzone">
+                        <input type="file" id="ocrFileInput" accept=".png,.jpg,.jpeg,.pdf" hidden>
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4v4H7z"/><path d="M7 13h10"/><path d="M7 17h10"/></svg>
+                        <h3 class="dropzone-title">Drop an image or PDF here</h3>
+                        <p class="dropzone-subtitle">Supports PNG, JPG, JPEG, and scanned PDFs</p>
+                    </div>
+                    <div id="ocrPreview" style="display:none;"></div>
+                    <div id="ocrFileInfo"></div>
+                    <div class="tool-actions">
+                        <button class="btn btn-primary" id="ocrBtn" onclick="handleOcr()" disabled>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4v4H7z"/><path d="M7 13h10"/><path d="M7 17h10"/></svg>
+                            Extract Text
+                        </button>
+                    </div>
+                    <div id="ocrResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- ════════ SUMMARY TOOL ════════ -->
+            <section class="tool-section" id="summary-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="tool-panel-title">
+                        <h2>AI Summary Generator</h2>
+                        <p>Generate intelligent summaries from your PDFs</p>
+                    </div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="summaryDropzone">
+                        <input type="file" id="summaryFileInput" accept=".pdf" hidden>
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        <h3 class="dropzone-title">Drop a PDF file here</h3>
+                        <p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="summaryFileInfo"></div>
+                    <div id="summaryOptions" style="display:none;">
+                        <div class="form-group">
+                            <label for="summaryMode" class="form-label">Summary Type</label>
+                            <select id="summaryMode" class="form-select">
+                                <option value="brief">Brief Summary</option>
+                                <option value="detailed">Detailed Summary</option>
+                                <option value="bullets">Bullet Points</option>
+                                <option value="exam_notes">Exam Notes</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" id="summaryBtn" onclick="handleSummary()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            Generate Summary
+                        </button>
+                    </div>
+                    <div id="summaryResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- ════════ RESUME ANALYZER ════════ -->
+            <section class="tool-section" id="resume-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="tool-panel-title">
+                        <h2>Resume Analyzer</h2>
+                        <p>Get ATS compatibility score and improvement suggestions</p>
+                    </div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="resumeDropzone">
+                        <input type="file" id="resumeFileInput" accept=".pdf" hidden>
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <h3 class="dropzone-title">Drop your resume PDF here</h3>
+                        <p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="resumeFileInfo"></div>
+                    <div id="resumeOptions" style="display:none;">
+                        <div class="form-group">
+                            <label for="targetRole" class="form-label">Target Role (Optional)</label>
+                            <input type="text" id="targetRole" class="form-input" placeholder="e.g., Software Engineer, Data Scientist">
+                        </div>
+                        <button class="btn btn-primary" id="resumeBtn" onclick="handleResumeAnalysis()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            Analyze Resume
+                        </button>
+                    </div>
+                    <div id="resumeResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- ════════ FLASHCARD MAKER ════════ -->
+            <section class="tool-section" id="flashcards-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="tool-panel-title">
+                        <h2>Interactive Flashcard Maker</h2>
+                        <p>Generate and practice with custom flashcards from your PDF</p>
+                    </div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="flashcardsDropzone">
+                        <input type="file" id="flashcardsFileInput" accept=".pdf" hidden>
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10M7 12h10M7 17h10"/></svg>
+                        <h3 class="dropzone-title">Drop your PDF file here</h3>
+                        <p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="flashcardsFileInfo"></div>
+                    <div id="flashcardsOptions" style="display:none; margin-top: 1.5rem; text-align: center;">
+                        <button class="btn btn-primary" id="flashcardsBtn" onclick="handleGenerateFlashcards()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10M7 12h10M7 17h10"/></svg>
+                            Generate Flashcards
+                        </button>
+                    </div>
+                    <div id="flashcardsResult" style="display:none;">
+                        <div id="flashcardDisplayArea"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════ MY FILES ════════ -->
+            <section class="tool-section" id="files-section" style="display:none;">
+                <div class="tool-panel-header">
+                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="tool-panel-title">
+                        <h2>My Files</h2>
+                        <p>Manage your uploaded documents</p>
+                    </div>
+                </div>
+                <div class="tool-panel-body">
+                    <div id="allFilesList" class="file-list">
+                        <div class="empty-state"><p>Loading...</p></div>
+                    </div>
+                </div>
+            </section>
+        </div>
     </main>
+</div>
 
-    <script src="js/app.js"></script>
-    <script src="js/upload.js"></script>
-    <script src="js/pdf-tools.js"></script>
-    <script src="js/ocr.js"></script>
-    <script src="js/summary.js"></script>
-    <script src="js/resume.js"></script>
+    <script src="js/app.js?v=2.1"></script>
+    <script src="js/upload.js?v=2.1"></script>
+    <script src="js/pdf-tools.js?v=2.1"></script>
+    <script src="js/ocr.js?v=2.1"></script>
+    <script src="js/summary.js?v=2.1"></script>
+    <script src="js/resume.js?v=2.1"></script>
+    <script src="js/flashcards.js?v=2.1"></script>
 
     <script>
         // Load all files for the files section
@@ -406,10 +613,10 @@
                                 <span class="file-meta">${formatFileSize(f.size)} • ${formatDate(f.created_at)}</span>
                             </div>
                             <div class="file-actions">
-                                <button class="btn-icon" onclick="downloadFile('${f._id}')" title="Download">
+                                <button class="btn-icon" onclick="downloadFile('${f.id}')" title="Download">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                 </button>
-                                <button class="btn-icon danger" onclick="deleteFileById('${f._id}')" title="Delete">
+                                <button class="btn-icon danger" onclick="deleteFileById('${f.id}')" title="Delete">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                 </button>
                             </div>

@@ -10,6 +10,7 @@ from services.pdf_service import extract_text
 from ai_modules.summarizer import generate_summary
 from ai_modules.chat_engine import chat_with_pdf
 from ai_modules.resume_analyzer import analyze_resume
+from ai_modules.flashcard_engine import generate_flashcards
 from database.models import (
     get_file_by_id,
     save_history,
@@ -241,6 +242,44 @@ def notes():
 
     except Exception as e:
         return jsonify({'error': f'Notes generation failed: {str(e)}'}), 500
+
+
+# ---------------------------------------------------------------------------
+# Flashcards
+# ---------------------------------------------------------------------------
+
+@ai_bp.route('/flashcards', methods=['POST'])
+@jwt_required()
+def flashcards():
+    """Generate study flashcards from a PDF."""
+    try:
+        _ensure_upload_dir()
+        user_id = get_jwt_identity()
+
+        file = request.files.get('file')
+        file_id = request.form.get('file_id', '')
+
+        text, error = _get_pdf_text(file=file, file_id=file_id)
+        if error:
+            return jsonify({'error': error}), 400
+
+        if not text.strip():
+            return jsonify({
+                'error': 'No text could be extracted from this PDF.',
+            }), 400
+
+        cards = generate_flashcards(text)
+
+        save_history(user_id, file_id or '', 'flashcards', 'success',
+                     {'card_count': len(cards)})
+
+        return jsonify({
+            'message': 'Flashcards generated successfully',
+            'cards': cards,
+        }), 200
+
+    except Exception as e:
+        return jsonify({'error': f'Flashcard generation failed: {str(e)}'}), 500
 
 
 # ---------------------------------------------------------------------------

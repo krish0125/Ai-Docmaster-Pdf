@@ -2,7 +2,7 @@
    AI DocMaster — Main Application Logic
    ============================================ */
 
-const API_BASE = 'http://127.0.0.1:5000';
+const API_BASE = 'http://127.0.0.1:5001';
 
 // ── Auth Helpers ──
 function getToken() {
@@ -157,10 +157,12 @@ async function loadUserProfile() {
     const nameEl = document.getElementById('userName');
     const avatarEl = document.getElementById('userAvatar');
     const welcomeEl = document.getElementById('welcomeName');
+    const welcomeTopbarEl = document.getElementById('welcomeNameTopbar');
 
     if (user.name) {
         if (nameEl) nameEl.textContent = user.name;
         if (welcomeEl) welcomeEl.textContent = user.name;
+        if (welcomeTopbarEl) welcomeTopbarEl.textContent = user.name;
         if (avatarEl) avatarEl.textContent = user.name.charAt(0).toUpperCase();
     }
 
@@ -171,6 +173,7 @@ async function loadUserProfile() {
             localStorage.setItem('user', JSON.stringify(data.user));
             if (nameEl) nameEl.textContent = data.user.name;
             if (welcomeEl) welcomeEl.textContent = data.user.name;
+            if (welcomeTopbarEl) welcomeTopbarEl.textContent = data.user.name;
             if (avatarEl) avatarEl.textContent = data.user.name.charAt(0).toUpperCase();
         }
     } catch (e) { /* silently fail, use cached data */ }
@@ -180,11 +183,11 @@ async function loadUserProfile() {
 async function loadStats() {
     try {
         const data = await apiFetch('/files/stats');
-        if (data) {
-            animateCounter('statFiles', data.total_files || 0);
-            animateCounter('statPdfs', data.pdf_count || 0);
-            animateCounter('statOcr', data.ocr_count || 0);
-            animateCounter('statChats', data.chat_count || 0);
+        if (data && data.stats) {
+            animateCounter('statFiles', data.stats.total_files || 0);
+            animateCounter('statPdfs', data.stats.pdf_count || 0);
+            animateCounter('statOcr', data.stats.ocr_count || 0);
+            animateCounter('statChats', data.stats.chat_count || 0);
         }
     } catch (e) {
         // Set defaults
@@ -223,7 +226,7 @@ async function loadRecentFiles() {
                         <span class="file-name">${f.original_name || f.filename}</span>
                         <span class="file-meta">${formatFileSize(f.size)} • ${formatDate(f.created_at)}</span>
                     </div>
-                    <button class="btn-icon" onclick="downloadFile('${f._id}')" title="Download">
+                    <button class="btn-icon" onclick="downloadFile('${f.id}')" title="Download">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     </button>
                 </div>
@@ -337,6 +340,17 @@ function showSection(sectionId) {
         target.style.display = 'block';
         requestAnimationFrame(() => target.classList.add('active'));
     }
+
+    // Automatically synchronize sidebar active and expanded states
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    const navItem = document.querySelector(`.nav-item[data-section="${sectionId}"]`);
+    if (navItem) {
+        navItem.classList.add('active');
+        const parentGroup = navItem.closest('.nav-group');
+        if (parentGroup) {
+            parentGroup.classList.add('expanded');
+        }
+    }
 }
 
 // ── Tool Panel Initialization ──
@@ -345,13 +359,25 @@ function initToolPanels() {
     document.querySelectorAll('.tool-card[data-tool]').forEach(card => {
         card.addEventListener('click', () => {
             const tool = card.dataset.tool;
+
+            // Handle Chat redirection
+            if (tool === 'chat') {
+                window.location.href = 'chat.html';
+                return;
+            }
+
             const section = document.getElementById(tool);
             if (section) {
                 showSection(tool);
-                // Update sidebar active state
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                const navItem = document.querySelector(`.nav-item[data-section="${tool}"]`);
-                if (navItem) navItem.classList.add('active');
+
+                // Handle pre-selecting the specific summary mode for Notes Generator vs AI Summary
+                const summaryModeSelect = document.getElementById('summaryMode');
+                if (summaryModeSelect) {
+                    const mode = card.dataset.summaryMode;
+                    if (mode) {
+                        summaryModeSelect.value = mode;
+                    }
+                }
             }
         });
     });

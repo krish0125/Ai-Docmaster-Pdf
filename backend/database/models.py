@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from bson import ObjectId
 from database.db import get_db
+import database.json_db as jdb
 
 
 # ---------------------------------------------------------------------------
@@ -11,7 +12,7 @@ def create_user(name: str, email: str, password_hash: str) -> dict | None:
     """Insert a new user document. Returns the created user dict or None on failure."""
     db = get_db()
     if db is None:
-        return None
+        return jdb.json_create_user(name, email, password_hash)
     try:
         user_doc = {
             'name': name,
@@ -32,7 +33,7 @@ def find_user_by_email(email: str) -> dict | None:
     """Find a user by email address."""
     db = get_db()
     if db is None:
-        return None
+        return jdb.json_find_user_by_email(email)
     try:
         return db.users.find_one({'email': email.lower().strip()})
     except Exception as e:
@@ -44,7 +45,7 @@ def find_user_by_id(user_id: str) -> dict | None:
     """Find a user by their ObjectId string."""
     db = get_db()
     if db is None:
-        return None
+        return jdb.json_find_user_by_id(user_id)
     try:
         return db.users.find_one({'_id': ObjectId(user_id)})
     except Exception as e:
@@ -56,7 +57,7 @@ def update_user(user_id: str, update_fields: dict) -> bool:
     """Update user fields. Returns True on success."""
     db = get_db()
     if db is None:
-        return False
+        return jdb.json_update_user(user_id, update_fields)
     try:
         update_fields['updated_at'] = datetime.now(timezone.utc)
         result = db.users.update_one(
@@ -78,7 +79,7 @@ def save_file_record(user_id: str, filename: str, original_name: str,
     """Save a file metadata record. Returns the document or None."""
     db = get_db()
     if db is None:
-        return None
+        return jdb.json_save_file_record(user_id, filename, original_name, file_type, file_path, size)
     try:
         file_doc = {
             'user_id': user_id,
@@ -101,7 +102,7 @@ def get_user_files(user_id: str) -> list:
     """Return all file records for a user, newest first."""
     db = get_db()
     if db is None:
-        return []
+        return jdb.json_get_user_files(user_id)
     try:
         cursor = db.files.find({'user_id': user_id}).sort('created_at', -1)
         return list(cursor)
@@ -114,7 +115,7 @@ def get_file_by_id(file_id: str) -> dict | None:
     """Get a single file record by its _id."""
     db = get_db()
     if db is None:
-        return None
+        return jdb.json_get_file_by_id(file_id)
     try:
         return db.files.find_one({'_id': ObjectId(file_id)})
     except Exception as e:
@@ -126,7 +127,7 @@ def delete_file_record(file_id: str) -> bool:
     """Delete a file record from the database. Returns True on success."""
     db = get_db()
     if db is None:
-        return False
+        return jdb.json_delete_file_record(file_id)
     try:
         result = db.files.delete_one({'_id': ObjectId(file_id)})
         return result.deleted_count > 0
@@ -144,7 +145,7 @@ def save_history(user_id: str, file_id: str, operation: str,
     """Save an operation history entry."""
     db = get_db()
     if db is None:
-        return None
+        return jdb.json_save_history(user_id, file_id, operation, result, metadata)
     try:
         history_doc = {
             'user_id': user_id,
@@ -166,7 +167,7 @@ def get_user_history(user_id: str, limit: int = 50) -> list:
     """Return recent operation history for a user."""
     db = get_db()
     if db is None:
-        return []
+        return jdb.json_get_user_history(user_id, limit)
     try:
         cursor = (
             db.history.find({'user_id': user_id})
@@ -187,7 +188,7 @@ def save_chat(user_id: str, file_id: str, messages: list) -> dict | None:
     """Create a new chat session."""
     db = get_db()
     if db is None:
-        return None
+        return jdb.json_save_chat(user_id, file_id, messages)
     try:
         chat_doc = {
             'user_id': user_id,
@@ -208,7 +209,7 @@ def get_chat(chat_id: str) -> dict | None:
     """Retrieve a chat session by its _id."""
     db = get_db()
     if db is None:
-        return None
+        return jdb.json_get_chat(chat_id)
     try:
         return db.chat.find_one({'_id': ObjectId(chat_id)})
     except Exception as e:
@@ -220,7 +221,7 @@ def get_chat_by_file(user_id: str, file_id: str) -> dict | None:
     """Retrieve the most recent chat session for a user + file pair."""
     db = get_db()
     if db is None:
-        return None
+        return jdb.json_get_chat_by_file(user_id, file_id)
     try:
         return db.chat.find_one(
             {'user_id': user_id, 'file_id': file_id},
@@ -235,7 +236,7 @@ def update_chat_messages(chat_id: str, messages: list) -> bool:
     """Append / replace the messages list in an existing chat."""
     db = get_db()
     if db is None:
-        return False
+        return jdb.json_update_chat_messages(chat_id, messages)
     try:
         result = db.chat.update_one(
             {'_id': ObjectId(chat_id)},
@@ -251,7 +252,7 @@ def get_user_chats(user_id: str) -> list:
     """Return all chat sessions for a user, newest first."""
     db = get_db()
     if db is None:
-        return []
+        return jdb.json_get_user_chats(user_id)
     try:
         cursor = db.chat.find({'user_id': user_id}).sort('updated_at', -1)
         return list(cursor)

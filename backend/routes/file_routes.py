@@ -138,6 +138,10 @@ def stats():
             op = h.get('operation', 'unknown')
             op_counts[op] = op_counts.get(op, 0) + 1
 
+        pdf_count = sum(1 for f in files if f.get('file_type') == 'pdf')
+        ocr_count = op_counts.get('ocr_extract', 0) + op_counts.get('ocr_batch', 0) + op_counts.get('pdf_ocr', 0)
+        chat_count = op_counts.get('chat', 0)
+
         return jsonify({
             'stats': {
                 'total_files': total_files,
@@ -145,6 +149,9 @@ def stats():
                 'total_size_formatted': get_file_size_formatted(total_size),
                 'operations_count': operations_count,
                 'operations_breakdown': op_counts,
+                'pdf_count': pdf_count,
+                'ocr_count': ocr_count,
+                'chat_count': chat_count,
             },
         }), 200
 

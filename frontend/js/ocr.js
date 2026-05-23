@@ -70,9 +70,10 @@ async function handleOcr() {
     try {
         const data = await uploadFileWithProgress(endpoint, formData, () => {});
         if (data) {
-            const text = data.text || data.extracted_text || 'No text found';
-            const confidence = data.confidence || 'N/A';
-            const wordCount = data.word_count || text.split(/\s+/).filter(w => w).length;
+            const resData = data.result || data;
+            const text = resData.text || resData.extracted_text || 'No text found';
+            const confidence = resData.confidence || 'N/A';
+            const wordCount = resData.word_count || text.split(/\s+/).filter(w => w).length;
 
             resultDiv.innerHTML = `
                 <div class="result-header">

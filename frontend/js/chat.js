@@ -2,7 +2,7 @@
    AI DocMaster — Chat with PDF Logic
    ============================================ */
 
-const API_BASE_CHAT = 'http://127.0.0.1:5000';
+const API_BASE_CHAT = 'http://127.0.0.1:5001';
 let chatFileId = null;
 let chatFileName = '';
 let chatMessages = [];

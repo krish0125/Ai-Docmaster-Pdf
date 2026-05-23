@@ -2,7 +2,7 @@
    AI DocMaster — Authentication Logic
    ============================================ */
 
-const API_BASE = 'http://127.0.0.1:5000';
+const API_BASE = 'http://127.0.0.1:5001';
 
 // ── Check if already logged in ──
 document.addEventListener('DOMContentLoaded', () => {
@@ -235,7 +235,7 @@ async function handleLogin(e) {
         }
     } catch (err) {
         console.error('Login error:', err);
-        const errorMsg = 'Cannot connect to server. Make sure the backend is running on port 5000.';
+        const errorMsg = 'Cannot connect to server. Make sure the backend is running on port 5001.';
         showAuthError(errorMsg);
         showToast(errorMsg, 'error');
     } finally {
@@ -292,7 +292,7 @@ async function handleSignup(e) {
         }
     } catch (err) {
         console.error('Signup error:', err);
-        const errorMsg = 'Cannot connect to server. Make sure the backend is running on port 5000.';
+        const errorMsg = 'Cannot connect to server. Make sure the backend is running on port 5001.';
         showAuthError(errorMsg);
         showToast(errorMsg, 'error');
     } finally {

@@ -48,7 +48,8 @@ async function handleResumeAnalysis() {
     try {
         const data = await uploadFileWithProgress('/ai/resume-analyze', formData, () => {});
         if (data) {
-            renderResumeResults(data, resultDiv);
+            const analysisData = data.result || data;
+            renderResumeResults(analysisData, resultDiv);
             resultDiv.style.display = 'block';
             showToast('Resume analysis complete!', 'success');
         }
