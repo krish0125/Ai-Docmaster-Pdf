@@ -77,3 +77,13 @@ AI-DocMaster/
      python -m http.server 5500
      ```
 2. Navigate to `http://localhost:5500` or open the pages in your browser.
+
+
+* How To Run this projects step -->
+
+[1] --> .env
+[2] --> cd backend
+[3]  -> pip install -r requirements.txt
+[4]  -> pythonn app.pythonn
+[5]  -> go to frontend and click login.html and then right bottom click live server 
+[6]  -> open mongobd to show data in local server 27017 :
