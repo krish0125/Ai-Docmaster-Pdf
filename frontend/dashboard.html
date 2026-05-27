@@ -185,12 +185,304 @@
                     <div class="topbar-welcome">Welcome back, <span id="welcomeNameTopbar">User</span>! 👋</div>
                 </div>
                 <div class="topbar-right">
-                    <div class="user-menu">
-                        <div class="user-avatar" id="userAvatar">U</div>
-                        <span class="user-name" id="userName">User</span>
+                    <!-- Theme Toggle -->
+                    <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode" aria-label="Toggle theme">
+                        <span class="theme-icon theme-icon-dark">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                        </span>
+                        <span class="theme-icon theme-icon-light" style="display:none">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                        </span>
+                    </button>
+
+                    <!-- Notification Bell -->
+                    <button class="notif-btn" id="notifBtn" title="Notifications" aria-label="Notifications">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        <span class="notif-dot" id="notifDot"></span>
+                    </button>
+
+                    <!-- User Profile Dropdown Trigger -->
+                    <div class="user-profile-trigger" id="userProfileTrigger">
+                        <div class="user-avatar-wrap">
+                            <div class="user-avatar" id="userAvatar">J</div>
+                            <span class="user-online-dot"></span>
+                        </div>
+                        <div class="user-info-mini">
+                            <span class="user-name" id="userName">Joy</span>
+                            <span class="user-role-label">Member</span>
+                        </div>
+                        <svg class="user-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
+
+                    <!-- ═══ USER DROPDOWN PANEL ═══ -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <!-- Profile Header -->
+                        <div class="udrop-header">
+                            <div class="udrop-avatar-ring">
+                                <div class="udrop-avatar" id="udropAvatar">J</div>
+                                <div class="udrop-status-ring"></div>
+                            </div>
+                            <div class="udrop-user-info">
+                                <h4 class="udrop-name" id="udropName">Joy</h4>
+                                <p class="udrop-email" id="udropEmail">joy@example.com</p>
+                                <span class="udrop-badge">✦ Pro Member</span>
+                            </div>
+                        </div>
+
+                        <div class="udrop-divider"></div>
+
+                        <!-- Account Section -->
+                        <div class="udrop-section-label">Account</div>
+                        <button class="udrop-item" onclick="showUserProfile()">
+                            <span class="udrop-item-icon udrop-icon-purple">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </span>
+                            <span class="udrop-item-text">My Profile</span>
+                            <svg class="udrop-item-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+                        <button class="udrop-item" onclick="showSection('files-section')" id="udropFilesBtn">
+                            <span class="udrop-item-icon udrop-icon-blue">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                            </span>
+                            <span class="udrop-item-text">My Files</span>
+                            <svg class="udrop-item-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+
+                        <div class="udrop-divider"></div>
+
+                        <!-- Appearance -->
+                        <div class="udrop-section-label">Appearance</div>
+                        <div class="udrop-item udrop-item-toggle" id="themeDropdownItem">
+                            <span class="udrop-item-icon udrop-icon-yellow">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+                            </span>
+                            <span class="udrop-item-text">Light Mode</span>
+                            <label class="toggle-switch" onclick="toggleTheme(event)">
+                                <input type="checkbox" id="themeToggleCheck">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="udrop-divider"></div>
+
+                        <!-- Admin -->
+                        <div class="udrop-section-label">Admin</div>
+                        <button class="udrop-item" onclick="showAdminPanel()">
+                            <span class="udrop-item-icon udrop-icon-red">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                            </span>
+                            <span class="udrop-item-text">Admin Panel</span>
+                            <span class="udrop-tag">Admin</span>
+                        </button>
+                        <button class="udrop-item" onclick="showSection('dashboard-home')">
+                            <span class="udrop-item-icon udrop-icon-green">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                            </span>
+                            <span class="udrop-item-text">Dashboard</span>
+                            <svg class="udrop-item-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+                        </button>
+
+                        <div class="udrop-divider"></div>
+
+                        <!-- API Settings -->
+                        <div class="udrop-section-label">API Configuration</div>
+                        <div style="padding: 6px 16px 12px 16px;">
+                            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between;">
+                                <span>Gemini API Key</span>
+                                <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--primary); text-decoration: none;">Get Key ↗</a>
+                            </div>
+                            <div style="position: relative; display: flex; align-items: center;">
+                                <input type="password" id="geminiApiKeyInput" placeholder="Paste your API key here..." style="width: 100%; padding: 8px 32px 8px 10px; font-size: 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: var(--text-primary); transition: border-color 0.2s;" oninput="saveGeminiKey()">
+                                <button onclick="toggleKeyVisibility(event)" style="position: absolute; right: 8px; background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; padding: 0;">
+                                    <svg id="eyeIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                </button>
+                            </div>
+                            <div id="keyStatusMsg" style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">Using default server API key</div>
+                        </div>
+
+                        <div class="udrop-divider"></div>
+
+                        <!-- Help & Legal -->
+                        <div class="udrop-section-label">Legal & Support</div>
+                        <button class="udrop-item" onclick="showPolicyModal('privacy')">
+                            <span class="udrop-item-icon udrop-icon-teal">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            </span>
+                            <span class="udrop-item-text">Privacy Policy</span>
+                        </button>
+                        <button class="udrop-item" onclick="showPolicyModal('terms')">
+                            <span class="udrop-item-icon udrop-icon-blue">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            </span>
+                            <span class="udrop-item-text">Terms of Service</span>
+                        </button>
+                        <button class="udrop-item" onclick="showHelpModal()">
+                            <span class="udrop-item-icon udrop-icon-purple">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            </span>
+                            <span class="udrop-item-text">Help & Support</span>
+                        </button>
+
+                        <div class="udrop-divider"></div>
+
+                        <!-- Logout -->
+                        <button class="udrop-item udrop-logout" id="logoutBtnDropdown" onclick="logout()">
+                            <span class="udrop-item-icon udrop-icon-danger">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            </span>
+                            <span class="udrop-item-text">Sign Out</span>
+                        </button>
+
+                        <!-- Footer -->
+                        <div class="udrop-footer">
+                            <span>AI DocMaster v2.1</span>
+                            <span class="udrop-footer-dot">·</span>
+                            <span>© 2025</span>
+                        </div>
                     </div>
                 </div>
             </header>
+
+            <!-- ═══ USER PROFILE MODAL ═══ -->
+            <div class="modal-backdrop" id="userProfileModal" onclick="closeModal('userProfileModal')">
+                <div class="profile-modal" onclick="event.stopPropagation()">
+                    <button class="modal-close-btn" onclick="closeModal('userProfileModal')">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                    <div class="profile-modal-header">
+                        <div class="profile-modal-avatar" id="profileModalAvatar">J</div>
+                        <div>
+                            <h3 id="profileModalName">Joy</h3>
+                            <p class="profile-modal-email" id="profileModalEmail">joy@example.com</p>
+                            <span class="profile-modal-badge">✦ Pro Member</span>
+                        </div>
+                    </div>
+                    <div class="profile-modal-stats">
+                        <div class="pm-stat"><span class="pm-stat-val" id="pmStatFiles">0</span><span class="pm-stat-label">Files</span></div>
+                        <div class="pm-stat-divider"></div>
+                        <div class="pm-stat"><span class="pm-stat-val" id="pmStatPdfs">0</span><span class="pm-stat-label">PDFs</span></div>
+                        <div class="pm-stat-divider"></div>
+                        <div class="pm-stat"><span class="pm-stat-val" id="pmStatChats">0</span><span class="pm-stat-label">AI Chats</span></div>
+                    </div>
+                    <div class="profile-modal-actions">
+                        <button class="btn btn-primary btn-sm" onclick="closeModal('userProfileModal')">Close Profile</button>
+                        <button class="btn btn-outline btn-sm" onclick="logout()">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ ADMIN PANEL MODAL ═══ -->
+            <div class="modal-backdrop" id="adminPanelModal" onclick="closeModal('adminPanelModal')">
+                <div class="admin-modal" onclick="event.stopPropagation()">
+                    <button class="modal-close-btn" onclick="closeModal('adminPanelModal')">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                    <div class="admin-modal-header">
+                        <div class="admin-modal-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <div>
+                            <h3>Admin Panel</h3>
+                            <p class="text-muted">System management & controls</p>
+                        </div>
+                    </div>
+                    <div class="admin-cards">
+                        <div class="admin-card">
+                            <div class="admin-card-icon" style="background:rgba(59,130,246,0.1);color:#3B82F6">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            </div>
+                            <div>
+                                <div class="admin-card-title">Total Users</div>
+                                <div class="admin-card-val" id="adminUsers">—</div>
+                            </div>
+                        </div>
+                        <div class="admin-card">
+                            <div class="admin-card-icon" style="background:rgba(34,197,94,0.1);color:#22C55E">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            </div>
+                            <div>
+                                <div class="admin-card-title">Total Files</div>
+                                <div class="admin-card-val" id="adminFiles">—</div>
+                            </div>
+                        </div>
+                        <div class="admin-card">
+                            <div class="admin-card-icon" style="background:rgba(249,115,22,0.1);color:#F97316">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                            </div>
+                            <div>
+                                <div class="admin-card-title">Operations</div>
+                                <div class="admin-card-val" id="adminOps">—</div>
+                            </div>
+                        </div>
+                        <div class="admin-card">
+                            <div class="admin-card-icon" style="background:rgba(168,85,247,0.1);color:#A855F7">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                            </div>
+                            <div>
+                                <div class="admin-card-title">API Status</div>
+                                <div class="admin-card-val" style="color:#22C55E">Online</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="admin-log-section">
+                        <h5 style="margin-bottom:0.75rem;font-size:13px;color:#6B7280;text-transform:uppercase;letter-spacing:.05em">System Info</h5>
+                        <div class="admin-log-item"><span>Backend</span><span style="color:#22C55E">Running on port 5001</span></div>
+                        <div class="admin-log-item"><span>Database</span><span id="adminDbStatus">MongoDB</span></div>
+                        <div class="admin-log-item"><span>AI Engine</span><span style="color:#22C55E">Gemini 2.0 Flash</span></div>
+                        <div class="admin-log-item"><span>Version</span><span>AI DocMaster v2.1</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ POLICY MODAL ═══ -->
+            <div class="modal-backdrop" id="policyModal" onclick="closeModal('policyModal')">
+                <div class="policy-modal" onclick="event.stopPropagation()">
+                    <button class="modal-close-btn" onclick="closeModal('policyModal')">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                    <h3 class="policy-modal-title" id="policyModalTitle">Privacy Policy</h3>
+                    <div class="policy-modal-body" id="policyModalBody"></div>
+                </div>
+            </div>
+
+            <!-- ═══ HELP MODAL ═══ -->
+            <div class="modal-backdrop" id="helpModal" onclick="closeModal('helpModal')">
+                <div class="help-modal" onclick="event.stopPropagation()">
+                    <button class="modal-close-btn" onclick="closeModal('helpModal')">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
+                    <div class="help-modal-header">
+                        <div class="help-modal-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        </div>
+                        <div>
+                            <h3>Help & Support</h3>
+                            <p class="text-muted">Quick guide to AI DocMaster</p>
+                        </div>
+                    </div>
+                    <div class="help-faq">
+                        <div class="faq-item">
+                            <div class="faq-q">How do I merge PDFs?</div>
+                            <div class="faq-a">Go to PDF Tools → Merge PDFs, drag and drop or select multiple PDF files, then click "Merge Now".</div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-q">How does OCR work?</div>
+                            <div class="faq-a">Upload an image (PNG/JPG) or scanned PDF under OCR Extract. The system uses Tesseract to extract text.</div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-q">What is Chat with PDF?</div>
+                            <div class="faq-a">Upload a PDF and ask questions about its content using Google Gemini AI for intelligent answers.</div>
+                        </div>
+                        <div class="faq-item">
+                            <div class="faq-q">How is my data stored?</div>
+                            <div class="faq-a">Files are stored locally on the server. Your account is secured with JWT authentication and bcrypt password hashing.</div>
+                        </div>
+                    </div>
+                    <div style="text-align:center;margin-top:1.25rem;padding-top:1rem;border-top:1px solid #E5E7EB">
+                        <p style="font-size:13px;color:#6B7280">Need more help? Contact us at <a href="mailto:support@aidocmaster.com" style="color:#22C55E">support@aidocmaster.com</a></p>
+                    </div>
+                </div>
+            </div>
 
             <div class="dashboard-content">
                 <!-- Dashboard Home -->
@@ -369,7 +661,18 @@
                             Merge PDFs
                         </button>
                     </div>
-                    <div id="mergeResult" style="display:none;"></div>
+                    <div id="mergeResult" style="display:none; margin-bottom: 2rem;"></div>
+
+                    <!-- Localized Store -->
+                    <div class="card" style="margin-top: 2rem;">
+                        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                            Saved Merged PDFs
+                        </h3>
+                        <div id="mergeStoreList" class="file-list">
+                            <div class="empty-state"><p>No saved merges yet</p></div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -403,7 +706,18 @@
                             Split PDF
                         </button>
                     </div>
-                    <div id="splitResult" style="display:none;"></div>
+                    <div id="splitResult" style="display:none; margin-bottom: 2rem;"></div>
+
+                    <!-- Localized Store -->
+                    <div class="card" style="margin-top: 2rem;">
+                        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                            Saved Split PDFs
+                        </h3>
+                        <div id="splitStoreList" class="file-list">
+                            <div class="empty-state"><p>No saved splits yet</p></div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -432,7 +746,18 @@
                             Compress PDF
                         </button>
                     </div>
-                    <div id="compressResult" style="display:none;"></div>
+                    <div id="compressResult" style="display:none; margin-bottom: 2rem;"></div>
+
+                    <!-- Localized Store -->
+                    <div class="card" style="margin-top: 2rem;">
+                        <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                            Saved Compressed PDFs
+                        </h3>
+                        <div id="compressStoreList" class="file-list">
+                            <div class="empty-state"><p>No saved compressions yet</p></div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -643,12 +968,17 @@
             }
         }
 
-        // Watch for files section activation
+        // Watch for files section activation via style and class changes
         const observer = new MutationObserver(() => {
             const filesSection = document.getElementById('files-section');
-            if (filesSection && filesSection.classList.contains('active')) loadAllFiles();
+            if (filesSection && (filesSection.style.display === 'block' || filesSection.classList.contains('active'))) {
+                loadAllFiles();
+            }
         });
-        observer.observe(document.getElementById('files-section'), { attributes: true, attributeFilter: ['class'] });
+        const filesSectionEl = document.getElementById('files-section');
+        if (filesSectionEl) {
+            observer.observe(filesSectionEl, { attributes: true, attributeFilter: ['class', 'style'] });
+        }
     </script>
 </body>
 </html>

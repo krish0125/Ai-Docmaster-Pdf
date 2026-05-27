@@ -176,16 +176,29 @@ def split():
         for path in output_paths:
             fname = os.path.basename(path)
             info = get_pdf_info(path)
-            results.append({
-                'filename': fname,
-                'download_url': f'/pdf/download/{fname}',
-                'page_count': info.get('page_count', 0),
-                'size': os.path.getsize(path),
-            })
+            
             # Move split files to main upload folder for serving
             dest = os.path.join(UPLOAD_FOLDER, fname)
             if path != dest:
                 os.replace(path, dest)
+
+            # DB record for this part
+            record = save_file_record(
+                user_id=user_id,
+                filename=fname,
+                original_name=fname,
+                file_type='pdf',
+                file_path=dest,
+                size=os.path.getsize(dest),
+            )
+
+            results.append({
+                'id': str(record['_id']) if record else None,
+                'filename': fname,
+                'download_url': f'/pdf/download/{fname}',
+                'page_count': info.get('page_count', 0),
+                'size': os.path.getsize(dest),
+            })
 
         save_history(user_id, '', 'split', 'success',
                      {'original': file_info['original_name'], 'parts': len(results)})

@@ -1,5 +1,6 @@
 """AI Flashcard engine — powered by Google Gemini (google-genai SDK)."""
 
+import re
 import json
 from config import Config
 
@@ -14,15 +15,9 @@ except ImportError:
 
 
 def get_client():
-    """Create / return a cached ``genai.Client``."""
-    global _client, _GENAI_AVAILABLE
-    if not _GENAI_AVAILABLE:
-        return None
-    if not Config.GEMINI_API_KEY:
-        return None
-    if _client is None:
-        _client = genai.Client(api_key=Config.GEMINI_API_KEY)
-    return _client
+    """Create / return the unified Gemini client from chat_engine."""
+    from ai_modules.chat_engine import get_client as _chat_get_client
+    return _chat_get_client()
 
 
 def generate_flashcards(text: str) -> list:
@@ -46,7 +41,7 @@ def generate_flashcards(text: str) -> list:
         f"{text[:15000]}\n"  # Keep within reasonable prompt size
         "--- END TEXT ---\n\n"
         "You MUST return ONLY a valid JSON array of objects, with NO additional text or markdown formatting. "
-        "Do not wrap it in ```json blocks. Each object in the array MUST have exactly these two keys: "
+        "Each object in the array MUST have exactly these two keys: "
         "'question' and 'answer'.\n"
         "Example format:\n"
         '[\n  {"question": "What is the main topic of the text?", "answer": "The text discusses X."}\n]'
@@ -59,15 +54,16 @@ def generate_flashcards(text: str) -> list:
         )
         resp_text = response.text.strip()
         
-        # Strip markdown syntax if returned
-        if resp_text.startswith("```"):
-            lines = resp_text.splitlines()
-            if lines[0].startswith("```"):
-                lines = lines[1:]
-            if lines[-1].startswith("```"):
-                lines = lines[:-1]
-            resp_text = "\n".join(lines).strip()
-            
+        # Clean markdown code blocks if present
+        resp_text = re.sub(r'^```(?:json)?\s*', '', resp_text, flags=re.IGNORECASE)
+        resp_text = re.sub(r'\s*```$', '', resp_text)
+        resp_text = resp_text.strip()
+
+        # Robustly extract JSON array using regular expressions to strip any prefix/suffix conversational text
+        json_match = re.search(r'\[\s*\{.*\}\s*\]', resp_text, re.DOTALL)
+        if json_match:
+            resp_text = json_match.group(0)
+
         cards = json.loads(resp_text)
         if isinstance(cards, list):
             # Validate format

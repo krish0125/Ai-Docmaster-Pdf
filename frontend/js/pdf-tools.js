@@ -97,6 +97,14 @@ async function handleMerge() {
             `;
             resultDiv.style.display = 'block';
             showToast('PDFs merged successfully!', 'success');
+            
+            // Refresh stores & dashboard stats
+            if (typeof loadStats === 'function') loadStats();
+            if (typeof loadRecentFiles === 'function') loadRecentFiles();
+            if (typeof loadAllFiles === 'function') loadAllFiles();
+            if (typeof loadSectionStores === 'function') loadSectionStores();
+            mergeFiles = [];
+            renderMergeFileList();
         }
     } catch (err) {
         showToast('Merge failed: ' + err.message, 'error');
@@ -176,6 +184,17 @@ async function handleSplit() {
             `;
             resultDiv.style.display = 'block';
             showToast('PDF split successfully!', 'success');
+
+            // Refresh stores & dashboard stats
+            if (typeof loadStats === 'function') loadStats();
+            if (typeof loadRecentFiles === 'function') loadRecentFiles();
+            if (typeof loadAllFiles === 'function') loadAllFiles();
+            if (typeof loadSectionStores === 'function') loadSectionStores();
+            splitFile = null;
+            const info = document.getElementById('splitFileInfo');
+            const options = document.getElementById('splitOptions');
+            if (info) info.innerHTML = '';
+            if (options) options.style.display = 'none';
         }
     } catch (err) {
         showToast('Split failed: ' + err.message, 'error');
@@ -257,12 +276,97 @@ async function handleCompress() {
             `;
             resultDiv.style.display = 'block';
             showToast(`PDF compressed by ${reduction.toFixed(1)}%!`, 'success');
+
+            // Refresh stores & dashboard stats
+            if (typeof loadStats === 'function') loadStats();
+            if (typeof loadRecentFiles === 'function') loadRecentFiles();
+            if (typeof loadAllFiles === 'function') loadAllFiles();
+            if (typeof loadSectionStores === 'function') loadSectionStores();
+            compressFile = null;
+            const info = document.getElementById('compressFileInfo');
+            if (info) info.innerHTML = '';
+            btn.disabled = true;
         }
     } catch (err) {
         showToast('Compression failed: ' + err.message, 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg> Compress PDF';
+    }
+}
+
+// ── Section-Specific Stores ──
+
+async function loadSectionStores() {
+    try {
+        const data = await apiFetch('/files/list');
+        if (!data || !data.files) return;
+
+        const allFiles = data.files;
+
+        // 1. Render Merge Store
+        const mergeContainer = document.getElementById('mergeStoreList');
+        if (mergeContainer) {
+            const merges = allFiles.filter(f => f.original_name === 'merged.pdf' || f.filename.startsWith('merged_'));
+            renderStoreItems(mergeContainer, merges, 'merge');
+        }
+
+        // 2. Render Split Store
+        const splitContainer = document.getElementById('splitStoreList');
+        if (splitContainer) {
+            const splits = allFiles.filter(f => f.filename.startsWith('split_') || f.original_name.startsWith('split_'));
+            renderStoreItems(splitContainer, splits, 'split');
+        }
+
+        // 3. Render Compress Store
+        const compressContainer = document.getElementById('compressStoreList');
+        if (compressContainer) {
+            const compressions = allFiles.filter(f => f.filename.startsWith('compressed_') || f.original_name.startsWith('compressed_'));
+            renderStoreItems(compressContainer, compressions, 'compress');
+        }
+    } catch (e) {
+        console.error("Failed to load section stores", e);
+    }
+}
+
+function renderStoreItems(container, files, section) {
+    if (files.length === 0) {
+        container.innerHTML = `<div class="empty-state"><p>No saved files found for this tool</p></div>`;
+        return;
+    }
+
+    container.innerHTML = files.map(f => `
+        <div class="file-item">
+            <div class="file-icon">${getFileIcon(f.file_type)}</div>
+            <div class="file-info">
+                <span class="file-name">${f.original_name || f.filename}</span>
+                <span class="file-meta">${formatFileSize(f.size)} • ${formatDate(f.created_at)}</span>
+            </div>
+            <div class="file-actions">
+                <button class="btn-icon" onclick="downloadFile('${f.id}')" title="Download">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </button>
+                <button class="btn-icon danger" onclick="deleteSectionFile('${f.id}')" title="Delete">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
+async function deleteSectionFile(fileId) {
+    if (!confirm('Delete this file permanently?')) return;
+    try {
+        await apiFetch(`/files/${fileId}`, { method: 'DELETE' });
+        showToast('File deleted', 'success');
+        
+        // Refresh everything
+        loadSectionStores();
+        if (typeof loadStats === 'function') loadStats();
+        if (typeof loadRecentFiles === 'function') loadRecentFiles();
+        if (typeof loadAllFiles === 'function') loadAllFiles();
+    } catch (e) {
+        showToast('Delete failed', 'error');
     }
 }
 

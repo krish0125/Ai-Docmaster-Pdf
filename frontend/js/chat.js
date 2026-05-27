@@ -98,9 +98,15 @@ async function uploadChatPdf(file) {
 
     try {
         const token = localStorage.getItem('token');
+        const headers = { 'Authorization': `Bearer ${token}` };
+        const customKey = localStorage.getItem('user_gemini_key');
+        if (customKey) {
+            headers['X-Gemini-Key'] = customKey;
+        }
+
         const res = await fetch(`${API_BASE_CHAT}/pdf/upload`, {
             method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` },
+            headers: headers,
             body: formData
         });
 
@@ -112,22 +118,26 @@ async function uploadChatPdf(file) {
 
             // Update sidebar info
             const pdfInfo = document.getElementById('pdfInfoPanel');
+            const pageCount = data.file_info && data.file_info.page_count ? data.file_info.page_count : (data.page_count || 0);
             if (pdfInfo) {
                 pdfInfo.innerHTML = `
                     <div class="pdf-info-card">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF5252" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
                         <h4>${file.name}</h4>
                         <p class="text-muted">${formatFileSize(file.size)}</p>
-                        ${data.page_count ? `<p class="text-muted">${data.page_count} pages</p>` : ''}
+                        ${pageCount ? `<p class="text-muted">${pageCount} pages</p>` : ''}
+                        <p class="text-muted" style="color:var(--success,#00E676);font-size:0.8rem;margin-top:0.5rem;">✓ Ready to chat</p>
                     </div>
                 `;
             }
 
-            // Show chat interface, hide upload
+            // Hide upload dropzone, keep sidebar visible
             const uploadArea = document.getElementById('chatUploadArea');
-            const chatArea = document.getElementById('chatArea');
             if (uploadArea) uploadArea.style.display = 'none';
-            if (chatArea) chatArea.style.display = 'flex';
+
+            // Reset and initialize chat messages
+            chatMessages = [];
+            renderMessages();
 
             // Add welcome message
             addBotMessage(`I've loaded **${file.name}**. Ask me anything about this document!`);
@@ -162,12 +172,18 @@ async function sendMessage(text) {
 
     try {
         const token = localStorage.getItem('token');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+        const customKey = localStorage.getItem('user_gemini_key');
+        if (customKey) {
+            headers['X-Gemini-Key'] = customKey;
+        }
+
         const res = await fetch(`${API_BASE_CHAT}/ai/chat`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
+            headers: headers,
             body: JSON.stringify({ file_id: chatFileId, question: text })
         });
 

@@ -54,8 +54,29 @@ async function handleSummary() {
 
             if (mode === 'bullets' && resData.bullets) {
                 displayContent = `<ul class="bullet-list">${resData.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>`;
+            } else if (mode === 'bullets' && summary && summary.includes('•')) {
+                // Backend returns bullets embedded in summary string with • characters
+                const bulletLines = summary.split('\n').filter(l => l.trim());
+                displayContent = `<ul class="bullet-list">${bulletLines.map(b => `<li>${escapeHtml(b.replace(/^[•\-\*]\s*/, '').trim())}</li>`).join('')}</ul>`;
             } else if (mode === 'exam_notes' && resData.notes) {
                 displayContent = `<div class="exam-notes">${formatExamNotes(resData.notes)}</div>`;
+            } else if (mode === 'exam_notes') {
+                // Backend returns exam notes embedded in summary string with newlines
+                const lines = summary.split('\n');
+                let html = '<div class="exam-notes">';
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (!trimmed) continue;
+                    if (trimmed.startsWith('📚') || trimmed.startsWith('=')) {
+                        html += `<h4 style="margin:1rem 0 0.5rem;color:var(--primary,#6C63FF)">${escapeHtml(trimmed)}</h4>`;
+                    } else if (trimmed.startsWith('📌') || trimmed.startsWith('📝') || trimmed.startsWith('📊')) {
+                        html += `<h5 style="margin:0.75rem 0 0.25rem;color:var(--text-secondary)">${escapeHtml(trimmed)}</h5>`;
+                    } else {
+                        html += `<p style="margin:0.25rem 0 0.25rem 1rem">${escapeHtml(trimmed)}</p>`;
+                    }
+                }
+                html += '</div>';
+                displayContent = html;
             } else {
                 displayContent = `<p class="summary-text">${escapeHtml(summary)}</p>`;
             }

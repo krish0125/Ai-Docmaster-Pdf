@@ -30,27 +30,39 @@ def _ensure_upload_dir():
 
 def _get_pdf_text(file=None, file_id=None) -> tuple[str, str | None]:
     """Extract text from either an uploaded file or an existing file_id.
-
-    Returns ``(text, error_message)``.
+    Automatically falls back to OCR if standard text extraction yields nothing (scanned PDFs).
     """
+    file_path = None
+    
     if file is not None and file.filename:
         if not allowed_file(file.filename, {'pdf'}):
             return '', 'Only PDF files are allowed'
         info = save_upload(file, UPLOAD_FOLDER)
-        text = extract_text(info['file_path'])
-        return text, None
-
-    if file_id:
+        file_path = info['file_path']
+    elif file_id:
         record = get_file_by_id(file_id)
         if record is None:
             return '', 'File not found'
-        file_path = record.get('file_path', '')
-        if not os.path.isfile(file_path):
+        path = record.get('file_path', '')
+        if not os.path.isfile(path):
             return '', 'File no longer exists on disk'
-        text = extract_text(file_path)
-        return text, None
+        file_path = path
 
-    return '', 'No file or file_id provided'
+    if not file_path:
+        return '', 'No file or file_id provided'
+
+    # Try standard digital text extraction first
+    text = extract_text(file_path)
+    
+    # If the text is empty or very short, it's likely a scanned PDF image! Fallback to Tesseract OCR!
+    if len(text.strip()) < 20:
+        print(f"[AI Routes] Standard text extraction yielded too little text ({len(text.strip())} chars). Trying OCR fallback...")
+        from ai_modules.ocr_engine import extract_text_from_pdf_image
+        ocr_text = extract_text_from_pdf_image(file_path)
+        if ocr_text and not ocr_text.startswith('[OCR unavailable]') and not ocr_text.startswith('OCR extraction failed'):
+            text = ocr_text
+            
+    return text, None
 
 
 # ---------------------------------------------------------------------------

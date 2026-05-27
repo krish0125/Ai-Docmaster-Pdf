@@ -123,6 +123,56 @@ def generate_summary(text: str, mode: str = 'brief') -> dict:
 
     clean_text = text.strip()
 
+    # --- 1. Premium Gemini AI Integration ---
+    from ai_modules.chat_engine import get_client
+    client = get_client()
+    if client is not None:
+        try:
+            if mode == 'bullets':
+                prompt = (
+                    "Provide a high-quality bullet-point summary of the following document. "
+                    "Extract the core insights, facts, and conclusions.\n\n"
+                    f"--- DOCUMENT CONTENT ---\n{clean_text[:40000]}\n--- END CONTENT ---\n\n"
+                    "Format your response as a clean, list of bullet points starting with '• ':"
+                )
+            elif mode == 'exam_notes':
+                prompt = (
+                    "Create structured study and exam notes from the following document. "
+                    "Use clear headers, bullet points, and highlight key terms, definitions, and concepts "
+                    "to make it extremely easy to study from.\n\n"
+                    f"--- DOCUMENT CONTENT ---\n{clean_text[:40000]}\n--- END CONTENT ---\n\n"
+                    "Format your response beautifully using standard markdown:"
+                )
+            elif mode == 'detailed':
+                prompt = (
+                    "Provide a comprehensive, detailed, and structured summary of the following document. "
+                    "Include all core themes, supporting details, and main arguments.\n\n"
+                    f"--- DOCUMENT CONTENT ---\n{clean_text[:40000]}\n--- END CONTENT ---\n\n"
+                    "Please write a detailed summary:"
+                )
+            else:  # brief
+                prompt = (
+                    "Provide a concise, clear, and high-impact summary of the following document. "
+                    "Condense it into a single coherent paragraph (approx. 100-150 words).\n\n"
+                    f"--- DOCUMENT CONTENT ---\n{clean_text[:40000]}\n--- END CONTENT ---\n\n"
+                    "Concise summary:"
+                )
+
+            response = client.models.generate_content(
+                model='gemini-2.0-flash',
+                contents=prompt,
+            )
+            summary_text = response.text.strip()
+            return {
+                'summary': summary_text,
+                'word_count': len(summary_text.split()),
+                'mode': mode,
+                'method': 'gemini_ai',
+            }
+        except Exception as e:
+            print(f"[Summarizer] Gemini summarization failed, falling back to local: {e}")
+
+    # --- 2. HuggingFace BART / Extractive Local Fallbacks ---
     if mode == 'bullets':
         return generate_bullet_points(clean_text)
 

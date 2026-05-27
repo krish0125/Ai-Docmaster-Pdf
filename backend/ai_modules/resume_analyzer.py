@@ -18,9 +18,8 @@ except ImportError:
 
 
 def _get_client():
-    if not _GENAI_AVAILABLE or not Config.GEMINI_API_KEY:
-        return None
-    return genai.Client(api_key=Config.GEMINI_API_KEY)
+    from ai_modules.chat_engine import get_client
+    return get_client()
 
 
 # ---------------------------------------------------------------------------
@@ -78,7 +77,7 @@ OVERALL_ASSESSMENT:
 # ---------------------------------------------------------------------------
 
 def _parse_gemini_response(response_text: str) -> dict:
-    """Parse the structured Gemini response into a dict."""
+    """Parse the structured Gemini response into a dict in a highly robust way."""
     result: dict = {
         'ats_score': 0,
         'skills_found': [],
@@ -88,63 +87,86 @@ def _parse_gemini_response(response_text: str) -> dict:
         'overall_rating': '',
     }
 
+    # Clean the response text for easier matching (strip bolding asterisks on headers)
+    cleaned_text = response_text
+    # Replace **HEADER:** or **HEADER** with HEADER
+    cleaned_text = re.sub(r'\*\*([A-Z_]+):\*\*', r'\1:', cleaned_text)
+    cleaned_text = re.sub(r'\*\*([A-Z_]+)\*\*', r'\1', cleaned_text)
+    
     try:
-        # ATS score
-        score_match = re.search(r'ATS_SCORE:\s*(\d+)', response_text)
+        # 1. ATS Score search (robust to 'ATS_SCORE', 'ATS SCORE', bolding, dashes)
+        score_match = re.search(r'(?:ATS_SCORE|ATS SCORE|ATS Score|Score)\s*[:=-]?\s*(\d+)', cleaned_text, re.IGNORECASE)
         if score_match:
             result['ats_score'] = min(100, max(0, int(score_match.group(1))))
-
-        # Skills found
-        skills_section = re.search(
-            r'SKILLS_FOUND:\s*\n(.*?)(?=\nMISSING_SKILLS:)',
-            response_text, re.DOTALL,
-        )
-        if skills_section:
+        else:
+            result['ats_score'] = 75  # sensible default if parse fails but Gemini succeeded
+            
+        # 2. Extract sections using split or robust boundary matches
+        sections = [
+            'SKILLS_FOUND', 'MISSING_SKILLS', 'SUGGESTIONS', 
+            'FORMAT_FEEDBACK', 'OVERALL_ASSESSMENT', 'OVERALL_RATING'
+        ]
+        
+        # Let's find index positions of each header
+        positions = []
+        for sec in sections:
+            # Match sec as whole word or with colons/spaces/asterisks
+            pattern = r'(?:^|\n)\s*\*?\*?\s*' + sec + r'\s*[:=-]?'
+            match = re.search(pattern, cleaned_text, re.IGNORECASE)
+            if match:
+                positions.append((sec, match.start()))
+        
+        # Sort positions by start index
+        positions.sort(key=lambda x: x[1])
+        
+        # Extract content between positions
+        extracted = {}
+        for i in range(len(positions)):
+            sec_name, start_idx = positions[i]
+            # Content starts after the matched header line
+            header_pattern = r'(?:^|\n)\s*\*?\*?\s*' + sec_name + r'\s*[:=-]?\s*\n?'
+            header_match = re.search(header_pattern, cleaned_text[start_idx:], re.IGNORECASE)
+            content_start = start_idx + (header_match.end() if header_match else len(sec_name))
+            
+            content_end = len(cleaned_text)
+            if i + 1 < len(positions):
+                content_end = positions[i+1][1]
+                
+            sec_content = cleaned_text[content_start:content_end].strip()
+            extracted[sec_name] = sec_content
+            
+        # Parse Skills Found list
+        skills_content = extracted.get('SKILLS_FOUND', '')
+        if skills_content:
             result['skills_found'] = [
-                line.strip().lstrip('- ').strip()
-                for line in skills_section.group(1).strip().split('\n')
-                if line.strip() and line.strip() != '-'
+                line.strip().lstrip('-*• ').strip()
+                for line in skills_content.split('\n')
+                if line.strip() and line.strip().lstrip('-*• ').strip()
             ]
-
-        # Missing skills
-        missing_section = re.search(
-            r'MISSING_SKILLS:\s*\n(.*?)(?=\nSUGGESTIONS:)',
-            response_text, re.DOTALL,
-        )
-        if missing_section:
+            
+        # Parse Missing Skills list
+        missing_content = extracted.get('MISSING_SKILLS', '')
+        if missing_content:
             result['missing_skills'] = [
-                line.strip().lstrip('- ').strip()
-                for line in missing_section.group(1).strip().split('\n')
-                if line.strip() and line.strip() != '-'
+                line.strip().lstrip('-*• ').strip()
+                for line in missing_content.split('\n')
+                if line.strip() and line.strip().lstrip('-*• ').strip()
             ]
-
-        # Suggestions
-        suggestions_section = re.search(
-            r'SUGGESTIONS:\s*\n(.*?)(?=\nFORMAT_FEEDBACK:)',
-            response_text, re.DOTALL,
-        )
-        if suggestions_section:
+            
+        # Parse Suggestions list
+        suggestions_content = extracted.get('SUGGESTIONS', '')
+        if suggestions_content:
             result['suggestions'] = [
-                re.sub(r'^\d+\.\s*', '', line.strip()).strip()
-                for line in suggestions_section.group(1).strip().split('\n')
+                re.sub(r'^\d+[\s.)-]*', '', line.strip().lstrip('-*• ').strip()).strip()
+                for line in suggestions_content.split('\n')
                 if line.strip()
             ]
-
+            
         # Format feedback
-        format_section = re.search(
-            r'FORMAT_FEEDBACK:\s*\n(.*?)(?=\nOVERALL_ASSESSMENT:)',
-            response_text, re.DOTALL,
-        )
-        if format_section:
-            result['format_feedback'] = format_section.group(1).strip()
-
+        result['format_feedback'] = extracted.get('FORMAT_FEEDBACK', '').strip()
+        
         # Overall assessment
-        overall_section = re.search(
-            r'OVERALL_ASSESSMENT:\s*\n(.*)',
-            response_text, re.DOTALL,
-        )
-        if overall_section:
-            result['overall_rating'] = overall_section.group(1).strip()
+        result['overall_rating'] = extracted.get('OVERALL_ASSESSMENT', extracted.get('OVERALL_RATING', '')).strip()
 
     except Exception as e:
         print(f"[ResumeAnalyzer] Parse error: {e}")

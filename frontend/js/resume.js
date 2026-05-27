@@ -52,6 +52,7 @@ async function handleResumeAnalysis() {
             renderResumeResults(analysisData, resultDiv);
             resultDiv.style.display = 'block';
             showToast('Resume analysis complete!', 'success');
+            if (typeof loadStats === 'function') loadStats();
         }
     } catch (err) {
         showToast('Analysis failed: ' + err.message, 'error');

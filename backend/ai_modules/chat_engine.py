@@ -4,6 +4,7 @@ Uses the NEW ``google-genai`` SDK (``from google import genai``), **not** the
 deprecated ``google-generativeai`` package.
 """
 
+import re
 from config import Config
 
 # ---------------------------------------------------------------------------
@@ -21,12 +22,30 @@ except ImportError:
 
 
 def get_client():
-    """Create / return a cached ``genai.Client``."""
+    """Create / return a cached or request-specific ``genai.Client``."""
     global _client
     if not _GENAI_AVAILABLE:
         return None
-    if not Config.GEMINI_API_KEY:
+
+    # Dynamically extract client API key from Flask request headers if available
+    key = None
+    try:
+        from flask import has_request_context, request
+        if has_request_context():
+            key = request.headers.get('X-Gemini-Key')
+    except Exception:
+        pass
+
+    if not key:
+        key = Config.GEMINI_API_KEY
+
+    if not key:
         return None
+
+    # If it is a request-specific key, return a fresh client instance to prevent caching issues
+    if key != Config.GEMINI_API_KEY:
+        return genai.Client(api_key=key)
+
     if _client is None:
         _client = genai.Client(api_key=Config.GEMINI_API_KEY)
     return _client
@@ -52,6 +71,48 @@ def _truncate_context(text: str, max_chars: int = 35000) -> str:
     )
 
 
+def _get_keyword_fallback_answer(context: str, question: str) -> str:
+    """Smart keyword-matching excerpt search over the document context when Gemini fails."""
+    # Extract terms (3+ chars) from the question to search for matching sentences
+    q_words = [w.lower() for w in re.findall(r'\b[a-zA-Z]{3,}\b', question) if w.lower() not in {
+        'what', 'when', 'where', 'who', 'how', 'why', 'this', 'that', 'with', 'from', 'about', 'document', 'pdfs', 'pdf', 'find'
+    }]
+    
+    # Split the document text into sentences
+    sentences = re.split(r'(?<=[.!?])\s+', context)
+    scored_sentences = []
+    
+    for sent in sentences:
+        sent_clean = sent.strip()
+        if not sent_clean or len(sent_clean) < 15:
+            continue
+        # Score based on keyword matches
+        score = sum(1 for w in q_words if w in sent_clean.lower())
+        if score > 0:
+            scored_sentences.append((score, sent_clean))
+            
+    # Sort matching sentences by matching score in descending order
+    scored_sentences.sort(key=lambda x: x[0], reverse=True)
+    best_matches = [s[1] for s in scored_sentences[:3]]
+    
+    if best_matches:
+        excerpt = "\n\n".join(f"• ... {m} ..." for m in best_matches)
+        return (
+            "⚠️ **Gemini AI Quota Exceeded (429 Rate Limit)**\n\n"
+            "Your default API key has reached its request limit. To enjoy seamless, high-speed, and premium AI insights, "
+            "please configure your own free Gemini API key in the **User Profile dropdown (top-right) → API Configuration**.\n\n"
+            "🔍 **Document Excerpt Fallback Search:**\n"
+            f"Here are matching segments found in your document:\n\n{excerpt}"
+        )
+    else:
+        return (
+            "⚠️ **Gemini AI Quota Exceeded (429 Rate Limit)**\n\n"
+            "Your default API key has reached its request limit. To enjoy seamless, high-speed, and premium AI insights, "
+            "please configure your own free Gemini API key in the **User Profile dropdown (top-right) → API Configuration**.\n\n"
+            "I scanned the document but could not find a direct sentence match for your specific question. Please try rephrasing or configure your API key."
+        )
+
+
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
@@ -69,13 +130,7 @@ def generate_response(context: str, question: str) -> str:
                 'The google-genai package is not installed. '
                 'Please run: pip install google-genai'
             )
-        if not Config.GEMINI_API_KEY:
-            return (
-                'Gemini API key is not configured. '
-                'Please set GEMINI_API_KEY in your .env file. '
-                'You can get one at https://aistudio.google.com/app/apikey'
-            )
-        return 'Could not initialise Gemini client.'
+        return _get_keyword_fallback_answer(context, question)
 
     prompt = (
         "You are a helpful AI assistant specializing in document analysis. "
@@ -93,7 +148,9 @@ def generate_response(context: str, question: str) -> str:
         )
         return response.text
     except Exception as e:
-        return f'Error communicating with Gemini: {str(e)}'
+        err_msg = str(e)
+        print(f"[ChatEngine] Gemini error: {err_msg}. Triggering smart fallback...")
+        return _get_keyword_fallback_answer(context, question)
 
 
 def chat_with_pdf(pdf_text: str, question: str, chat_history: list | None = None) -> str:
