@@ -53,32 +53,34 @@ async function handleSummary() {
             const summary = resData.summary || resData.text || 'No summary generated';
 
             if (mode === 'bullets' && resData.bullets) {
-                displayContent = `<ul class="bullet-list">${resData.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>`;
-            } else if (mode === 'bullets' && summary && summary.includes('•')) {
-                // Backend returns bullets embedded in summary string with • characters
-                const bulletLines = summary.split('\n').filter(l => l.trim());
-                displayContent = `<ul class="bullet-list">${bulletLines.map(b => `<li>${escapeHtml(b.replace(/^[•\-\*]\s*/, '').trim())}</li>`).join('')}</ul>`;
+                displayContent = `<ul class="bullet-list">${resData.bullets.map(b => `<li>${renderMarkdown(b)}</li>`).join('')}</ul>`;
+            } else if (mode === 'bullets' && summary) {
+                // Render the entire markdown string beautifully
+                displayContent = `<div class="summary-markdown">${renderMarkdown(summary)}</div>`;
             } else if (mode === 'exam_notes' && resData.notes) {
                 displayContent = `<div class="exam-notes">${formatExamNotes(resData.notes)}</div>`;
             } else if (mode === 'exam_notes') {
-                // Backend returns exam notes embedded in summary string with newlines
-                const lines = summary.split('\n');
-                let html = '<div class="exam-notes">';
-                for (const line of lines) {
-                    const trimmed = line.trim();
-                    if (!trimmed) continue;
-                    if (trimmed.startsWith('📚') || trimmed.startsWith('=')) {
-                        html += `<h4 style="margin:1rem 0 0.5rem;color:var(--primary,#6C63FF)">${escapeHtml(trimmed)}</h4>`;
-                    } else if (trimmed.startsWith('📌') || trimmed.startsWith('📝') || trimmed.startsWith('📊')) {
-                        html += `<h5 style="margin:0.75rem 0 0.25rem;color:var(--text-secondary)">${escapeHtml(trimmed)}</h5>`;
-                    } else {
-                        html += `<p style="margin:0.25rem 0 0.25rem 1rem">${escapeHtml(trimmed)}</p>`;
+                if (summary.includes('📚 EXAM NOTES') || summary.startsWith('📚') || summary.includes('📌')) {
+                    const lines = summary.split('\n');
+                    let html = '<div class="exam-notes">';
+                    for (const line of lines) {
+                        const trimmed = line.trim();
+                        if (!trimmed) continue;
+                        if (trimmed.startsWith('📚') || trimmed.startsWith('=')) {
+                            html += `<h4 style="margin:1rem 0 0.5rem;color:var(--primary,#6C63FF)">${renderMarkdown(trimmed)}</h4>`;
+                        } else if (trimmed.startsWith('📌') || trimmed.startsWith('📝') || trimmed.startsWith('📊')) {
+                            html += `<h5 style="margin:0.75rem 0 0.25rem;color:var(--text-secondary)">${renderMarkdown(trimmed)}</h5>`;
+                        } else {
+                            html += `<p style="margin:0.25rem 0 0.25rem 1rem">${renderMarkdown(trimmed)}</p>`;
+                        }
                     }
+                    html += '</div>';
+                    displayContent = html;
+                } else {
+                    displayContent = `<div class="summary-markdown">${renderMarkdown(summary)}</div>`;
                 }
-                html += '</div>';
-                displayContent = html;
             } else {
-                displayContent = `<p class="summary-text">${escapeHtml(summary)}</p>`;
+                displayContent = `<div class="summary-markdown">${renderMarkdown(summary)}</div>`;
             }
 
             const modeLabels = { brief: 'Brief Summary', detailed: 'Detailed Summary', bullets: 'Bullet Points', exam_notes: 'Exam Notes' };
@@ -117,12 +119,12 @@ async function handleSummary() {
 }
 
 function formatExamNotes(notes) {
-    if (typeof notes === 'string') return `<p>${escapeHtml(notes)}</p>`;
+    if (typeof notes === 'string') return `<p>${renderMarkdown(notes)}</p>`;
     if (typeof notes === 'object') {
         let html = '';
-        if (notes.key_points) html += `<h5>Key Points</h5><ul>${notes.key_points.map(p => `<li>${escapeHtml(p)}</li>`).join('')}</ul>`;
-        if (notes.definitions) html += `<h5>Definitions</h5><ul>${notes.definitions.map(d => `<li>${escapeHtml(d)}</li>`).join('')}</ul>`;
-        if (notes.summary) html += `<h5>Summary</h5><p>${escapeHtml(notes.summary)}</p>`;
+        if (notes.key_points) html += `<h5>Key Points</h5><ul>${notes.key_points.map(p => `<li>${renderMarkdown(p)}</li>`).join('')}</ul>`;
+        if (notes.definitions) html += `<h5>Definitions</h5><ul>${notes.definitions.map(d => `<li>${renderMarkdown(d)}</li>`).join('')}</ul>`;
+        if (notes.summary) html += `<h5>Summary</h5><p>${renderMarkdown(notes.summary)}</p>`;
         return html || `<pre>${JSON.stringify(notes, null, 2)}</pre>`;
     }
     return '';
@@ -146,12 +148,6 @@ function downloadSummary() {
         document.body.appendChild(a); a.click(); a.remove();
         URL.revokeObjectURL(url);
     }
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
 }
 
 if (document.readyState === 'loading') {

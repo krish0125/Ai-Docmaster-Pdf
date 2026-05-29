@@ -39,16 +39,22 @@ def create_app() -> Flask:
     origins=[
         'http://localhost:5500',
         'http://127.0.0.1:5500',
-        'http://localhost:5501',        # ← ADD THIS LINE
-        'http://127.0.0.1:5501',        # ← ADD THIS LINE
+        'http://localhost:5501',
+        'http://127.0.0.1:5501',
         'http://localhost:3000',
         'http://127.0.0.1:3000',
         'http://localhost:8080',
         'http://127.0.0.1:8080',
-        'null',
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+        'http://localhost:4000',
+        'http://127.0.0.1:4000',
+        'http://localhost:5000',
+        'http://127.0.0.1:5000',
+        'null',          # file:// origin
     ],
     supports_credentials=True,
-    allow_headers=['Content-Type', 'Authorization'],
+    allow_headers=['Content-Type', 'Authorization', 'X-Gemini-Key'],
     methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 )
 

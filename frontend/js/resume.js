@@ -120,7 +120,7 @@ function renderResumeResults(data, container) {
             <div class="resume-section">
                 <h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FFD600" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> Improvement Suggestions</h4>
                 <ul class="suggestions-list">
-                    ${suggestions.map(s => `<li>${escapeHtml(s)}</li>`).join('')}
+                    ${suggestions.map(s => `<li>${renderMarkdown(s)}</li>`).join('')}
                 </ul>
             </div>` : ''}
 
@@ -128,14 +128,14 @@ function renderResumeResults(data, container) {
             ${formatFeedback ? `
             <div class="resume-section">
                 <h4><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00D4FF" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg> Format & Structure</h4>
-                <p>${escapeHtml(formatFeedback)}</p>
+                <div class="resume-markdown-content">${renderMarkdown(formatFeedback)}</div>
             </div>` : ''}
 
             <!-- Overall -->
             ${overallRating ? `
             <div class="resume-section overall">
                 <h4>Overall Assessment</h4>
-                <p>${escapeHtml(overallRating)}</p>
+                <div class="resume-markdown-content">${renderMarkdown(overallRating)}</div>
             </div>` : ''}
 
             <div class="result-actions">
@@ -160,12 +160,6 @@ function downloadResumeReport() {
         document.body.appendChild(a); a.click(); a.remove();
         URL.revokeObjectURL(url);
     }
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
 }
 
 if (document.readyState === 'loading') {

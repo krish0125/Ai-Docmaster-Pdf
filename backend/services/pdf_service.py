@@ -72,7 +72,9 @@ def merge_pdfs(file_paths: list[str], output_path: str) -> str:
     for path in file_paths:
         writer.append(path)
 
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    out_dir = os.path.dirname(output_path)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
     with open(output_path, 'wb') as f:
         writer.write(f)
     writer.close()
@@ -162,7 +164,9 @@ def compress_pdf(file_path: str, output_path: str) -> dict:
     for page in writer.pages:
         page.compress_content_streams(level=9)
 
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    out_dir = os.path.dirname(output_path)
+    if out_dir:
+        os.makedirs(out_dir, exist_ok=True)
     with open(output_path, 'wb') as f:
         writer.write(f)
     writer.close()

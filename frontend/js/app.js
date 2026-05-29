@@ -107,6 +107,73 @@ function showToast(message, type = 'info') {
     }, 4000);
 }
 
+// ── HTML and Markdown rendering ──
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function renderMarkdown(text) {
+    if (!text) return '';
+    
+    // First, escape any HTML present in the text to avoid XSS
+    let html = escapeHtml(text);
+    
+    // Convert headers (###, ##, #)
+    html = html.replace(/^### (.*$)/gim, '<h5 style="margin: 0.75rem 0 0.25rem; color: var(--text-secondary);">$1</h5>');
+    html = html.replace(/^## (.*$)/gim, '<h4 style="margin: 1rem 0 0.5rem; color: var(--primary, #6C63FF);">$1</h4>');
+    html = html.replace(/^# (.*$)/gim, '<h3 style="margin: 1.25rem 0 0.75rem; color: var(--primary, #6C63FF);">$1</h3>');
+    
+    // Convert blockquotes
+    html = html.replace(/^\> (.*$)/gim, '<blockquote style="border-left: 3px solid var(--primary); padding-left: 10px; margin: 5px 0; color: var(--text-muted);">$1</blockquote>');
+    
+    // Convert bold (**text** or __text__)
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/__(.*?)__/g, '<strong>$1</strong>');
+    
+    // Convert italic (*text* or _text_)
+    html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    html = html.replace(/_(.*?)_/g, '<em>$1</em>');
+    
+    // Convert inline code (`code`)
+    html = html.replace(/`(.*?)`/g, '<code style="background: rgba(255,255,255,0.1); padding: 2px 4px; border-radius: 4px; font-family: monospace;">$1</code>');
+    
+    // Convert bullet lists (lines starting with -, * or +)
+    const lines = html.split('\n');
+    let inList = false;
+    let newLines = [];
+    
+    for (let line of lines) {
+        const trimmed = line.trim();
+        const isBullet = trimmed.match(/^[\-\*•]\s+(.*)/);
+        if (isBullet) {
+            if (!inList) {
+                inList = true;
+                newLines.push('<ul class="bullet-list" style="margin-left: 1.5rem; margin-bottom: 0.75rem;">');
+            }
+            newLines.push(`<li>${isBullet[1]}</li>`);
+        } else {
+            if (inList) {
+                inList = false;
+                newLines.push('</ul>');
+            }
+            newLines.push(line);
+        }
+    }
+    if (inList) {
+        newLines.push('</ul>');
+    }
+    
+    html = newLines.join('\n');
+    
+    // Convert remaining newlines to line breaks
+    html = html.replace(/\n/g, '<br>');
+    
+    return html;
+}
+
 // ── Format Helpers ──
 function formatFileSize(bytes) {
     if (!bytes || bytes === 0) return '0 B';
@@ -489,14 +556,23 @@ function uploadFileWithProgress(url, formData, onProgress) {
                 if (xhr.status >= 200 && xhr.status < 300) {
                     resolve(data);
                 } else {
-                    reject(new Error(data.error || `HTTP ${xhr.status}`));
+                    // Surface the actual server error message (e.g. from a 500)
+                    const msg = data.error || data.message || `Server error (HTTP ${xhr.status})`;
+                    reject(new Error(msg));
                 }
             } catch (e) {
-                reject(new Error('Invalid response'));
+                reject(new Error(`Server returned an unexpected response (HTTP ${xhr.status})`));
             }
         };
 
-        xhr.onerror = () => reject(new Error('Network error'));
+        xhr.onerror = () => {
+            showToast('Cannot connect to server. Is the backend running on port 5001?', 'error');
+            reject(new Error('Cannot connect to backend server. Make sure it is running on port 5001.'));
+        };
+
+        xhr.ontimeout = () => reject(new Error('Request timed out. The server took too long to respond.'));
+        xhr.timeout = 120000; // 2 minute timeout for large files
+
         xhr.send(formData);
     });
 }

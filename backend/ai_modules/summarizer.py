@@ -159,7 +159,7 @@ def generate_summary(text: str, mode: str = 'brief') -> dict:
                 )
 
             response = client.models.generate_content(
-                model='gemini-2.0-flash',
+                model='gemini-2.5-flash',
                 contents=prompt,
             )
             summary_text = response.text.strip()

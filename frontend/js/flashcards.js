@@ -102,13 +102,13 @@ function renderFlashcard() {
                 <!-- Front Side -->
                 <div class="flashcard-front">
                     <div class="flashcard-badge font-secondary">QUESTION</div>
-                    <p class="flashcard-content">${escapeHtml(card.question)}</p>
+                    <div class="flashcard-content">${renderMarkdown(card.question)}</div>
                     <div class="flashcard-hint">Click card to reveal answer</div>
                 </div>
                 <!-- Back Side -->
                 <div class="flashcard-back">
                     <div class="flashcard-badge font-secondary">ANSWER</div>
-                    <p class="flashcard-content">${escapeHtml(card.answer)}</p>
+                    <div class="flashcard-content">${renderMarkdown(card.answer)}</div>
                     <div class="flashcard-hint">Click card to see question</div>
                 </div>
             </div>
@@ -168,12 +168,6 @@ function downloadFlashcardsJson() {
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
 }
 
 // Initialize on DOM load

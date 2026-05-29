@@ -271,7 +271,7 @@ def analyze_resume(resume_text: str, target_role: str = '') -> dict:
     try:
         prompt = get_analysis_prompt(resume_text, target_role)
         response = client.models.generate_content(
-            model='gemini-2.0-flash',
+            model='gemini-2.5-flash',
             contents=prompt,
         )
         parsed = _parse_gemini_response(response.text)
