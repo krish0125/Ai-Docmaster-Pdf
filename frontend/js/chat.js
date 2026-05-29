@@ -122,13 +122,33 @@ async function uploadChatPdf(file) {
             if (pdfInfo) {
                 pdfInfo.innerHTML = `
                     <div class="pdf-info-card">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF5252" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                        <h4>${file.name}</h4>
-                        <p class="text-muted">${formatFileSize(file.size)}</p>
-                        ${pageCount ? `<p class="text-muted">${pageCount} pages</p>` : ''}
-                        <p class="text-muted" style="color:var(--success,#00E676);font-size:0.8rem;margin-top:0.5rem;">✓ Ready to chat</p>
+                        <div class="pdf-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF5252" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                        <div class="pdf-name" style="color: var(--text-primary); text-align: center; margin-bottom: var(--space-3); font-weight: 600; font-size: var(--fs-sm);">${file.name}</div>
+                        <div class="pdf-info-details" style="display: flex; flex-direction: column; gap: var(--space-2);">
+                            <div class="pdf-info-row" style="display: flex; justify-content: space-between; font-size: var(--fs-xs);">
+                                <span class="label" style="color: var(--text-muted);">Size</span>
+                                <span class="value" style="color: var(--text-secondary); font-weight: 500;">${formatFileSize(file.size)}</span>
+                            </div>
+                            ${pageCount ? `
+                            <div class="pdf-info-row" style="display: flex; justify-content: space-between; font-size: var(--fs-xs);">
+                                <span class="label" style="color: var(--text-muted);">Pages</span>
+                                <span class="value" style="color: var(--text-secondary); font-weight: 500;">${pageCount} pages</span>
+                            </div>` : ''}
+                            <div class="pdf-info-row" style="display: flex; justify-content: space-between; font-size: var(--fs-xs);">
+                                <span class="label" style="color: var(--text-muted);">Status</span>
+                                <span class="value" style="color: var(--success,#00E676); font-weight: 500;">✓ Ready</span>
+                            </div>
+                        </div>
                     </div>
                 `;
+            }
+
+            // Update topbar doc name
+            const headerDocName = document.getElementById('chatHeaderDocName');
+            if (headerDocName) {
+                headerDocName.textContent = file.name;
             }
 
             // Hide upload dropzone, keep sidebar visible
@@ -220,10 +240,19 @@ function renderMessages() {
 
     if (chatMessages.length === 0) {
         container.innerHTML = `
-            <div class="chat-empty-state">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                <h3>Start a Conversation</h3>
-                <p>Upload a PDF and ask questions about its content</p>
+            <div class="chat-empty">
+                <div class="chat-empty-icon">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <h3>Chat with Your PDF</h3>
+                <p class="text-muted">Upload a PDF document in the sidebar to start an intelligent conversation about its content.</p>
+                
+                <div class="example-questions" style="margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                    <p class="text-sm text-muted">Try asking:</p>
+                    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('chatInput').value='What is this document about?'; document.getElementById('chatInput').dispatchEvent(new Event('input'))" style="max-width: 320px; width: 100%;">What is this document about?</button>
+                    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('chatInput').value='Summarize the key points'; document.getElementById('chatInput').dispatchEvent(new Event('input'))" style="max-width: 320px; width: 100%;">Summarize the key points</button>
+                    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('chatInput').value='List the main conclusions'; document.getElementById('chatInput').dispatchEvent(new Event('input'))" style="max-width: 320px; width: 100%;">List the main conclusions</button>
+                </div>
             </div>
         `;
         return;
@@ -235,7 +264,7 @@ function renderMessages() {
         const content = formatMessageContent(msg.content);
 
         return `
-            <div class="chat-message ${isUser ? 'user' : 'bot'}">
+            <div class="message ${isUser ? 'message-user' : 'message-ai'}">
                 <div class="message-avatar">
                     ${isUser
                         ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
@@ -267,13 +296,13 @@ function showTypingIndicator() {
     if (!container) return;
     const indicator = document.createElement('div');
     indicator.id = 'typingIndicator';
-    indicator.className = 'chat-message bot';
+    indicator.className = 'message message-ai';
     indicator.innerHTML = `
         <div class="message-avatar">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M6 12h12v4a6 6 0 0 1-12 0v-4z"/></svg>
         </div>
         <div class="message-content">
-            <div class="message-bubble typing">
+            <div class="message-bubble typing-indicator show">
                 <span class="typing-dot"></span>
                 <span class="typing-dot"></span>
                 <span class="typing-dot"></span>

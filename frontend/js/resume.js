@@ -7,6 +7,7 @@ let resumeFile = null;
 function initResumeTool() {
     const dropzone = document.getElementById('resumeDropzone');
     const fileInput = document.getElementById('resumeFileInput');
+    const targetRole = document.getElementById('targetRole');
 
     if (!dropzone) return;
 
@@ -19,6 +20,15 @@ function initResumeTool() {
         setResumeFile(e.dataTransfer.files[0]);
     });
     fileInput.addEventListener('change', () => { setResumeFile(fileInput.files[0]); fileInput.value = ''; });
+
+    if (targetRole) {
+        targetRole.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleResumeAnalysis(e);
+            }
+        });
+    }
 }
 
 function setResumeFile(file) {
@@ -32,7 +42,10 @@ function setResumeFile(file) {
     document.getElementById('resumeOptions').style.display = 'block';
 }
 
-async function handleResumeAnalysis() {
+async function handleResumeAnalysis(e) {
+    if (e) {
+        e.preventDefault();
+    }
     if (!resumeFile) { showToast('Please select a resume PDF first', 'warning'); return; }
 
     const targetRole = document.getElementById('targetRole')?.value.trim() || '';

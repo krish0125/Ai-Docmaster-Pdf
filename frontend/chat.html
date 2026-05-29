@@ -16,33 +16,42 @@
         <!-- PDF Info Sidebar -->
         <aside class="chat-sidebar" id="chatSidebar">
             <div class="chat-sidebar-header">
-                <a href="dashboard.html" class="btn-back-link">
+                <a href="dashboard.html" class="back-link" title="Back to Dashboard">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-                    Dashboard
                 </a>
-                <button class="btn-icon" id="toggleSidebar" title="Toggle sidebar">
+                <h2>AI DocMaster</h2>
+                <button class="chat-sidebar-toggle" id="toggleSidebar" title="Toggle sidebar">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
                 </button>
             </div>
 
-            <div class="pdf-upload-sidebar" id="chatUploadArea">
-                <div class="dropzone compact" id="chatPdfDropzone">
-                    <input type="file" id="chatPdfInput" accept=".pdf" hidden>
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
-                    <h4>Upload PDF</h4>
-                    <p class="text-muted text-sm">Drop a PDF to start chatting</p>
+            <div class="chat-sidebar-body">
+                <!-- PDF Upload Zone -->
+                <div id="chatUploadArea">
+                    <div class="chat-pdf-upload" id="chatPdfDropzone">
+                        <input type="file" id="chatPdfInput" accept=".pdf" hidden>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+                        <span class="upload-label">Upload PDF</span>
+                        <p>Drop a PDF to start chatting</p>
+                    </div>
                 </div>
-                <div id="chatUploadStatus" style="display:none;" class="upload-status-bar"></div>
-            </div>
+                
+                <div id="chatUploadStatus" style="display:none; align-items:center; justify-content:center; gap:8px; margin: 15px 0; font-size: var(--fs-xs); color: var(--text-secondary);" class="upload-status-bar">
+                    <span class="spinner-sm"></span> Loading PDF...
+                </div>
 
-            <div id="pdfInfoPanel" class="pdf-info-panel">
-                <div class="empty-state-sm">
-                    <p class="text-muted">No PDF loaded yet</p>
+                <div id="pdfInfoPanel" class="pdf-info-panel" style="margin-top: 20px;">
+                    <div class="pdf-info-card" id="pdfInfoPlaceholder">
+                        <div class="pdf-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                        <div class="pdf-name" style="color:var(--text-muted);">No PDF loaded yet</div>
+                    </div>
                 </div>
             </div>
 
             <div class="chat-sidebar-footer">
-                <button class="btn btn-outline btn-sm btn-full" id="clearChatBtn">
+                <button class="btn btn-outline btn-sm w-full" id="clearChatBtn" style="width: 100%;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                     Clear Chat
                 </button>
@@ -51,39 +60,81 @@
 
         <!-- Chat Area -->
         <main class="chat-main" id="chatArea">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-header-left">
+                    <button class="chat-sidebar-toggle" id="mobileSidebarToggle" title="Open sidebar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                    <div class="chat-header-info">
+                        <h3>Chat with your PDF</h3>
+                        <p id="chatHeaderDocName">No active document</p>
+                    </div>
+                </div>
+                <div class="chat-header-right">
+                    <span class="badge badge-primary">Gemini 2.5 Flash</span>
+                </div>
+            </div>
+
             <!-- Chat Messages -->
             <div class="chat-messages" id="chatMessages">
-                <div class="chat-empty-state">
+                <div class="chat-empty">
                     <div class="chat-empty-icon">
-                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                     </div>
-                    <h3>Chat with Your PDF</h3>
-                    <p class="text-muted">Upload a PDF document to start an intelligent conversation about its contents.</p>
-                    <div class="example-questions">
+                    <h3>Start a Conversation</h3>
+                    <p class="text-muted">Upload a PDF document in the sidebar to start an intelligent conversation about its content.</p>
+                    
+                    <div class="example-questions" style="margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
                         <p class="text-sm text-muted">Try asking:</p>
-                        <button class="example-q" onclick="document.getElementById('chatInput').value='What is this document about?'">What is this document about?</button>
-                        <button class="example-q" onclick="document.getElementById('chatInput').value='Summarize the key points'">Summarize the key points</button>
-                        <button class="example-q" onclick="document.getElementById('chatInput').value='List the main conclusions'">List the main conclusions</button>
+                        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('chatInput').value='What is this document about?'; document.getElementById('chatInput').dispatchEvent(new Event('input'))" style="max-width: 320px; width: 100%;">What is this document about?</button>
+                        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('chatInput').value='Summarize the key points'; document.getElementById('chatInput').dispatchEvent(new Event('input'))" style="max-width: 320px; width: 100%;">Summarize the key points</button>
+                        <button class="btn btn-secondary btn-sm" onclick="document.getElementById('chatInput').value='List the main conclusions'; document.getElementById('chatInput').dispatchEvent(new Event('input'))" style="max-width: 320px; width: 100%;">List the main conclusions</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Chat Input -->
-            <div class="chat-input-area">
+            <!-- Chat Input Bar -->
+            <div class="chat-input-bar">
                 <form class="chat-form" id="chatForm">
                     <div class="chat-input-wrapper">
-                        <textarea id="chatInput" class="chat-input" placeholder="Ask a question about your PDF..." rows="1" 
-                            oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
-                        <button type="submit" class="send-btn" id="sendBtn" title="Send message">
+                        <div class="chat-input-field">
+                            <textarea id="chatInput" placeholder="Ask a question about your PDF..." rows="1" 
+                                oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,150)+'px'"></textarea>
+                        </div>
+                        <button type="submit" class="chat-send-btn" id="sendBtn" title="Send message">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                            <span class="spinner spinner-sm" style="display: none; width: 18px; height: 18px; margin-right: 0;"></span>
                         </button>
                     </div>
-                    <p class="chat-disclaimer text-muted text-sm">AI responses are generated and may not always be accurate. Verify important information.</p>
+                    <p class="chat-disclaimer text-muted text-sm" style="text-align: center; margin-top: 8px; font-size: 11px;">AI responses are generated and may not always be accurate. Verify important information.</p>
                 </form>
             </div>
         </main>
     </div>
 
-    <script src="js/chat.js?v=2.1"></script>
+    <!-- Sidebar Responsive Toggle Handler -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleSidebar = document.getElementById('toggleSidebar');
+            const mobileToggle = document.getElementById('mobileSidebarToggle');
+            const sidebar = document.getElementById('chatSidebar');
+            
+            const overlay = document.createElement('div');
+            overlay.className = 'chat-sidebar-overlay';
+            document.body.appendChild(overlay);
+
+            const toggle = (e) => {
+                if (e) e.stopPropagation();
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('show');
+            };
+
+            if (toggleSidebar) toggleSidebar.addEventListener('click', toggle);
+            if (mobileToggle) mobileToggle.addEventListener('click', toggle);
+            overlay.addEventListener('click', toggle);
+        });
+    </script>
+    <script src="js/chat.js?v=2.2"></script>
 </body>
 </html>

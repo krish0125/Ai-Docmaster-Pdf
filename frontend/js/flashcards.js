@@ -54,7 +54,10 @@ function setFlashcardFile(file) {
     document.getElementById('flashcardsOptions').style.display = 'block';
 }
 
-async function handleGenerateFlashcards() {
+async function handleGenerateFlashcards(e) {
+    if (e) {
+        e.preventDefault();
+    }
     if (!flashcardFile) {
         showToast('Please select a PDF first', 'warning');
         return;

@@ -32,7 +32,10 @@ function setSummaryFile(file) {
     document.getElementById('summaryOptions').style.display = 'block';
 }
 
-async function handleSummary() {
+async function handleSummary(e) {
+    if (e) {
+        e.preventDefault();
+    }
     if (!summaryFile) { showToast('Please select a PDF first', 'warning'); return; }
 
     const mode = document.getElementById('summaryMode')?.value || 'brief';

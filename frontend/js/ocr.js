@@ -54,7 +54,10 @@ function setOcrFile(file) {
     document.getElementById('ocrBtn').disabled = false;
 }
 
-async function handleOcr() {
+async function handleOcr(e) {
+    if (e) {
+        e.preventDefault();
+    }
     if (!ocrFile) { showToast('Please select a file first', 'warning'); return; }
 
     const btn = document.getElementById('ocrBtn');

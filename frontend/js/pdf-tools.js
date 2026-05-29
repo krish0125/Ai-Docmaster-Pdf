@@ -68,7 +68,10 @@ function removeMergeFile(index) {
     renderMergeFileList();
 }
 
-async function handleMerge() {
+async function handleMerge(e) {
+    if (e) {
+        e.preventDefault();
+    }
     if (mergeFiles.length < 2) { showToast('Please add at least 2 PDFs to merge', 'warning'); return; }
 
     const btn = document.getElementById('mergeBtn');
@@ -120,6 +123,7 @@ let splitFile = null;
 function initSplitTool() {
     const dropzone = document.getElementById('splitDropzone');
     const fileInput = document.getElementById('splitFileInput');
+    const splitPages = document.getElementById('splitPages');
 
     if (!dropzone) return;
 
@@ -132,6 +136,15 @@ function initSplitTool() {
         setSplitFile(e.dataTransfer.files[0]);
     });
     fileInput.addEventListener('change', () => { setSplitFile(fileInput.files[0]); fileInput.value = ''; });
+
+    if (splitPages) {
+        splitPages.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSplit(e);
+            }
+        });
+    }
 }
 
 function setSplitFile(file) {
@@ -146,7 +159,10 @@ function setSplitFile(file) {
     if (options) options.style.display = 'block';
 }
 
-async function handleSplit() {
+async function handleSplit(e) {
+    if (e) {
+        e.preventDefault();
+    }
     if (!splitFile) { showToast('Please select a PDF first', 'warning'); return; }
 
     const pages = document.getElementById('splitPages').value.trim();
@@ -235,7 +251,10 @@ function setCompressFile(file) {
     document.getElementById('compressBtn').disabled = false;
 }
 
-async function handleCompress() {
+async function handleCompress(e) {
+    if (e) {
+        e.preventDefault();
+    }
     if (!compressFile) { showToast('Please select a PDF first', 'warning'); return; }
 
     const btn = document.getElementById('compressBtn');
