@@ -18,6 +18,7 @@ function initUploadPage() {
 
     // Click to browse
     dropzone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('click', (e) => e.stopPropagation());
 
     // Drag events
     dropzone.addEventListener('dragover', (e) => {
