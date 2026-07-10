@@ -2,6 +2,8 @@
    AI DocMaster — AI Interactive Flashcard Maker
    ============================================ */
 
+console.log('🚀 [AI DocMaster] flashcards.js loaded - Version 3.0');
+
 let flashcardFile = null;
 let currentFlashcards = [];
 let currentCardIndex = 0;
@@ -52,7 +54,8 @@ function setFlashcardFile(file) {
                 </div>
             </div>`;
     }
-    document.getElementById('flashcardsOptions').style.display = 'block';
+    const flashcardsOptions = document.getElementById('flashcardsOptions');
+    if (flashcardsOptions) flashcardsOptions.style.display = 'block';
 }
 
 async function handleGenerateFlashcards(e) {
@@ -84,7 +87,17 @@ async function handleGenerateFlashcards(e) {
             showToast('No flashcards could be generated from this document.', 'error');
         }
     } catch (err) {
-        showToast('Flashcard generation failed: ' + err.message, 'error');
+        let errMsg = err.message || 'Unknown error';
+        if (err.error_type === 'invalid_key') {
+            errMsg = 'Invalid Gemini API key. Please check your API key in the configuration.';
+        } else if (err.error_type === 'quota_exceeded') {
+            errMsg = 'Gemini API quota exceeded. Please wait a minute or set a personal API key.';
+        } else if (err.error_type === 'model_not_found') {
+            errMsg = 'Gemini model not found. Check if the model is valid and not deprecated.';
+        } else if (err.error_type === 'timeout' || err.error_type === 'network') {
+            errMsg = 'Network error: Cannot reach the backend or Gemini servers.';
+        }
+        showToast('Flashcard generation failed: ' + errMsg, 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = `
@@ -119,17 +132,17 @@ function renderFlashcard() {
         </div>
         
         <div class="flashcard-controls">
-            <button class="btn btn-outline btn-sm" onclick="prevCard()" ${currentCardIndex === 0 ? 'disabled' : ''}>
+            <button type="button" class="btn btn-outline btn-sm" onclick="prevCard()" ${currentCardIndex === 0 ? 'disabled' : ''}>
                 ← Previous
             </button>
             <span class="flashcard-progress">Card ${currentCardIndex + 1} of ${currentFlashcards.length}</span>
-            <button class="btn btn-outline btn-sm" onclick="nextCard()" ${currentCardIndex === currentFlashcards.length - 1 ? 'disabled' : ''}>
+            <button type="button" class="btn btn-outline btn-sm" onclick="nextCard()" ${currentCardIndex === currentFlashcards.length - 1 ? 'disabled' : ''}>
                 Next →
             </button>
         </div>
         
         <div class="result-actions" style="margin-top: 1.5rem; justify-content: center;">
-            <button class="btn btn-primary btn-sm" onclick="downloadFlashcardsJson()">
+            <button type="button" class="btn btn-primary btn-sm" onclick="downloadFlashcardsJson()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                     <polyline points="7 10 12 15 17 10"/>

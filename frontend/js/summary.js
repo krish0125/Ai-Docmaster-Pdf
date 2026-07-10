@@ -2,6 +2,8 @@
    AI DocMaster — AI Summary Logic
    ============================================ */
 
+console.log('🚀 [AI DocMaster] summary.js loaded - Version 3.0');
+
 let summaryFile = null;
 
 function initSummaryTool() {
@@ -30,7 +32,8 @@ function setSummaryFile(file) {
     summaryFile = file;
     const info = document.getElementById('summaryFileInfo');
     if (info) info.innerHTML = `<div class="file-item"><div class="file-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF5252" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="file-info"><span class="file-name">${file.name}</span><span class="file-meta">${formatFileSize(file.size)}</span></div></div>`;
-    document.getElementById('summaryOptions').style.display = 'block';
+    const summaryOptions = document.getElementById('summaryOptions');
+    if (summaryOptions) summaryOptions.style.display = 'block';
 }
 
 async function handleSummary(e) {
@@ -101,11 +104,11 @@ async function handleSummary(e) {
                     ${displayContent}
                 </div>
                 <div class="result-actions">
-                    <button class="btn btn-primary btn-sm" onclick="copySummary()">
+                    <button type="button" class="btn btn-primary btn-sm" onclick="copySummary()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                         Copy
                     </button>
-                    <button class="btn btn-outline btn-sm" onclick="downloadSummary()">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="downloadSummary()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                         Download
                     </button>
@@ -115,7 +118,17 @@ async function handleSummary(e) {
             showToast('Summary generated!', 'success');
         }
     } catch (err) {
-        showToast('Summary failed: ' + err.message, 'error');
+        let errMsg = err.message || 'Unknown error';
+        if (err.error_type === 'invalid_key') {
+            errMsg = 'Invalid Gemini API key. Please check your API key in the configuration.';
+        } else if (err.error_type === 'quota_exceeded') {
+            errMsg = 'Gemini API quota exceeded. Please wait a minute or set a personal API key.';
+        } else if (err.error_type === 'model_not_found') {
+            errMsg = 'Gemini model not found. Check if the model is valid and not deprecated.';
+        } else if (err.error_type === 'timeout' || err.error_type === 'network') {
+            errMsg = 'Network error: Cannot reach the backend or Gemini servers.';
+        }
+        showToast('Summary failed: ' + errMsg, 'error');
     } finally {
         btn.disabled = false;
         btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Generate Summary';

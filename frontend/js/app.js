@@ -2,6 +2,8 @@
    AI DocMaster — Main Application Logic
    ============================================ */
 
+console.log('🚀 [AI DocMaster] app.js loaded - Version 3.0');
+
 const API_BASE = 'http://127.0.0.1:5001';
 
 // ── Auth Helpers ──
@@ -62,7 +64,9 @@ async function apiFetch(endpoint, options = {}) {
 
         const data = await res.json();
         if (!res.ok) {
-            throw new Error(data.error || data.message || `HTTP ${res.status}`);
+            const errObj = new Error(data.error || data.message || `HTTP ${res.status}`);
+            errObj.error_type = data.error_type;
+            throw errObj;
         }
         return data;
     } catch (err) {
@@ -71,6 +75,9 @@ async function apiFetch(endpoint, options = {}) {
             msg.includes('Network request failed') || msg.includes('ERR_CONNECTION_REFUSED') ||
             msg.includes('fetch') || err.name === 'TypeError') {
             showToast('Cannot connect to server. Is the backend running on port 5001?', 'error');
+            const netErr = new Error('Cannot connect to backend server. Make sure it is running on port 5001.');
+            netErr.error_type = 'network';
+            throw netErr;
         }
         throw err;
     }
@@ -96,7 +103,7 @@ function showToast(message, type = 'info') {
             <span class="toast-icon">${icons[type] || icons.info}</span>
             <span class="toast-message">${message}</span>
         </div>
-        <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+        <button type="button" class="toast-close" onclick="this.parentElement.remove()">×</button>
     `;
 
     document.body.appendChild(toast);
@@ -322,7 +329,7 @@ async function loadRecentFiles() {
                         <span class="file-name">${f.original_name || f.filename}</span>
                         <span class="file-meta">${formatFileSize(f.size)} • ${formatDate(f.created_at)}</span>
                     </div>
-                    <button class="btn-icon" onclick="downloadFile('${f.id}')" title="Download">
+                    <button type="button" class="btn-icon" onclick="downloadFile('${f.id}')" title="Download">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                     </button>
                 </div>
@@ -553,12 +560,21 @@ function uploadFileWithProgress(url, formData, onProgress) {
         xhr.onload = () => {
             try {
                 const data = JSON.parse(xhr.responseText);
+                if (xhr.status === 401) {
+                    // Session expired — redirect to login
+                    showToast('Session expired. Please login again.', 'error');
+                    logout();
+                    reject(new Error('Session expired'));
+                    return;
+                }
                 if (xhr.status >= 200 && xhr.status < 300) {
                     resolve(data);
                 } else {
                     // Surface the actual server error message (e.g. from a 500)
                     const msg = data.error || data.message || `Server error (HTTP ${xhr.status})`;
-                    reject(new Error(msg));
+                    const errObj = new Error(msg);
+                    errObj.error_type = data.error_type;
+                    reject(errObj);
                 }
             } catch (e) {
                 reject(new Error(`Server returned an unexpected response (HTTP ${xhr.status})`));
@@ -567,10 +583,16 @@ function uploadFileWithProgress(url, formData, onProgress) {
 
         xhr.onerror = () => {
             showToast('Cannot connect to server. Is the backend running on port 5001?', 'error');
-            reject(new Error('Cannot connect to backend server. Make sure it is running on port 5001.'));
+            const netErr = new Error('Cannot connect to backend server. Make sure it is running on port 5001.');
+            netErr.error_type = 'network';
+            reject(netErr);
         };
 
-        xhr.ontimeout = () => reject(new Error('Request timed out. The server took too long to respond.'));
+        xhr.ontimeout = () => {
+            const timeErr = new Error('Request timed out. The server took too long to respond.');
+            timeErr.error_type = 'timeout';
+            reject(timeErr);
+        };
         xhr.timeout = 120000; // 2 minute timeout for large files
 
         xhr.send(formData);

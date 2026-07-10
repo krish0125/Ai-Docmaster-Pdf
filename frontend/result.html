@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <script src="js/app.js?v=2.1"></script>
+    <script src="js/app.js?v=3.0"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
@@ -70,8 +70,8 @@
                                 </div>
                                 <pre class="result-text" id="resultText">${resultData.text || 'No text extracted'}</pre>
                                 <div class="result-actions">
-                                    <button class="btn btn-primary btn-sm" onclick="copyResult()">Copy Text</button>
-                                    <button class="btn btn-outline btn-sm" onclick="downloadResult('ocr_result.txt')">Download .txt</button>
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="copyResult()">Copy Text</button>
+                                    <button type="button" class="btn btn-outline btn-sm" onclick="downloadResult('ocr_result.txt')">Download .txt</button>
                                 </div>
                             </div>
                         `;
@@ -84,8 +84,8 @@
                                 <h3>Generated Summary</h3>
                                 <div class="result-text summary-content" id="resultText">${resultData.summary || 'No summary available'}</div>
                                 <div class="result-actions">
-                                    <button class="btn btn-primary btn-sm" onclick="copyResult()">Copy</button>
-                                    <button class="btn btn-outline btn-sm" onclick="downloadResult('summary.txt')">Download</button>
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="copyResult()">Copy</button>
+                                    <button type="button" class="btn btn-outline btn-sm" onclick="downloadResult('summary.txt')">Download</button>
                                 </div>
                             </div>
                         `;
@@ -102,7 +102,7 @@
                                 ${resultData.skills_found ? `<div class="section"><h4>Skills Found</h4><div class="tags">${resultData.skills_found.map(s => `<span class="tag success">${s}</span>`).join('')}</div></div>` : ''}
                                 ${resultData.suggestions ? `<div class="section"><h4>Suggestions</h4><ul>${resultData.suggestions.map(s => `<li>${s}</li>`).join('')}</ul></div>` : ''}
                                 <div class="result-actions">
-                                    <button class="btn btn-primary btn-sm" onclick="copyResult()">Copy Report</button>
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="copyResult()">Copy Report</button>
                                 </div>
                             </div>
                         `;
@@ -113,7 +113,7 @@
                             <div class="result-card">
                                 <pre class="result-text" id="resultText">${JSON.stringify(resultData, null, 2)}</pre>
                                 <div class="result-actions">
-                                    <button class="btn btn-primary btn-sm" onclick="copyResult()">Copy</button>
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="copyResult()">Copy</button>
                                 </div>
                             </div>
                         `;

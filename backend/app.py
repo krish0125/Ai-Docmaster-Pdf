@@ -35,28 +35,15 @@ def create_app() -> Flask:
 
     # ── CORS ───────────────────────────────────────────────────────────
     CORS(
-    app,
-    origins=[
-        'http://localhost:5500',
-        'http://127.0.0.1:5500',
-        'http://localhost:5501',
-        'http://127.0.0.1:5501',
-        'http://localhost:3000',
-        'http://127.0.0.1:3000',
-        'http://localhost:8080',
-        'http://127.0.0.1:8080',
-        'http://localhost:8000',
-        'http://127.0.0.1:8000',
-        'http://localhost:4000',
-        'http://127.0.0.1:4000',
-        'http://localhost:5000',
-        'http://127.0.0.1:5000',
-        'null',          # file:// origin
-    ],
-    supports_credentials=True,
-    allow_headers=['Content-Type', 'Authorization', 'X-Gemini-Key'],
-    methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-)
+        app,
+        origins=[
+            "http://127.0.0.1:5500",
+            "http://localhost:5500",
+            "http://127.0.0.1:5501",
+            "http://localhost:5501"
+        ],
+        supports_credentials=True
+    )
 
     # ── JWT ─────────────────────────────────────────────────────────────
     JWTManager(app)
@@ -129,4 +116,4 @@ if __name__ == '__main__':
     print("  AI DocMaster Backend")
     print("  http://localhost:5001")
     print("=" * 50)
-    app.run(debug=True, port=5001)
+    app.run(debug=True, use_reloader=False, port=5001)

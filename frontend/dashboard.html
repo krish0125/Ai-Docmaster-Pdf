@@ -179,14 +179,14 @@
             <!-- Top Bar -->
             <header class="topbar">
                 <div class="topbar-left">
-                    <button class="sidebar-toggle" id="sidebarToggle">
+                    <button type="button" class="sidebar-toggle" id="sidebarToggle">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
                     </button>
                     <div class="topbar-welcome">Welcome back, <span id="welcomeNameTopbar">User</span>! 👋</div>
                 </div>
                 <div class="topbar-right">
                     <!-- Theme Toggle -->
-                    <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode" aria-label="Toggle theme">
+                    <button type="button" class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark/Light Mode" aria-label="Toggle theme">
                         <span class="theme-icon theme-icon-dark">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
                         </span>
@@ -196,7 +196,7 @@
                     </button>
 
                     <!-- Notification Bell -->
-                    <button class="notif-btn" id="notifBtn" title="Notifications" aria-label="Notifications">
+                    <button type="button" class="notif-btn" id="notifBtn" title="Notifications" aria-label="Notifications">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                         <span class="notif-dot" id="notifDot"></span>
                     </button>
@@ -233,14 +233,14 @@
 
                         <!-- Account Section -->
                         <div class="udrop-section-label">Account</div>
-                        <button class="udrop-item" onclick="showUserProfile()">
+                        <button type="button" class="udrop-item" onclick="showUserProfile()">
                             <span class="udrop-item-icon udrop-icon-purple">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                             </span>
                             <span class="udrop-item-text">My Profile</span>
                             <svg class="udrop-item-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
                         </button>
-                        <button class="udrop-item" onclick="showSection('files-section')" id="udropFilesBtn">
+                        <button type="button" class="udrop-item" onclick="showSection('files-section')" id="udropFilesBtn">
                             <span class="udrop-item-icon udrop-icon-blue">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                             </span>
@@ -267,14 +267,14 @@
 
                         <!-- Admin -->
                         <div class="udrop-section-label">Admin</div>
-                        <button class="udrop-item" onclick="showAdminPanel()">
+                        <button type="button" class="udrop-item" onclick="showAdminPanel()">
                             <span class="udrop-item-icon udrop-icon-red">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                             </span>
                             <span class="udrop-item-text">Admin Panel</span>
                             <span class="udrop-tag">Admin</span>
                         </button>
-                        <button class="udrop-item" onclick="showSection('dashboard-home')">
+                        <button type="button" class="udrop-item" onclick="showSection('dashboard-home')">
                             <span class="udrop-item-icon udrop-icon-green">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                             </span>
@@ -293,7 +293,7 @@
                             </div>
                             <div style="position: relative; display: flex; align-items: center;">
                                 <input type="password" id="geminiApiKeyInput" placeholder="Paste your API key here..." style="width: 100%; padding: 8px 32px 8px 10px; font-size: 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: var(--text-primary); transition: border-color 0.2s;" oninput="saveGeminiKey()">
-                                <button onclick="toggleKeyVisibility(event)" style="position: absolute; right: 8px; background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; padding: 0;">
+                                <button type="button" onclick="toggleKeyVisibility(event)" style="position: absolute; right: 8px; background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; padding: 0;">
                                     <svg id="eyeIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                 </button>
                             </div>
@@ -304,19 +304,19 @@
 
                         <!-- Help & Legal -->
                         <div class="udrop-section-label">Legal & Support</div>
-                        <button class="udrop-item" onclick="showPolicyModal('privacy')">
+                        <button type="button" class="udrop-item" onclick="showPolicyModal('privacy')">
                             <span class="udrop-item-icon udrop-icon-teal">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                             </span>
                             <span class="udrop-item-text">Privacy Policy</span>
                         </button>
-                        <button class="udrop-item" onclick="showPolicyModal('terms')">
+                        <button type="button" class="udrop-item" onclick="showPolicyModal('terms')">
                             <span class="udrop-item-icon udrop-icon-blue">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                             </span>
                             <span class="udrop-item-text">Terms of Service</span>
                         </button>
-                        <button class="udrop-item" onclick="showHelpModal()">
+                        <button type="button" class="udrop-item" onclick="showHelpModal()">
                             <span class="udrop-item-icon udrop-icon-purple">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
                             </span>
@@ -326,7 +326,7 @@
                         <div class="udrop-divider"></div>
 
                         <!-- Logout -->
-                        <button class="udrop-item udrop-logout" id="logoutBtnDropdown" onclick="logout()">
+                        <button type="button" class="udrop-item udrop-logout" id="logoutBtnDropdown" onclick="logout()">
                             <span class="udrop-item-icon udrop-icon-danger">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
                             </span>
@@ -346,7 +346,7 @@
             <!-- ═══ USER PROFILE MODAL ═══ -->
             <div class="modal-backdrop" id="userProfileModal" onclick="closeModal('userProfileModal')">
                 <div class="profile-modal" onclick="event.stopPropagation()">
-                    <button class="modal-close-btn" onclick="closeModal('userProfileModal')">
+                    <button type="button" class="modal-close-btn" onclick="closeModal('userProfileModal')">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                     <div class="profile-modal-header">
@@ -365,8 +365,8 @@
                         <div class="pm-stat"><span class="pm-stat-val" id="pmStatChats">0</span><span class="pm-stat-label">AI Chats</span></div>
                     </div>
                     <div class="profile-modal-actions">
-                        <button class="btn btn-primary btn-sm" onclick="closeModal('userProfileModal')">Close Profile</button>
-                        <button class="btn btn-outline btn-sm" onclick="logout()">Sign Out</button>
+                        <button type="button" class="btn btn-primary btn-sm" onclick="closeModal('userProfileModal')">Close Profile</button>
+                        <button type="button" class="btn btn-outline btn-sm" onclick="logout()">Sign Out</button>
                     </div>
                 </div>
             </div>
@@ -374,7 +374,7 @@
             <!-- ═══ ADMIN PANEL MODAL ═══ -->
             <div class="modal-backdrop" id="adminPanelModal" onclick="closeModal('adminPanelModal')">
                 <div class="admin-modal" onclick="event.stopPropagation()">
-                    <button class="modal-close-btn" onclick="closeModal('adminPanelModal')">
+                    <button type="button" class="modal-close-btn" onclick="closeModal('adminPanelModal')">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                     <div class="admin-modal-header">
@@ -437,7 +437,7 @@
             <!-- ═══ POLICY MODAL ═══ -->
             <div class="modal-backdrop" id="policyModal" onclick="closeModal('policyModal')">
                 <div class="policy-modal" onclick="event.stopPropagation()">
-                    <button class="modal-close-btn" onclick="closeModal('policyModal')">
+                    <button type="button" class="modal-close-btn" onclick="closeModal('policyModal')">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                     <h3 class="policy-modal-title" id="policyModalTitle">Privacy Policy</h3>
@@ -448,7 +448,7 @@
             <!-- ═══ HELP MODAL ═══ -->
             <div class="modal-backdrop" id="helpModal" onclick="closeModal('helpModal')">
                 <div class="help-modal" onclick="event.stopPropagation()">
-                    <button class="modal-close-btn" onclick="closeModal('helpModal')">
+                    <button type="button" class="modal-close-btn" onclick="closeModal('helpModal')">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>
                     <div class="help-modal-header">
@@ -639,7 +639,7 @@
             <!-- ════════ MERGE TOOL ════════ -->
             <section class="tool-section" id="merge-tool" style="display:none;">
                 <div class="tool-panel-header">
-                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                     </button>
                     <div class="tool-panel-title">
@@ -679,7 +679,7 @@
             <!-- ════════ SPLIT TOOL ════════ -->
             <section class="tool-section" id="split-tool" style="display:none;">
                 <div class="tool-panel-header">
-                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                     </button>
                     <div class="tool-panel-title">
@@ -724,7 +724,7 @@
             <!-- ════════ COMPRESS TOOL ════════ -->
             <section class="tool-section" id="compress-tool" style="display:none;">
                 <div class="tool-panel-header">
-                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                     </button>
                     <div class="tool-panel-title">
@@ -764,7 +764,7 @@
             <!-- ════════ OCR TOOL ════════ -->
             <section class="tool-section" id="ocr-tool" style="display:none;">
                 <div class="tool-panel-header">
-                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                     </button>
                     <div class="tool-panel-title">
@@ -794,7 +794,7 @@
             <!-- ════════ SUMMARY TOOL ════════ -->
             <section class="tool-section" id="summary-tool" style="display:none;">
                 <div class="tool-panel-header">
-                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                     </button>
                     <div class="tool-panel-title">
@@ -832,7 +832,7 @@
             <!-- ════════ RESUME ANALYZER ════════ -->
             <section class="tool-section" id="resume-tool" style="display:none;">
                 <div class="tool-panel-header">
-                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                     </button>
                     <div class="tool-panel-title">
@@ -865,7 +865,7 @@
             <!-- ════════ FLASHCARD MAKER ════════ -->
             <section class="tool-section" id="flashcards-tool" style="display:none;">
                 <div class="tool-panel-header">
-                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                     </button>
                     <div class="tool-panel-title">
@@ -896,7 +896,7 @@
             <!-- ════════ MY FILES ════════ -->
             <section class="tool-section" id="files-section" style="display:none;">
                 <div class="tool-panel-header">
-                    <button class="tool-panel-back" onclick="showSection('dashboard-home')">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                     </button>
                     <div class="tool-panel-title">
@@ -914,13 +914,13 @@
     </main>
 </div>
 
-    <script src="js/app.js?v=2.1"></script>
-    <script src="js/upload.js?v=2.1"></script>
-    <script src="js/pdf-tools.js?v=2.1"></script>
-    <script src="js/ocr.js?v=2.1"></script>
-    <script src="js/summary.js?v=2.1"></script>
-    <script src="js/resume.js?v=2.1"></script>
-    <script src="js/flashcards.js?v=2.1"></script>
+    <script src="js/app.js?v=3.0"></script>
+    <script src="js/upload.js?v=3.0"></script>
+    <script src="js/pdf-tools.js?v=3.0"></script>
+    <script src="js/ocr.js?v=3.0"></script>
+    <script src="js/summary.js?v=3.0"></script>
+    <script src="js/resume.js?v=3.0"></script>
+    <script src="js/flashcards.js?v=3.0"></script>
 
     <script>
         // Load all files for the files section
@@ -938,10 +938,10 @@
                                 <span class="file-meta">${formatFileSize(f.size)} • ${formatDate(f.created_at)}</span>
                             </div>
                             <div class="file-actions">
-                                <button class="btn-icon" onclick="downloadFile('${f.id}')" title="Download">
+                                <button type="button" class="btn-icon" onclick="downloadFile('${f.id}')" title="Download">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                 </button>
-                                <button class="btn-icon danger" onclick="deleteFileById('${f.id}')" title="Delete">
+                                <button type="button" class="btn-icon danger" onclick="deleteFileById('${f.id}')" title="Delete">
                                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                                 </button>
                             </div>

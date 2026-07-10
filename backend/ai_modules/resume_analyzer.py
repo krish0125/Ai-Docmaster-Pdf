@@ -264,21 +264,24 @@ def analyze_resume(resume_text: str, target_role: str = '') -> dict:
             'error': 'Empty resume text',
         }
 
+    from ai_modules.exceptions import GeminiAPIError, parse_gemini_error, call_gemini_with_retry
+
     client = _get_client()
     if client is None:
-        return _fallback_analysis(resume_text, target_role)
-
-    try:
-        prompt = get_analysis_prompt(resume_text, target_role)
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt,
+        raise GeminiAPIError(
+            "Gemini API client could not be initialized. Please configure GEMINI_API_KEY in your .env file.",
+            error_type="invalid_key",
+            status_code=401
         )
-        parsed = _parse_gemini_response(response.text)
-        parsed['method'] = 'gemini_ai'
-        return parsed
-    except Exception as e:
-        print(f"[ResumeAnalyzer] Gemini error, using fallback: {e}")
-        result = _fallback_analysis(resume_text, target_role)
-        result['gemini_error'] = str(e)
-        return result
+
+    prompt = get_analysis_prompt(resume_text, target_role)
+    response = call_gemini_with_retry(
+        client=client,
+        model='gemini-2.5-flash',
+        contents=prompt
+    )
+    parsed = _parse_gemini_response(response.text)
+    parsed['method'] = 'gemini_ai'
+    return parsed
+
+

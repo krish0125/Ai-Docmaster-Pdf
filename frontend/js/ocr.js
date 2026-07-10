@@ -2,6 +2,8 @@
    AI DocMaster — OCR Logic
    ============================================ */
 
+console.log('🚀 [AI DocMaster] ocr.js loaded - Version 3.0');
+
 let ocrFile = null;
 
 function initOcrTool() {
@@ -52,7 +54,8 @@ function setOcrFile(file) {
         preview.style.display = 'block';
     }
 
-    document.getElementById('ocrBtn').disabled = false;
+    const ocrBtn = document.getElementById('ocrBtn');
+    if (ocrBtn) ocrBtn.disabled = false;
 }
 
 async function handleOcr(e) {
@@ -91,11 +94,11 @@ async function handleOcr(e) {
                     <pre id="ocrTextOutput">${escapeHtml(text)}</pre>
                 </div>
                 <div class="result-actions">
-                    <button class="btn btn-primary btn-sm" onclick="copyOcrText()">
+                    <button type="button" class="btn btn-primary btn-sm" onclick="copyOcrText()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                         Copy Text
                     </button>
-                    <button class="btn btn-outline btn-sm" onclick="downloadOcrText()">
+                    <button type="button" class="btn btn-outline btn-sm" onclick="downloadOcrText()">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                         Download .txt
                     </button>

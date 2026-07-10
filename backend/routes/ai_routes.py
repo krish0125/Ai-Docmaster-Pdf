@@ -11,6 +11,7 @@ from ai_modules.summarizer import generate_summary
 from ai_modules.chat_engine import chat_with_pdf
 from ai_modules.resume_analyzer import analyze_resume
 from ai_modules.flashcard_engine import generate_flashcards
+from ai_modules.exceptions import GeminiAPIError
 from database.models import (
     get_file_by_id,
     save_history,
@@ -103,6 +104,8 @@ def summary():
             'result': result,
         }), 200
 
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': f'Summary generation failed: {str(e)}'}), 500
 
@@ -173,6 +176,8 @@ def chat():
             'chat_id': chat_id,
         }), 200
 
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': f'Chat failed: {str(e)}'}), 500
 
@@ -214,6 +219,8 @@ def resume_analyze():
             'result': analysis,
         }), 200
 
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': f'Resume analysis failed: {str(e)}'}), 500
 
@@ -252,6 +259,8 @@ def notes():
             'result': result,
         }), 200
 
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': f'Notes generation failed: {str(e)}'}), 500
 
@@ -290,6 +299,8 @@ def flashcards():
             'cards': cards,
         }), 200
 
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': f'Flashcard generation failed: {str(e)}'}), 500
 
@@ -319,3 +330,4 @@ def chat_history(file_id):
 
     except Exception as e:
         return jsonify({'error': f'Failed to fetch chat history: {str(e)}'}), 500
+

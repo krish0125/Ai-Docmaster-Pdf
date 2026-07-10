@@ -2,6 +2,8 @@
    AI DocMaster — PDF Tools Logic
    ============================================ */
 
+console.log('🚀 [AI DocMaster] pdf-tools.js loaded - Version 3.0');
+
 // ── PDF Merge ──
 let mergeFiles = [];
 
@@ -57,7 +59,7 @@ function renderMergeFileList() {
                 <span class="file-name">${f.name}</span>
                 <span class="file-meta">${formatFileSize(f.size)}</span>
             </div>
-            <button class="btn-icon" onclick="removeMergeFile(${i})" title="Remove">
+            <button type="button" class="btn-icon" onclick="removeMergeFile(${i})" title="Remove">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
         </div>
@@ -251,7 +253,8 @@ function setCompressFile(file) {
     compressFile = file;
     const info = document.getElementById('compressFileInfo');
     if (info) info.innerHTML = `<div class="file-item"><div class="file-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF5252" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="file-info"><span class="file-name">${file.name}</span><span class="file-meta">${formatFileSize(file.size)}</span></div></div>`;
-    document.getElementById('compressBtn').disabled = false;
+    const btn = document.getElementById('compressBtn');
+    if (btn) btn.disabled = false;
 }
 
 async function handleCompress(e) {
@@ -365,10 +368,10 @@ function renderStoreItems(container, files, section) {
                 <span class="file-meta">${formatFileSize(f.size)} • ${formatDate(f.created_at)}</span>
             </div>
             <div class="file-actions">
-                <button class="btn-icon" onclick="downloadFile('${f.id}')" title="Download">
+                <button type="button" class="btn-icon" onclick="downloadFile('${f.id}')" title="Download">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 </button>
-                <button class="btn-icon danger" onclick="deleteSectionFile('${f.id}')" title="Delete">
+                <button type="button" class="btn-icon danger" onclick="deleteSectionFile('${f.id}')" title="Delete">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                 </button>
             </div>

@@ -2,6 +2,8 @@
    AI DocMaster — Authentication Logic
    ============================================ */
 
+console.log('🚀 [AI DocMaster] auth.js loaded - Version 3.0');
+
 const API_BASE = 'http://127.0.0.1:5001';
 
 // ── Check if already logged in ──
@@ -199,7 +201,8 @@ async function handleLogin(e) {
 
     const email = document.getElementById('loginEmail').value.trim();
     const password = document.getElementById('loginPassword').value;
-    const btn = e.target.querySelector('button[type="submit"]');
+    // Robust selector: try submit type first, then by ID
+    const btn = e.target.querySelector('button[type="submit"]') || document.getElementById('loginSubmit');
 
     // Client-side validation
     if (!email) { showFieldError('loginEmail', 'Email is required'); return; }
@@ -207,9 +210,8 @@ async function handleLogin(e) {
     if (!password) { showFieldError('loginPassword', 'Password is required'); return; }
     if (password.length < 6) { showFieldError('loginPassword', 'Password must be at least 6 characters'); return; }
 
-    // Set loading state
-    btn.classList.add('loading');
-    btn.disabled = true;
+    // Set loading state (null-safe)
+    if (btn) { btn.classList.add('loading'); btn.disabled = true; }
 
     try {
         const res = await fetch(`${API_BASE}/auth/login`, {
@@ -239,8 +241,7 @@ async function handleLogin(e) {
         showAuthError(errorMsg);
         showToast(errorMsg, 'error');
     } finally {
-        btn.classList.remove('loading');
-        btn.disabled = false;
+        if (btn) { btn.classList.remove('loading'); btn.disabled = false; }
     }
 }
 
@@ -254,7 +255,8 @@ async function handleSignup(e) {
     const email = document.getElementById('signupEmail').value.trim();
     const password = document.getElementById('signupPassword').value;
     const confirmPassword = document.getElementById('signupConfirm').value;
-    const btn = e.target.querySelector('button[type="submit"]');
+    // Robust selector: try submit type first, then by ID
+    const btn = e.target.querySelector('button[type="submit"]') || document.getElementById('signupSubmit');
 
     // Client-side validation
     if (!name) { showFieldError('signupName', 'Full name is required'); return; }
@@ -264,9 +266,8 @@ async function handleSignup(e) {
     if (password.length < 6) { showFieldError('signupPassword', 'Password must be at least 6 characters'); return; }
     if (password !== confirmPassword) { showFieldError('signupConfirm', 'Passwords do not match'); return; }
 
-    // Set loading state
-    btn.classList.add('loading');
-    btn.disabled = true;
+    // Set loading state (null-safe)
+    if (btn) { btn.classList.add('loading'); btn.disabled = true; }
 
     try {
         const res = await fetch(`${API_BASE}/auth/signup`, {
@@ -296,8 +297,7 @@ async function handleSignup(e) {
         showAuthError(errorMsg);
         showToast(errorMsg, 'error');
     } finally {
-        btn.classList.remove('loading');
-        btn.disabled = false;
+        if (btn) { btn.classList.remove('loading'); btn.disabled = false; }
     }
 }
 
@@ -313,6 +313,7 @@ function showToast(message, type = 'info') {
     const icons = {
         success: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
         error: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+        warning: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
         info: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
     };
 
@@ -321,7 +322,7 @@ function showToast(message, type = 'info') {
             <span class="auth-toast-icon">${icons[type] || icons.info}</span>
             <span class="auth-toast-message">${message}</span>
         </div>
-        <button class="auth-toast-close" onclick="this.parentElement.remove()">×</button>
+        <button type="button" class="auth-toast-close" onclick="this.parentElement.remove()">×</button>
     `;
 
     document.body.appendChild(toast);

@@ -117,20 +117,27 @@ def _get_keyword_fallback_answer(context: str, question: str) -> str:
 # Public API
 # ---------------------------------------------------------------------------
 
+from ai_modules.exceptions import GeminiAPIError, parse_gemini_error, call_gemini_with_retry
+
 def generate_response(context: str, question: str) -> str:
     """Low-level Gemini API call.
 
     Builds a prompt from *context* + *question*, sends it to
-    ``gemini-2.0-flash``, and returns the model's text response.
+    ``gemini-2.5-flash``, and returns the model's text response.
     """
     client = get_client()
     if client is None:
         if not _GENAI_AVAILABLE:
-            return (
-                'The google-genai package is not installed. '
-                'Please run: pip install google-genai'
+            raise GeminiAPIError(
+                'The google-genai package is not installed. Please run: pip install google-genai',
+                error_type="network",
+                status_code=500
             )
-        return _get_keyword_fallback_answer(context, question)
+        raise GeminiAPIError(
+            "Gemini API client could not be initialized. Please configure GEMINI_API_KEY in your .env file.",
+            error_type="invalid_key",
+            status_code=401
+        )
 
     prompt = (
         "You are a helpful AI assistant specializing in document analysis. "
@@ -141,16 +148,14 @@ def generate_response(context: str, question: str) -> str:
         "Please provide a clear, accurate, and helpful answer:"
     )
 
-    try:
-        response = client.models.generate_content(
-            model='gemini-2.5-flash',
-            contents=prompt,
-        )
-        return response.text
-    except Exception as e:
-        err_msg = str(e)
-        print(f"[ChatEngine] Gemini error: {err_msg}. Triggering smart fallback...")
-        return _get_keyword_fallback_answer(context, question)
+    response = call_gemini_with_retry(
+        client=client,
+        model='gemini-2.5-flash',
+        contents=prompt
+    )
+    return response.text
+
+
 
 
 def chat_with_pdf(pdf_text: str, question: str, chat_history: list | None = None) -> str:

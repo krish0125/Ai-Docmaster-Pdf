@@ -2,6 +2,8 @@
    AI DocMaster — Chat with PDF Logic
    ============================================ */
 
+console.log('🚀 [AI DocMaster] chat.js loaded - Version 3.0');
+
 const API_BASE_CHAT = 'http://127.0.0.1:5001';
 let chatFileId = null;
 let chatFileName = '';
@@ -148,7 +150,7 @@ async function uploadChatPdf(file) {
                                 <span class="value" style="color: var(--success,#00E676); font-weight: 500;">✓ Ready</span>
                             </div>
                         </div>
-                        <button class="btn btn-outline btn-sm w-full" onclick="resetChatUpload()" style="margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: var(--fs-xs);">
+                        <button type="button" class="btn btn-outline btn-sm w-full" onclick="resetChatUpload()" style="margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: var(--fs-xs);">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
                             Upload Different PDF
                         </button>
@@ -224,11 +226,21 @@ async function sendMessage(text) {
         if (res.ok) {
             addBotMessage(data.response || data.answer || 'No response received');
         } else {
-            addBotMessage('Sorry, I encountered an error: ' + (data.error || 'Unknown error'));
+            let errMsg = data.error || 'Unknown error';
+            if (data.error_type === 'invalid_key') {
+                errMsg = 'Invalid Gemini API key. Please check your API key in the configuration.';
+            } else if (data.error_type === 'quota_exceeded') {
+                errMsg = 'Gemini API quota exceeded. Please wait a minute or set a personal API key in settings.';
+            } else if (data.error_type === 'model_not_found') {
+                errMsg = 'Gemini model not found. Check if the model is valid and not deprecated.';
+            } else if (data.error_type === 'timeout' || data.error_type === 'network') {
+                errMsg = 'Network error: Cannot reach Gemini servers.';
+            }
+            addBotMessage('Sorry, I encountered an error: ' + errMsg);
         }
     } catch (err) {
         hideTypingIndicator();
-        addBotMessage('Connection error. Please make sure the server is running.');
+        addBotMessage('Connection error. Please make sure the server is running on port 5001.');
     } finally {
         if (sendBtn) sendBtn.disabled = false;
         chatInput.focus();
@@ -260,9 +272,9 @@ function renderMessages() {
                 
                 <div class="example-questions" style="margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 10px;">
                     <p class="text-sm text-muted">Try asking:</p>
-                    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('chatInput').value='What is this document about?'; document.getElementById('chatInput').dispatchEvent(new Event('input'))" style="max-width: 320px; width: 100%;">What is this document about?</button>
-                    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('chatInput').value='Summarize the key points'; document.getElementById('chatInput').dispatchEvent(new Event('input'))" style="max-width: 320px; width: 100%;">Summarize the key points</button>
-                    <button class="btn btn-secondary btn-sm" onclick="document.getElementById('chatInput').value='List the main conclusions'; document.getElementById('chatInput').dispatchEvent(new Event('input'))" style="max-width: 320px; width: 100%;">List the main conclusions</button>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('chatInput').value='What is this document about?'; document.getElementById('chatInput').dispatchEvent(new Event('input'))" style="max-width: 320px; width: 100%;">What is this document about?</button>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('chatInput').value='Summarize the key points'; document.getElementById('chatInput').dispatchEvent(new Event('input'))" style="max-width: 320px; width: 100%;">Summarize the key points</button>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('chatInput').value='List the main conclusions'; document.getElementById('chatInput').dispatchEvent(new Event('input'))" style="max-width: 320px; width: 100%;">List the main conclusions</button>
                 </div>
             </div>
         `;
@@ -384,7 +396,7 @@ async function loadChatHistory(fileId) {
                                     <span class="value" style="color: var(--success,#00E676); font-weight: 500;">✓ Ready</span>
                                 </div>
                             </div>
-                            <button class="btn btn-outline btn-sm w-full" onclick="resetChatUpload()" style="margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: var(--fs-xs);">
+                            <button type="button" class="btn btn-outline btn-sm w-full" onclick="resetChatUpload()" style="margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: var(--fs-xs);">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
                                 Upload Different PDF
                             </button>
@@ -457,7 +469,7 @@ function showToast(message, type = 'info') {
 
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
-    toast.innerHTML = `<div class="toast-content"><span class="toast-message">${message}</span></div><button class="toast-close" onclick="this.parentElement.remove()">×</button>`;
+    toast.innerHTML = `<div class="toast-content"><span class="toast-message">${message}</span></div><button type="button" class="toast-close" onclick="this.parentElement.remove()">×</button>`;
     document.body.appendChild(toast);
     requestAnimationFrame(() => toast.classList.add('show'));
     setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 4000);

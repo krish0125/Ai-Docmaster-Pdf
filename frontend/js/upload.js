@@ -2,6 +2,8 @@
    AI DocMaster — File Upload Logic
    ============================================ */
 
+console.log('🚀 [AI DocMaster] upload.js loaded - Version 3.0');
+
 const uploadedFiles = [];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -96,7 +98,7 @@ function renderFileList() {
                 </div>
                 <span class="upload-status" id="status-${index}"></span>
             </div>
-            <button class="btn-icon remove-btn" onclick="removeFile(${index})" title="Remove">
+            <button type="button" class="btn-icon remove-btn" onclick="removeFile(${index})" title="Remove">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
         </div>
@@ -157,9 +159,4 @@ async function uploadAllFiles() {
     if (typeof loadStats === 'function') loadStats();
 }
 
-function getFileIcon(type) {
-    if (type === 'application/pdf' || type === 'pdf') {
-        return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF5252" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
-    }
-    return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00D4FF" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
-}
+
