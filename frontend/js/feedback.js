@@ -1,0 +1,334 @@
+/* ==========================================================================
+   AI DocMaster — Dynamic User Feedback Widget (MongoDB Backed)
+   ========================================================================== */
+
+(function () {
+    console.log('💬 [AI DocMaster] feedback.js loaded');
+
+    // 1. Inject Styles Dynamically
+    const styles = `
+        /* Floating Feedback Button */
+        #feedback-widget-trigger {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: linear-gradient(135deg, var(--primary, #6C63FF) 0%, #5142E6 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(108, 99, 255, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #feedback-widget-trigger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(108, 99, 255, 0.6);
+        }
+
+        /* Modal Overlay */
+        #feedback-widget-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        #feedback-widget-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Feedback Modal Card */
+        #feedback-widget-card {
+            background: rgba(30, 30, 46, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 420px;
+            padding: 30px;
+            color: #ffffff;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        #feedback-widget-overlay.active #feedback-widget-card {
+            transform: scale(1);
+        }
+
+        #feedback-widget-card h3 {
+            margin-top: 0;
+            font-size: 1.3rem;
+            color: #ffffff;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        #feedback-widget-card p {
+            font-size: 0.9rem;
+            color: #b4b4db;
+            margin-bottom: 20px;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        /* Close Button */
+        #feedback-widget-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #b4b4db;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        #feedback-widget-close:hover {
+            color: #ffffff;
+        }
+
+        /* Star Rating Controls */
+        .feedback-stars-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .feedback-star {
+            font-size: 2.2rem;
+            color: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: color 0.2s, transform 0.2s;
+        }
+
+        .feedback-star:hover {
+            transform: scale(1.2);
+        }
+
+        .feedback-star.active {
+            color: #FFD700; /* Gold */
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        /* Text Input */
+        .feedback-textarea {
+            width: 100%;
+            min-height: 100px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 0.9rem;
+            resize: vertical;
+            outline: none;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        .feedback-textarea:focus {
+            border-color: var(--primary, #6C63FF);
+        }
+
+        /* Submit Button */
+        .feedback-submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary, #6C63FF) 0%, #5142E6 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+
+        .feedback-submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .feedback-submit-btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+    `;
+
+    const styleEl = document.createElement('style');
+    styleEl.textContent = styles;
+    document.head.appendChild(styleEl);
+
+    // 2. Setup DOM Elements on Load
+    function init() {
+        // Create Floating Button
+        const trigger = document.createElement('button');
+        trigger.id = 'feedback-widget-trigger';
+        trigger.innerHTML = `
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            Feedback
+        `;
+        document.body.appendChild(trigger);
+
+        // Create Modal Overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'feedback-widget-overlay';
+        overlay.innerHTML = `
+            <div id="feedback-widget-card">
+                <button type="button" id="feedback-widget-close">&times;</button>
+                <h3>Send Us Feedback</h3>
+                <p>We'd love to hear your thoughts! Rate your experience on this page.</p>
+                
+                <div class="feedback-stars-container">
+                    <span class="feedback-star" data-rating="1">&#9733;</span>
+                    <span class="feedback-star" data-rating="2">&#9733;</span>
+                    <span class="feedback-star" data-rating="3">&#9733;</span>
+                    <span class="feedback-star" data-rating="4">&#9733;</span>
+                    <span class="feedback-star" data-rating="5">&#9733;</span>
+                </div>
+
+                <textarea class="feedback-textarea" placeholder="Optional comments, feature suggestions, or bug details (max 1000 characters)..." maxlength="1000"></textarea>
+                
+                <button type="button" class="feedback-submit-btn" disabled>Submit Feedback</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+
+        // 3. Event Listeners
+        const closeBtn = overlay.querySelector('#feedback-widget-close');
+        const stars = overlay.querySelectorAll('.feedback-star');
+        const textarea = overlay.querySelector('.feedback-textarea');
+        const submitBtn = overlay.querySelector('.feedback-submit-btn');
+
+        let selectedRating = 0;
+
+        // Open Modal
+        trigger.addEventListener('click', () => {
+            overlay.classList.add('active');
+        });
+
+        // Close Modal
+        function closeModal() {
+            overlay.classList.remove('active');
+            // Reset fields
+            selectedRating = 0;
+            stars.forEach(s => s.classList.remove('active'));
+            textarea.value = '';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submit Feedback';
+        }
+
+        closeBtn.addEventListener('click', closeModal);
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeModal();
+        });
+
+        // Stars Interactive Rating
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                selectedRating = parseInt(star.getAttribute('data-rating'));
+                
+                // Highlight stars up to selectedRating
+                stars.forEach(s => {
+                    const r = parseInt(s.getAttribute('data-rating'));
+                    if (r <= selectedRating) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+
+                submitBtn.disabled = false;
+            });
+        });
+
+        // Form Submission
+        submitBtn.addEventListener('click', async () => {
+            if (selectedRating < 1 || selectedRating > 5) return;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+
+            const payload = {
+                rating: selectedRating,
+                message: textarea.value.trim(),
+                page: window.location.pathname.split('/').pop() || 'index.html'
+            };
+
+            // Use the API base URL defined or fall back to localhost
+            const baseApiUrl = API_BASE_URL;
+
+            // Get Auth Token if exists
+            const token = localStorage.getItem('token');
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            try {
+                const res = await fetch(`${baseApiUrl}/feedback`, {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    // Show a toast if function exists, else alert
+                    if (typeof showToast === 'function') {
+                        showToast('Thank you for your feedback!', 'success');
+                    } else {
+                        alert('Thank you for your feedback!');
+                    }
+                    closeModal();
+                } else {
+                    throw new Error(data.error || 'Failed to submit feedback');
+                }
+            } catch (err) {
+                console.error('[Feedback] Submit error:', err);
+                if (typeof showToast === 'function') {
+                    showToast(err.message || 'Server error. Please try again.', 'error');
+                } else {
+                    alert(err.message || 'Server error. Please try again.');
+                }
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Feedback';
+            }
+        });
+    }
+
+    // Init when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();

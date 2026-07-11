@@ -1,0 +1,1 @@
+This is a simple plain text sample file used to verify text-to-pdf conversions and parsing.

@@ -292,7 +292,7 @@ body {
 }
 
 .nav-group.expanded .sidebar-submenu {
-  max-height: 150px;
+  max-height: 1200px;
   margin-top: 4px;
   margin-bottom: 4px;
 }
@@ -2445,6 +2445,40 @@ input:checked + .toggle-slider:before {
 .resume-section.overall h4 {
   color: #8B5CF6;
   border-bottom-color: rgba(108, 99, 255, 0.15);
+}
+
+/* Edit PDF Text Styles */
+.edit-text-node {
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    transition: border 0.15s ease, background 0.15s ease;
+}
+
+.edit-text-node:hover {
+    border: 1px dashed rgba(59, 130, 246, 0.5);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.edit-text-node.focused {
+    border: 1.5px solid #3B82F6 !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+    outline: none;
+    z-index: 1000;
+}
+
+.edit-text-node.added-node {
+    cursor: move;
+}
+
+.editor-toolbar button.active {
+    background-color: #3B82F6 !important;
+    color: #FFFFFF !important;
+}
+
+.editor-toolbar select:focus, .editor-toolbar input:focus {
+    border-color: #3B82F6;
+    outline: none;
 }
 
 

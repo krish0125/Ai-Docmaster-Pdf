@@ -4,7 +4,7 @@
 
 console.log('🚀 [AI DocMaster] app.js loaded - Version 3.0');
 
-const API_BASE = 'http://127.0.0.1:5001';
+const API_BASE = API_BASE_URL;
 
 // ── Auth Helpers ──
 function getToken() {
@@ -265,6 +265,15 @@ async function loadUserProfile() {
         if (udropEmailEl) udropEmailEl.textContent = u.email || '';
         if (udropAvatarEl) udropAvatarEl.textContent = initial;
 
+        const adminSection = document.getElementById('adminDropdownSection');
+        if (adminSection) {
+            if (u.role === 'admin' || (u.email && u.email.toLowerCase().trim() === 'admin@aidocmaster.com')) {
+                adminSection.style.display = 'block';
+            } else {
+                adminSection.style.display = 'none';
+            }
+        }
+
         if (pmNameEl) pmNameEl.textContent = u.name;
         if (pmEmailEl) pmEmailEl.textContent = u.email || '';
         if (pmAvatarEl) pmAvatarEl.textContent = initial;
@@ -421,14 +430,13 @@ function initSidebar() {
         });
     }
 
-    // PDF Tools submenu toggle
-    const pdfToolsToggle = document.getElementById('pdfToolsToggle');
-    if (pdfToolsToggle) {
-        pdfToolsToggle.addEventListener('click', (e) => {
+    // Sidebar submenu toggles
+    document.querySelectorAll('.nav-group-toggle').forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
             e.preventDefault();
-            pdfToolsToggle.closest('.nav-group').classList.toggle('expanded');
+            toggle.closest('.nav-group').classList.toggle('expanded');
         });
-    }
+    });
 }
 
 // ── Section Switching ──

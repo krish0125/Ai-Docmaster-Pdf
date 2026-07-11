@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <style>
         /* Flashcards 3D Flipping Card CSS Styling */
         .flashcard-wrapper {
@@ -132,6 +133,27 @@
                         <a href="#" class="nav-item sidebar-link sub" data-section="compress-tool">
                             <span>Compress PDF</span>
                         </a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="organize-tool">
+                            <span>Organize Pages</span>
+                        </a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="rotate-tool">
+                            <span>Rotate Pages</span>
+                        </a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="delete-pages-tool">
+                            <span>Delete Pages</span>
+                        </a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="extract-pages-tool">
+                            <span>Extract Pages</span>
+                        </a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="duplicate-pages-tool">
+                            <span>Duplicate Pages</span>
+                        </a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="crop-tool">
+                            <span>Crop PDF</span>
+                        </a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="rearrange-tool">
+                            <span>Rearrange Pages</span>
+                        </a>
                     </div>
                 </div>
 
@@ -164,6 +186,140 @@
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
                     <span>My Files</span>
                 </a>
+
+                
+                <!-- PDF Conversion Submenu -->
+                <div class="nav-group">
+                    <a href="#" class="nav-item sidebar-link nav-group-toggle" id="convertToolsToggle">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 8 16 13"/><line x1="21" y1="8" x2="9" y2="8"/><path d="M21 21H9a4 4 0 0 1-4-4v-7"/></svg>
+                        <span>PDF Conversion</span>
+                        <svg class="nav-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </a>
+                    <div class="nav-submenu sidebar-submenu">
+                        <a href="#" class="nav-item sidebar-link sub" data-section="pdf-to-word"><span>PDF to Word</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="word-to-pdf"><span>Word to PDF</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="pdf-to-excel"><span>PDF to Excel</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="excel-to-pdf"><span>Excel to PDF</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="pdf-to-pptx"><span>PDF to PPTX</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="pptx-to-pdf"><span>PPTX to PDF</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="pdf-to-image"><span>PDF to Image</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="image-to-pdf"><span>Image to PDF</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="pdf-to-html"><span>PDF to HTML</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="html-to-pdf"><span>HTML to PDF</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="pdf-to-text"><span>PDF to Text</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="text-to-pdf"><span>Text to PDF</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="pdf-to-epub"><span>PDF to EPUB</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="epub-to-pdf"><span>EPUB to PDF</span></a>
+                    </div>
+                </div>
+
+                <!-- PDF Editing & Security Submenu -->
+                <div class="nav-group">
+                    <a href="#" class="nav-item sidebar-link nav-group-toggle" id="editToolsToggle">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                        <span>Edit & Security</span>
+                        <svg class="nav-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </a>
+                    <div class="nav-submenu sidebar-submenu">
+                        <a href="#" class="nav-item sidebar-link sub" data-section="add-text-tool"><span>Add Text</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="add-image-tool"><span>Add Image Stamp</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="highlight-tool"><span>Highlight Area</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="hf-tool"><span>Header & Footer</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="pnum-tool"><span>Page Numbers</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="whiteout-tool"><span>Whiteout PDF</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="edit-pdf-text"><span>Edit PDF Text</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="lock-tool"><span>Lock PDF</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="unlock-tool"><span>Unlock PDF</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="watermark-tool"><span>Watermark</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="flatten-tool"><span>Flatten PDF</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="meta-tool"><span>Remove Metadata</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="sign-tool"><span>Digital Stamp</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="redact-tool"><span>Redaction</span></a>
+                    </div>
+                </div>
+
+                <!-- OCR & Advanced Scanner Submenu -->
+                <div class="nav-group">
+                    <a href="#" class="nav-item sidebar-link nav-group-toggle" id="ocrToolsToggle">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h4v4H7z"/><path d="M7 13h10"/><path d="M7 17h10"/></svg>
+                        <span>OCR & Scanner</span>
+                        <svg class="nav-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </a>
+                    <div class="nav-submenu sidebar-submenu">
+                        <a href="#" class="nav-item sidebar-link sub" data-section="ocr-tool"><span>Standard OCR</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="hw-ocr-tool"><span>Handwriting OCR</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="tables-ocr-tool"><span>Extract Tables</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="images-ocr-tool"><span>Extract Images</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="ml-ocr-tool"><span>Multilingual OCR</span></a>
+                    </div>
+                </div>
+
+                <!-- AI Tools Submenu -->
+                <div class="nav-group">
+                    <a href="#" class="nav-item sidebar-link nav-group-toggle" id="aiToolsToggleGroup">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                        <span>AI Engines</span>
+                        <svg class="nav-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </a>
+                    <div class="nav-submenu sidebar-submenu">
+                        <a href="#" class="nav-item sidebar-link sub" data-section="explain-tool"><span>Explain PDF</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="keywords-tool"><span>Extract Keywords</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="quiz-tool"><span>Generate Quiz</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="mcq-tool"><span>Generate MCQ</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="grammar-tool"><span>Grammar Checker</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="improve-tool"><span>Improve Writing</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="proofread-tool"><span>Proofread Document</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="translate-tool"><span>Translate PDF</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="rewrite-tool"><span>Rewrite Document</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="tone-tool"><span>Change Tone</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="contract-tool"><span>Analyze Contract</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="invoice-tool"><span>Read Invoice</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="financial-tool"><span>Analyze Financials</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="legal-tool"><span>Review Legal Docs</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="assignment-tool"><span>Assignment Helper</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="research-tool"><span>Research Assistant</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="coverletter-tool"><span>Cover Letter Generator</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="interview-tool"><span>Interview Questions</span></a>
+                    </div>
+                </div>
+
+                <!-- Image Tools Submenu -->
+                <div class="nav-group">
+                    <a href="#" class="nav-item sidebar-link nav-group-toggle" id="imageToolsToggle">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                        <span>Image Tools</span>
+                        <svg class="nav-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </a>
+                    <div class="nav-submenu sidebar-submenu">
+                        <a href="#" class="nav-item sidebar-link sub" data-section="resize-img-tool"><span>Resize Image</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="thumbnail-img-tool"><span>Create Thumbnail</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="convert-img-tool"><span>Convert Format</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="filter-img-tool"><span>Apply Filters</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="nobg-img-tool"><span>Remove Background</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="upscale-img-tool"><span>Upscale Image</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="crop-img-tool"><span>Crop Image</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="rotate-img-tool"><span>Rotate Image</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="flip-img-tool"><span>Flip Image</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="wm-img-tool"><span>Image Watermark</span></a>
+                    </div>
+                </div>
+
+                <!-- Utilities & Productivity Submenu -->
+                <div class="nav-group">
+                    <a href="#" class="nav-item sidebar-link nav-group-toggle" id="utilToolsToggle">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        <span>Utilities & Cloud</span>
+                        <svg class="nav-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </a>
+                    <div class="nav-submenu sidebar-submenu">
+                        <a href="#" class="nav-item sidebar-link sub" data-section="qr-tool"><span>QR Code Generator</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="barcode-tool"><span>Barcode Generator</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="meta-view-tool"><span>PDF Metadata Edit</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="pass-tool"><span>Password Generator</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="web-tool"><span>Web to PDF</span></a>
+                        <a href="#" class="nav-item sidebar-link sub" data-section="cloud-tool"><span>Cloud Storage connect</span></a>
+                    </div>
+                </div>
 
                 <div class="nav-divider"></div>
 
@@ -322,6 +478,17 @@
                             </span>
                             <span class="udrop-item-text">Help & Support</span>
                         </button>
+
+                        <!-- Administration (visible to admins only) -->
+                        <div id="adminDropdownSection" style="display:none;">
+                            <div class="udrop-section-label">Administration</div>
+                            <a href="admin-feedback.html" class="udrop-item" style="text-decoration:none;">
+                                <span class="udrop-item-icon" style="background: rgba(255, 107, 0, 0.1); color: rgb(255, 107, 0); width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                                </span>
+                                <span class="udrop-item-text" style="margin-left: 10px;">Feedback Board</span>
+                            </a>
+                        </div>
 
                         <div class="udrop-divider"></div>
 
@@ -625,6 +792,71 @@
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                             </div>
                         </div>
+
+                        <!-- ── Phase 1: PDF Management Cards ── -->
+                        <div class="tool-card" data-tool="organize-tool">
+                            <div class="tool-card-icon purple">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="17" width="18" height="4" rx="1"/></svg>
+                            </div>
+                            <h3>Organize Pages</h3>
+                            <p>Reorder PDF pages into any sequence</p>
+                            <div class="tool-card-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+                        </div>
+
+                        <div class="tool-card" data-tool="rotate-tool">
+                            <div class="tool-card-icon cyan">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                            </div>
+                            <h3>Rotate Pages</h3>
+                            <p>Rotate pages 90°, 180°, or 270°</p>
+                            <div class="tool-card-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+                        </div>
+
+                        <div class="tool-card" data-tool="delete-pages-tool">
+                            <div class="tool-card-icon red">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            </div>
+                            <h3>Delete Pages</h3>
+                            <p>Remove unwanted pages from PDF</p>
+                            <div class="tool-card-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+                        </div>
+
+                        <div class="tool-card" data-tool="extract-pages-tool">
+                            <div class="tool-card-icon green">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                            </div>
+                            <h3>Extract Pages</h3>
+                            <p>Pull specific pages into a new PDF</p>
+                            <div class="tool-card-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+                        </div>
+
+                        <div class="tool-card" data-tool="duplicate-pages-tool">
+                            <div class="tool-card-icon teal">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            </div>
+                            <h3>Duplicate Pages</h3>
+                            <p>Append copies of selected pages</p>
+                            <div class="tool-card-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+                        </div>
+
+                        <div class="tool-card" data-tool="crop-tool">
+                            <div class="tool-card-icon yellow">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6.13 1 6 16a2 2 0 0 0 2 2h15"/><polyline points="1 6.13 16 6a2 2 0 0 1 2 2v15"/></svg>
+                            </div>
+                            <h3>Crop PDF</h3>
+                            <p>Trim margins and resize page area</p>
+                            <div class="tool-card-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+                        </div>
+
+                        <div class="tool-card" data-tool="rearrange-tool">
+                            <div class="tool-card-icon pink">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+                            </div>
+                            <h3>Rearrange Pages</h3>
+                            <p>Full drag-and-drop page reordering</p>
+                            <div class="tool-card-arrow"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></div>
+                        </div>
+
                     </div>
 
                     <!-- Recent Files -->
@@ -893,6 +1125,1665 @@
                 </div>
             </section>
 
+            <!-- ════════ PHASE 1 TOOL SECTIONS ════════ -->
+
+            <!-- ORGANIZE PAGES -->
+            <section class="tool-section" id="organize-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="tool-panel-title">
+                        <h2>Organize Pages</h2>
+                        <p>Reorder PDF pages into any sequence you want</p>
+                    </div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="organizeDropzone">
+                        <input type="file" id="organizeFileInput" accept=".pdf" hidden>
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="17" width="18" height="4" rx="1"/></svg>
+                        <h3 class="dropzone-title">Drop a PDF file here</h3>
+                        <p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="organizeFileInfo"></div>
+                    <div id="organizeOptions" style="display:none;">
+                        <div class="form-group">
+                            <label for="organizeOrder" class="form-label">New Page Order</label>
+                            <input type="text" id="organizeOrder" class="form-input" placeholder="e.g. 3,1,2 (for 3-page PDF)">
+                            <small class="form-hint">Enter page numbers separated by commas in the new order you want</small>
+                        </div>
+                        <button class="btn btn-primary" id="organizeBtn" type="button" onclick="handleOrganize(event)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="17" width="18" height="4" rx="1"/></svg>
+                            Organize Pages
+                        </button>
+                    </div>
+                    <div id="organizeResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- ROTATE PAGES -->
+            <section class="tool-section" id="rotate-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="tool-panel-title">
+                        <h2>Rotate Pages</h2>
+                        <p>Rotate one or all pages by 90°, 180°, or 270°</p>
+                    </div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="rotateDropzone">
+                        <input type="file" id="rotateFileInput" accept=".pdf" hidden>
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                        <h3 class="dropzone-title">Drop a PDF file here</h3>
+                        <p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="rotateFileInfo"></div>
+                    <div id="rotateOptions" style="display:none;">
+                        <div class="form-group">
+                            <label for="rotateAngle" class="form-label">Rotation Angle</label>
+                            <select id="rotateAngle" class="form-select">
+                                <option value="90">90° Clockwise</option>
+                                <option value="180">180°</option>
+                                <option value="270">270° (90° Counter-clockwise)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="rotatePages" class="form-label">Pages to Rotate (Optional)</label>
+                            <input type="text" id="rotatePages" class="form-input" placeholder="e.g. 1,3 — leave blank for all pages">
+                            <small class="form-hint">Leave blank to rotate all pages</small>
+                        </div>
+                        <button class="btn btn-primary" id="rotateBtn" type="button" onclick="handleRotate(event)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                            Rotate Pages
+                        </button>
+                    </div>
+                    <div id="rotateResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- DELETE PAGES -->
+            <section class="tool-section" id="delete-pages-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="tool-panel-title">
+                        <h2>Delete Pages</h2>
+                        <p>Remove unwanted pages from your PDF</p>
+                    </div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="deletePagesDropzone">
+                        <input type="file" id="deletePagesFileInput" accept=".pdf" hidden>
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        <h3 class="dropzone-title">Drop a PDF file here</h3>
+                        <p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="deletePagesFileInfo"></div>
+                    <div id="deletePagesOptions" style="display:none;">
+                        <div class="form-group">
+                            <label for="deletePagesInput" class="form-label">Pages to Delete</label>
+                            <input type="text" id="deletePagesInput" class="form-input" placeholder="e.g. 2,4,6">
+                            <small class="form-hint">Enter page numbers to delete, separated by commas</small>
+                        </div>
+                        <button class="btn btn-primary" id="deletePagesBtn" type="button" onclick="handleDeletePages(event)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                            Delete Pages
+                        </button>
+                    </div>
+                    <div id="deletePagesResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- EXTRACT PAGES -->
+            <section class="tool-section" id="extract-pages-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="tool-panel-title">
+                        <h2>Extract Pages</h2>
+                        <p>Pull specific pages into a new single PDF</p>
+                    </div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="extractPagesDropzone">
+                        <input type="file" id="extractPagesFileInput" accept=".pdf" hidden>
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                        <h3 class="dropzone-title">Drop a PDF file here</h3>
+                        <p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="extractPagesFileInfo"></div>
+                    <div id="extractPagesOptions" style="display:none;">
+                        <div class="form-group">
+                            <label for="extractPagesInput" class="form-label">Pages to Extract</label>
+                            <input type="text" id="extractPagesInput" class="form-input" placeholder="e.g. 1,3,5">
+                            <small class="form-hint">Enter page numbers to extract, separated by commas</small>
+                        </div>
+                        <button class="btn btn-primary" id="extractPagesBtn" type="button" onclick="handleExtractPages(event)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            Extract Pages
+                        </button>
+                    </div>
+                    <div id="extractPagesResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- DUPLICATE PAGES -->
+            <section class="tool-section" id="duplicate-pages-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="tool-panel-title">
+                        <h2>Duplicate Pages</h2>
+                        <p>Append copies of selected pages to your PDF</p>
+                    </div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="duplicatePagesDropzone">
+                        <input type="file" id="duplicatePagesFileInput" accept=".pdf" hidden>
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        <h3 class="dropzone-title">Drop a PDF file here</h3>
+                        <p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="duplicatePagesFileInfo"></div>
+                    <div id="duplicatePagesOptions" style="display:none;">
+                        <div class="form-group">
+                            <label for="duplicatePagesInput" class="form-label">Pages to Duplicate</label>
+                            <input type="text" id="duplicatePagesInput" class="form-input" placeholder="e.g. 1,2">
+                            <small class="form-hint">Duplicates will be appended at the end of the PDF</small>
+                        </div>
+                        <button class="btn btn-primary" id="duplicatePagesBtn" type="button" onclick="handleDuplicatePages(event)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                            Duplicate Pages
+                        </button>
+                    </div>
+                    <div id="duplicatePagesResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- CROP PDF -->
+            <section class="tool-section" id="crop-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="tool-panel-title">
+                        <h2>Crop PDF</h2>
+                        <p>Trim margins and resize the visible page area</p>
+                    </div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="cropDropzone">
+                        <input type="file" id="cropFileInput" accept=".pdf" hidden>
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="6.13 1 6 16a2 2 0 0 0 2 2h15"/><polyline points="1 6.13 16 6a2 2 0 0 1 2 2v15"/></svg>
+                        <h3 class="dropzone-title">Drop a PDF file here</h3>
+                        <p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="cropFileInfo"></div>
+                    <div id="cropOptions" style="display:none;">
+                        <p class="form-hint" style="margin-bottom:1rem">Set crop margins as percentage of page size (0 = no crop, 100 = full page)</p>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                            <div class="form-group">
+                                <label class="form-label">Left: <span id="cropLeftVal">0%</span></label>
+                                <input type="range" id="cropLeft" min="0" max="50" value="0" class="form-input" style="padding:0;">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Right: <span id="cropRightVal">100%</span></label>
+                                <input type="range" id="cropRight" min="50" max="100" value="100" class="form-input" style="padding:0;">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Bottom: <span id="cropBottomVal">0%</span></label>
+                                <input type="range" id="cropBottom" min="0" max="50" value="0" class="form-input" style="padding:0;">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Top: <span id="cropTopVal">100%</span></label>
+                                <input type="range" id="cropTop" min="50" max="100" value="100" class="form-input" style="padding:0;">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="cropPages" class="form-label">Pages to Crop (Optional)</label>
+                            <input type="text" id="cropPages" class="form-input" placeholder="e.g. 1,3 — leave blank for all pages">
+                        </div>
+                        <button class="btn btn-primary" id="cropBtn" type="button" onclick="handleCrop(event)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6.13 1 6 16a2 2 0 0 0 2 2h15"/><polyline points="1 6.13 16 6a2 2 0 0 1 2 2v15"/></svg>
+                            Crop PDF
+                        </button>
+                    </div>
+                    <div id="cropResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- REARRANGE PAGES -->
+            <section class="tool-section" id="rearrange-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    </button>
+                    <div class="tool-panel-title">
+                        <h2>Rearrange Pages</h2>
+                        <p>Provide a complete new page order (full permutation required)</p>
+                    </div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="rearrangeDropzone">
+                        <input type="file" id="rearrangeFileInput" accept=".pdf" hidden>
+                        <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+                        <h3 class="dropzone-title">Drop a PDF file here</h3>
+                        <p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="rearrangeFileInfo"></div>
+                    <div id="rearrangeOptions" style="display:none;">
+                        <div class="form-group">
+                            <label for="rearrangeOrder" class="form-label">Complete New Page Order</label>
+                            <input type="text" id="rearrangeOrder" class="form-input" placeholder="e.g. 3,1,2 for a 3-page PDF">
+                            <small class="form-hint">Must include every page number exactly once (e.g. a 5-page PDF needs 5 numbers)</small>
+                        </div>
+                        <button class="btn btn-primary" id="rearrangeBtn" type="button" onclick="handleRearrange(event)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+                            Rearrange Pages
+                        </button>
+                    </div>
+                    <div id="rearrangeResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            
+            <!-- ════════ PHASE 2: PDF CONVERSION SECTIONS ════════ -->
+            
+            <!-- PDF to Word -->
+            <section class="tool-section" id="pdf-to-word" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert PDF to Word</h2><p>Change your PDF into a fully editable DOCX document</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="pdfToWordDz">
+                        <input type="file" id="pdfToWordInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="pdfToWordInfo"></div>
+                    <div id="pdfToWordOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="pdfToWordBtn" onclick="handlePdfToWord()">Convert to DOCX</button>
+                    </div>
+                    <div id="pdfToWordResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Word to PDF -->
+            <section class="tool-section" id="word-to-pdf" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert Word to PDF</h2><p>Convert DOCX/DOC files into professional PDF document format</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="wordToPdfDz">
+                        <input type="file" id="wordToPdfInput" accept=".docx,.doc" hidden>
+                        <h3 class="dropzone-title">Drop DOCX/DOC file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="wordToPdfInfo"></div>
+                    <div id="wordToPdfOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="wordToPdfBtn" onclick="handleWordToPdf()">Convert to PDF</button>
+                    </div>
+                    <div id="wordToPdfResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- PDF to Excel -->
+            <section class="tool-section" id="pdf-to-excel" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert PDF to Excel</h2><p>Extract structured tables from PDF into XLSX worksheets</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="pdfToExcelDz">
+                        <input type="file" id="pdfToExcelInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="pdfToExcelInfo"></div>
+                    <div id="pdfToExcelOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="pdfToExcelBtn" onclick="handlePdfToExcel()">Extract Tables</button>
+                    </div>
+                    <div id="pdfToExcelResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Excel to PDF -->
+            <section class="tool-section" id="excel-to-pdf" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert Excel to PDF</h2><p>Convert spreadsheets to report-grade PDF documents</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="excelToPdfDz">
+                        <input type="file" id="excelToPdfInput" accept=".xlsx,.xls" hidden>
+                        <h3 class="dropzone-title">Drop XLSX/XLS file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="excelToPdfInfo"></div>
+                    <div id="excelToPdfOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="excelToPdfBtn" onclick="handleExcelToPdf()">Convert to PDF</button>
+                    </div>
+                    <div id="excelToPdfResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- PDF to PPTX -->
+            <section class="tool-section" id="pdf-to-pptx" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert PDF to PowerPoint</h2><p>Generate presentation slides from PDF content</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="pdfToPptxDz">
+                        <input type="file" id="pdfToPptxInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="pdfToPptxInfo"></div>
+                    <div id="pdfToPptxOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="pdfToPptxBtn" onclick="handlePdfToPptx()">Convert to PPTX</button>
+                    </div>
+                    <div id="pdfToPptxResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- PDF to Image -->
+            <section class="tool-section" id="pdf-to-image" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert PDF to Image</h2><p>Convert PDF pages to JPG/PNG images</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="pdfToImageDz">
+                        <input type="file" id="pdfToImageInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="pdfToImageInfo"></div>
+                    <div id="pdfToImageOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Format</label>
+                            <select id="pdfToImageFmt" class="form-select"><option value="jpg">JPG</option><option value="png">PNG</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">DPI Resolution</label>
+                            <select id="pdfToImageDpi" class="form-select"><option value="150">150 DPI (Standard)</option><option value="300">300 DPI (High Quality)</option></select>
+                        </div>
+                        <button class="btn btn-primary" id="pdfToImageBtn" onclick="handlePdfToImage()">Convert Pages</button>
+                    </div>
+                    <div id="pdfToImageResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- PDF to HTML -->
+            <section class="tool-section" id="pdf-to-html" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert PDF to HTML</h2><p>Produce web-ready responsive HTML code from PDF content</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="pdfToHtmlDz">
+                        <input type="file" id="pdfToHtmlInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="pdfToHtmlInfo"></div>
+                    <div id="pdfToHtmlOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="pdfToHtmlBtn" onclick="handlePdfToHtml()">Convert to HTML</button>
+                    </div>
+                    <div id="pdfToHtmlResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- PDF to Text -->
+            <section class="tool-section" id="pdf-to-text" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert PDF to Plain Text</h2><p>Extract all text content to plain .txt document</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="pdfToTextDz">
+                        <input type="file" id="pdfToTextInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="pdfToTextInfo"></div>
+                    <div id="pdfToTextOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="pdfToTextBtn" onclick="handlePdfToText()">Extract Text</button>
+                    </div>
+                    <div id="pdfToTextResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- PDF to EPUB -->
+            <section class="tool-section" id="pdf-to-epub" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert PDF to EPUB</h2><p>Format your PDF into reflowable ebook reader standard format</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="pdfToEpubDz">
+                        <input type="file" id="pdfToEpubInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="pdfToEpubInfo"></div>
+                    <div id="pdfToEpubOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="pdfToEpubBtn" onclick="handlePdfToEpub()">Convert to EPUB</button>
+                    </div>
+                    <div id="pdfToEpubResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- PPTX to PDF -->
+            <section class="tool-section" id="pptx-to-pdf" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert PowerPoint to PDF</h2><p>Convert PPTX/PPT files into professional PDF document format</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="pptxToPdfDz">
+                        <input type="file" id="pptxToPdfInput" accept=".pptx,.ppt" hidden>
+                        <h3 class="dropzone-title">Drop PPTX/PPT file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="pptxToPdfInfo"></div>
+                    <div id="pptxToPdfOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="pptxToPdfBtn" onclick="handlePptxToPdf()">Convert to PDF</button>
+                    </div>
+                    <div id="pptxToPdfResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Image to PDF -->
+            <section class="tool-section" id="image-to-pdf" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert Images to PDF</h2><p>Merge PNG, JPG, JPEG, BMP or GIF images into a single PDF document</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="imageToPdfDz">
+                        <input type="file" id="imageToPdfInput" accept="image/*" multiple hidden>
+                        <h3 class="dropzone-title">Drop images here</h3><p class="dropzone-subtitle">or click to browse (multiple allowed)</p>
+                    </div>
+                    <div id="imageToPdfInfo"></div>
+                    <div id="imageToPdfOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="imageToPdfBtn" onclick="handleImageToPdf()">Convert to PDF</button>
+                    </div>
+                    <div id="imageToPdfResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- HTML to PDF -->
+            <section class="tool-section" id="html-to-pdf" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert HTML to PDF</h2><p>Convert HTML webpage file into professional PDF layout</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="htmlToPdfDz">
+                        <input type="file" id="htmlToPdfInput" accept=".html,.htm" hidden>
+                        <h3 class="dropzone-title">Drop HTML/HTM file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="htmlToPdfInfo"></div>
+                    <div id="htmlToPdfOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="htmlToPdfBtn" onclick="handleHtmlToPdf()">Convert to PDF</button>
+                    </div>
+                    <div id="htmlToPdfResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Text to PDF -->
+            <section class="tool-section" id="text-to-pdf" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert Text to PDF</h2><p>Format plain TXT files into formatted PDF documents</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="textToPdfDz">
+                        <input type="file" id="textToPdfInput" accept=".txt" hidden>
+                        <h3 class="dropzone-title">Drop TXT file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="textToPdfInfo"></div>
+                    <div id="textToPdfOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="textToPdfBtn" onclick="handleTextToPdf()">Convert to PDF</button>
+                    </div>
+                    <div id="textToPdfResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- EPUB to PDF -->
+            <section class="tool-section" id="epub-to-pdf" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert EPUB to PDF</h2><p>Convert reflowable EPUB ebooks into fixed-layout PDF format</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="epubToPdfDz">
+                        <input type="file" id="epubToPdfInput" accept=".epub" hidden>
+                        <h3 class="dropzone-title">Drop EPUB file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="epubToPdfInfo"></div>
+                    <div id="epubToPdfOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="epubToPdfBtn" onclick="handleEpubToPdf()">Convert to PDF</button>
+                    </div>
+                    <div id="epubToPdfResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- ════════ PHASE 3 & 4: PDF EDITING & SECURITY SECTIONS ════════ -->
+
+            <!-- Add Text -->
+            <section class="tool-section" id="add-text-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Add Text Overlay</h2><p>Stamp custom text anywhere on PDF pages</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="addTextDropzone">
+                        <input type="file" id="addTextFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="addTextFileInfo"></div>
+                    <div id="addTextOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group"><label class="form-label">Overlay Text</label><input type="text" id="addTextInput" class="form-input" placeholder="Enter text to overlay"></div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div class="form-group"><label class="form-label">X position (%)</label><input type="number" id="addTextX" class="form-input" value="10"></div>
+                            <div class="form-group"><label class="form-label">Y position (%)</label><input type="number" id="addTextY" class="form-input" value="10"></div>
+                            <div class="form-group"><label class="form-label">Font Size</label><input type="number" id="addTextSize" class="form-input" value="14"></div>
+                            <div class="form-group"><label class="form-label">Color (Hex)</label><input type="color" id="addTextColor" class="form-input" style="height:44px; padding:0" value="#000000"></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Pages (Optional, e.g. 1,2)</label><input type="text" id="addTextPages" class="form-input" placeholder="Leave empty for all pages"></div>
+                        <button class="btn btn-primary" id="addTextBtn" onclick="handleAddText()">Apply Text Overlay</button>
+                    </div>
+                    <div id="addTextResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Add Image Stamp -->
+            <section class="tool-section" id="add-image-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Add Image Stamp</h2><p>Stamp an image (logo, sign, watermark) on PDF pages</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="addImageDropzone">
+                        <input type="file" id="addImageFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="addImageFileInfo"></div>
+                    <div id="addImageOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group"><label class="form-label">Select Stamp Image</label><input type="file" id="addImageInput" class="form-input" accept="image/*"></div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem">
+                            <div class="form-group"><label class="form-label">X (%)</label><input type="number" id="addImageX" class="form-input" value="70"></div>
+                            <div class="form-group"><label class="form-label">Y (%)</label><input type="number" id="addImageY" class="form-input" value="70"></div>
+                            <div class="form-group"><label class="form-label">Width (%)</label><input type="number" id="addImageW" class="form-input" value="20"></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Pages (Optional, e.g. 1)</label><input type="text" id="addImagePages" class="form-input" placeholder="Leave empty for all pages"></div>
+                        <button class="btn btn-primary" id="addImageBtn" onclick="handleAddImage()">Overlay Image Stamp</button>
+                    </div>
+                    <div id="addImageResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Highlight Area -->
+            <section class="tool-section" id="highlight-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Highlight Page Area</h2><p>Draw transparent highlighted bounding boxes</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="highlightDropzone">
+                        <input type="file" id="highlightFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="highlightFileInfo"></div>
+                    <div id="highlightOptions" style="display:none; margin-top:1rem;">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div class="form-group"><label class="form-label">Left X (%)</label><input type="number" id="highlightX" class="form-input" value="10"></div>
+                            <div class="form-group"><label class="form-label">Bottom Y (%)</label><input type="number" id="highlightY" class="form-input" value="40"></div>
+                            <div class="form-group"><label class="form-label">Width (%)</label><input type="number" id="highlightW" class="form-input" value="80"></div>
+                            <div class="form-group"><label class="form-label">Height (%)</label><input type="number" id="highlightH" class="form-input" value="10"></div>
+                            <div class="form-group"><label class="form-label">Highlight Color</label><input type="color" id="highlightColor" class="form-input" style="height:44px; padding:0" value="#FFFF00"></div>
+                            <div class="form-group"><label class="form-label">Opacity (0.1 - 1.0)</label><input type="number" id="highlightOpacity" class="form-input" step="0.1" value="0.4"></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Pages (Optional, e.g. 1)</label><input type="text" id="highlightPages" class="form-input"></div>
+                        <button class="btn btn-primary" id="highlightBtn" onclick="handleHighlight()">Highlight Area</button>
+                    </div>
+                    <div id="highlightResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Header & Footer -->
+            <section class="tool-section" id="hf-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Headers & Footers</h2><p>Stamp consistent text headers/footers to all pages</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="hfDropzone">
+                        <input type="file" id="hfFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="hfFileInfo"></div>
+                    <div id="hfOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group"><label class="form-label">Header Text</label><input type="text" id="hfHeader" class="form-input" placeholder="Document title, chapter, etc."></div>
+                        <div class="form-group"><label class="form-label">Footer Text</label><input type="text" id="hfFooter" class="form-input" placeholder="Copyright details, custom text, etc."></div>
+                        <div class="form-group"><label class="form-label">Font Size</label><input type="number" id="hfSize" class="form-input" value="10"></div>
+                        <button class="btn btn-primary" id="hfBtn" onclick="handleHeaderFooter()">Apply Header/Footer</button>
+                    </div>
+                    <div id="hfResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Page Numbers -->
+            <section class="tool-section" id="pnum-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Add Page Numbers</h2><p>Automatically stamp page counts on all pages</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="pnumDropzone">
+                        <input type="file" id="pnumFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="pnumFileInfo"></div>
+                    <div id="pnumOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Position Alignment</label>
+                            <select id="pnumPos" class="form-select">
+                                <option value="bottom-center">Bottom Center</option>
+                                <option value="bottom-right">Bottom Right</option>
+                                <option value="top-center">Top Center</option>
+                                <option value="top-right">Top Right</option>
+                            </select>
+                        </div>
+                        <div class="form-group"><label class="form-label">Font Size</label><input type="number" id="pnumSize" class="form-input" value="10"></div>
+                        <div class="form-group"><label class="form-label">Start Counting from Page</label><input type="number" id="pnumStart" class="form-input" value="1"></div>
+                        <button class="btn btn-primary" id="pnumBtn" onclick="handlePageNumbers()">Stamp Page Numbers</button>
+                    </div>
+                    <div id="pnumResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Lock PDF -->
+            <section class="tool-section" id="lock-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Password Lock PDF</h2><p>Encrypt PDF using AES-256 password protection</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="lockDropzone">
+                        <input type="file" id="lockFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="lockFileInfo"></div>
+                    <div id="lockOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group"><label class="form-label">Enter Lock Password</label><input type="password" id="lockPassword" class="form-input" placeholder="Create strong password"></div>
+                        <button class="btn btn-primary" id="lockBtn" onclick="handleLockPdf()">Lock PDF</button>
+                    </div>
+                    <div id="lockResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Unlock PDF -->
+            <section class="tool-section" id="unlock-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Password Unlock PDF</h2><p>Remove passwords and decryption locks from PDF</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="unlockDropzone">
+                        <input type="file" id="unlockFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop locked PDF here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="unlockFileInfo"></div>
+                    <div id="unlockOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group"><label class="form-label">Enter PDF Password</label><input type="password" id="unlockPassword" class="form-input" placeholder="Enter password to decrypt"></div>
+                        <button class="btn btn-primary" id="unlockBtn" onclick="handleUnlockPdf()">Unlock PDF</button>
+                    </div>
+                    <div id="unlockResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Watermark -->
+            <section class="tool-section" id="watermark-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Watermark PDF</h2><p>Apply a diagonal transparent text watermark across pages</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="watermarkDropzone">
+                        <input type="file" id="watermarkFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="watermarkFileInfo"></div>
+                    <div id="watermarkOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group"><label class="form-label">Watermark Text</label><input type="text" id="watermarkText" class="form-input" value="CONFIDENTIAL"></div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div class="form-group"><label class="form-label">Opacity (0.0 - 1.0)</label><input type="number" id="watermarkOpacity" class="form-input" step="0.05" value="0.15"></div>
+                            <div class="form-group"><label class="form-label">Font Size</label><input type="number" id="watermarkSize" class="form-input" value="48"></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Color (Hex)</label><input type="color" id="watermarkColor" class="form-input" style="height:44px; padding:0" value="#888888"></div>
+                        <button class="btn btn-primary" id="watermarkBtn" onclick="handleWatermark()">Apply Watermark</button>
+                    </div>
+                    <div id="watermarkResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Flatten PDF -->
+            <section class="tool-section" id="flatten-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Flatten PDF</h2><p>Bake form inputs and annotations directly into the document layer</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="flattenDropzone">
+                        <input type="file" id="flattenFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="flattenFileInfo"></div>
+                    <div id="flattenOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="flattenBtn" onclick="handleFlatten()">Flatten PDF</button>
+                    </div>
+                    <div id="flattenResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Remove Metadata -->
+            <section class="tool-section" id="meta-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Strip PDF Metadata</h2><p>Remove author details, created date and other private tag items</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="metaDropzone">
+                        <input type="file" id="metaFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="metaFileInfo"></div>
+                    <div id="metaOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="metaBtn" onclick="handleRemoveMeta()">Strip Metadata</button>
+                    </div>
+                    <div id="metaResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Digital Stamp -->
+            <section class="tool-section" id="sign-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Add Digital Stamp</h2><p>Stamp a visual confirmation and date sign box</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="signDropzone">
+                        <input type="file" id="signFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="signFileInfo"></div>
+                    <div id="signOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group"><label class="form-label">Signer Name</label><input type="text" id="signSigner" class="form-input" placeholder="e.g. John Doe"></div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div class="form-group"><label class="form-label">Date (Optional)</label><input type="date" id="signDate" class="form-input"></div>
+                            <div class="form-group"><label class="form-label">Target Page Number</label><input type="number" id="signPage" class="form-input" value="1"></div>
+                        </div>
+                        <button class="btn btn-primary" id="signBtn" onclick="handleSign()">Add Stamp</button>
+                    </div>
+                    <div id="signResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Redaction -->
+            <section class="tool-section" id="redact-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Redact PDF Area</h2><p>Black-out a region on your PDF pages securely</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="redactDropzone">
+                        <input type="file" id="redactFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="redactFileInfo"></div>
+                    <div id="redactOptions" style="display:none; margin-top:1rem;">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div class="form-group"><label class="form-label">Left X (%)</label><input type="number" id="redactX" class="form-input" value="10"></div>
+                            <div class="form-group"><label class="form-label">Bottom Y (%)</label><input type="number" id="redactY" class="form-input" value="40"></div>
+                            <div class="form-group"><label class="form-label">Width (%)</label><input type="number" id="redactW" class="form-input" value="30"></div>
+                            <div class="form-group"><label class="form-label">Height (%)</label><input type="number" id="redactH" class="form-input" value="5"></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Pages (Optional, e.g. 1)</label><input type="text" id="redactPages" class="form-input"></div>
+                        <button class="btn btn-primary" id="redactBtn" onclick="handleRedact()">Redact Area</button>
+                    </div>
+                    <div id="redactResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Whiteout PDF -->
+            <section class="tool-section" id="whiteout-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Whiteout PDF Area</h2><p>Erase a region on your PDF pages by overlaying a white box</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="whiteoutDropzone">
+                        <input type="file" id="whiteoutFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="whiteoutFileInfo"></div>
+                    <div id="whiteoutOptions" style="display:none; margin-top:1rem;">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div class="form-group"><label class="form-label">Left X (%)</label><input type="number" id="whiteoutX" class="form-input" value="10"></div>
+                            <div class="form-group"><label class="form-label">Top Y (%)</label><input type="number" id="whiteoutY" class="form-input" value="40"></div>
+                            <div class="form-group"><label class="form-label">Width (%)</label><input type="number" id="whiteoutW" class="form-input" value="30"></div>
+                            <div class="form-group"><label class="form-label">Height (%)</label><input type="number" id="whiteoutH" class="form-input" value="10"></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Pages (Optional, e.g. 1)</label><input type="text" id="whiteoutPages" class="form-input"></div>
+                        <button class="btn btn-primary" id="whiteoutBtn" onclick="handleWhiteout()">Whiteout Area</button>
+                    </div>
+                    <div id="whiteoutResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Edit PDF Text -->
+            <section class="tool-section" id="edit-pdf-text" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Edit PDF Text</h2><p>Click on existing text to modify it, or click anywhere to insert new text runs</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <!-- Upload Dropzone -->
+                    <div class="dropzone" id="editPdfTextDz">
+                        <input type="file" id="editPdfTextFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="editPdfTextFileInfo"></div>
+
+                    <!-- Editor Workspace (Hidden until file selected) -->
+                    <div id="editPdfTextWorkspace" style="display:none; margin-top:1.5rem;">
+                        <div class="disclaimer-note" style="background:#FFFBEB; border-left:4px solid #F59E0B; padding:0.75rem 1rem; margin-bottom:1rem; border-radius:4px; font-size:13px; color:#B45309;">
+                            ℹ️ <strong>Note:</strong> Editing existing text works reliably on digital/text-based PDFs, but is not supported on scanned or image-only documents. If your document is scanned, please run the <strong>OCR Tool</strong> first.
+                        </div>
+
+                        <!-- Editor Toolbar -->
+                        <div class="editor-toolbar" style="background:#F9FAFB; border:1px solid #E5E7EB; border-radius:8px; padding:0.75rem; margin-bottom:1.5rem; display:flex; flex-wrap:wrap; gap:0.75rem; align-items:center;">
+                            <!-- Interaction Mode -->
+                            <div class="btn-group" style="display:inline-flex; gap:2px; background:#E5E7EB; padding:2px; border-radius:6px;">
+                                <button type="button" class="btn btn-sm btn-light active" id="editPdfTextModeEdit" onclick="setEditMode('edit')" style="padding:6px 12px; font-size:13px;">✏️ Edit Text</button>
+                                <button type="button" class="btn btn-sm btn-light" id="editPdfTextModeAdd" onclick="setEditMode('add')" style="padding:6px 12px; font-size:13px;">➕ Add Text</button>
+                            </div>
+
+                            <div style="height:24px; width:1px; background:#E5E7EB;"></div>
+
+                            <!-- Formatting Controls (active when a text box is selected) -->
+                            <div id="editPdfTextFormattingToolbar" style="display:inline-flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+                                <select id="editPdfTextFontFamily" class="form-select font-selector" style="width:130px; padding:4px 8px; font-size:13px; height:32px;">
+                                    <option value="Helvetica" style="font-family:Helvetica, Arial, sans-serif;">Helvetica</option>
+                                    <option value="Times New Roman" style="font-family:'Times New Roman', Times, serif;">Times Roman</option>
+                                    <option value="Courier" style="font-family:Courier, monospace;">Courier</option>
+                                </select>
+
+                                <input type="number" id="editPdfTextFontSize" class="form-input" min="6" max="72" value="12" style="width:60px; padding:4px; font-size:13px; text-align:center; height:32px;">
+
+                                <div class="btn-group" style="display:inline-flex; gap:2px;">
+                                    <button type="button" class="btn btn-sm btn-light" id="editPdfTextBoldBtn" onclick="toggleStyle('bold')" style="width:32px; height:32px; padding:0; font-weight:bold;">B</button>
+                                    <button type="button" class="btn btn-sm btn-light" id="editPdfTextItalicBtn" onclick="toggleStyle('italic')" style="width:32px; height:32px; padding:0; font-style:italic;">I</button>
+                                </div>
+
+                                <input type="color" id="editPdfTextColor" value="#000000" style="width:36px; height:32px; padding:2px; border:1px solid #D1D5DB; border-radius:4px; cursor:pointer;">
+
+                                <select id="editPdfTextAlign" class="form-select" style="width:90px; padding:4px 8px; font-size:13px; height:32px;">
+                                    <option value="left">Left</option>
+                                    <option value="center">Center</option>
+                                    <option value="right">Right</option>
+                                </select>
+                            </div>
+
+                            <div style="height:24px; width:1px; background:#E5E7EB; margin-left:auto;"></div>
+
+                            <!-- Page Navigation -->
+                            <div class="page-nav" style="display:flex; align-items:center; gap:0.5rem; margin-left:auto;">
+                                <button type="button" class="btn btn-sm btn-light" id="editPdfTextPrevPage" onclick="prevEditPage()" style="padding:4px 8px;">◀</button>
+                                <span style="font-size:13px; min-width:80px; text-align:center;">Page <strong id="editPdfTextPageNum">1</strong> of <strong id="editPdfTextPageCount">1</strong></span>
+                                <button type="button" class="btn btn-sm btn-light" id="editPdfTextNextPage" onclick="nextEditPage()" style="padding:4px 8px;">▶</button>
+                            </div>
+
+                            <div style="height:24px; width:1px; background:#E5E7EB;"></div>
+
+                            <!-- Undo & Reset -->
+                            <div class="btn-group" style="display:inline-flex; gap:0.5rem;">
+                                <button type="button" class="btn btn-sm btn-light" id="editPdfTextUndoBtn" onclick="undoLastEdit()" title="Undo last change">↩️ Undo</button>
+                                <button type="button" class="btn btn-sm btn-light" id="editPdfTextResetBtn" onclick="resetAllEdits()" title="Reset all changes">🔄 Reset</button>
+                            </div>
+
+                            <!-- Apply changes -->
+                            <button type="button" class="btn btn-sm btn-primary" id="editPdfTextApplyBtn" onclick="applyPdfTextEdits()">Apply Changes</button>
+                        </div>
+
+                        <!-- Main Canvas / Workspace -->
+                        <div id="editPdfTextWorkArea" style="position:relative; width:100%; min-height:500px; background:#4B5563; border-radius:8px; display:flex; justify-content:center; padding:1.5rem; overflow:auto; max-height:80vh; border:1px solid #E5E7EB; box-shadow:inset 0 4px 6px -1px rgba(0,0,0,0.1);">
+                            <div id="editPdfTextPageWrapper" style="position:relative; background:#FFFFFF; box-shadow:0 10px 15px -3px rgba(0, 0, 0, 0.3);">
+                                <canvas id="editPdfTextCanvas" style="display:block;"></canvas>
+                                <!-- Interactive Editing Layer -->
+                                <div id="editPdfTextOverlay" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:auto;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Result Panel -->
+                    <div id="editPdfTextResult" style="display:none; margin-top:1.5rem;"></div>
+                </div>
+            </section>
+
+            <!-- ════════ PHASE 5: ADVANCED OCR SECTIONS ════════ -->
+
+            <!-- Handwriting OCR -->
+            <section class="tool-section" id="hw-ocr-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Handwriting Transcription</h2><p>Transcribe handwritten document pages into digital text via Gemini</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="hwDropzone">
+                        <input type="file" id="hwFileInput" accept="image/*" hidden>
+                        <h3 class="dropzone-title">Drop handwriting image here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="hwFileInfo"></div>
+                    <div id="hwOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="hwBtn" onclick="handleHandwriting()">Transcribe Handwriting</button>
+                    </div>
+                    <div id="hwResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Extract Tables OCR -->
+            <section class="tool-section" id="tables-ocr-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Extract PDF Tables</h2><p>Extract all tabular matrices into structured JSON representations</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="tablesDropzone">
+                        <input type="file" id="tablesFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="tablesFileInfo"></div>
+                    <div id="tablesOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="tablesBtn" onclick="handleExtractTables()">Extract Tables</button>
+                    </div>
+                    <div id="tablesResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Extract Images OCR -->
+            <section class="tool-section" id="images-ocr-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Extract PDF Images</h2><p>Extract all embedded high-res images from PDF document pages</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="imagesDropzone">
+                        <input type="file" id="imagesFileInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="imagesFileInfo"></div>
+                    <div id="imagesOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="imagesBtn" onclick="handleExtractImages()">Extract Embedded Images</button>
+                    </div>
+                    <div id="imagesResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Multilingual OCR -->
+            <section class="tool-section" id="ml-ocr-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Multilingual OCR</h2><p>Extract text from images in multiple foreign languages</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="mlDropzone">
+                        <input type="file" id="mlFileInput" accept="image/*,.pdf" hidden>
+                        <h3 class="dropzone-title">Drop file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="mlFileInfo"></div>
+                    <div id="mlOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Tesseract Language Code</label>
+                            <select id="mlLang" class="form-select">
+                                <option value="eng">English (eng)</option>
+                                <option value="hin">Hindi (hin)</option>
+                                <option value="fra">French (fra)</option>
+                                <option value="deu">German (deu)</option>
+                                <option value="spa">Spanish (spa)</option>
+                                <option value="chi_sim">Chinese Simplified (chi_sim)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" id="mlBtn" onclick="handleMultilangOcr()">Run Multi-Language OCR</button>
+                    </div>
+                    <div id="mlResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- ════════ PHASE 6: AI ENGINES SECTIONS ════════ -->
+
+            <!-- Explain PDF -->
+            <section class="tool-section" id="explain-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Explain PDF Concept</h2><p>AI-driven simplified concepts explanation</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="explainDz">
+                        <input type="file" id="explainInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="explainFileInfo"></div>
+                    <div id="explainOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="explainBtn" onclick="handleExplain()">Explain Document</button>
+                    </div>
+                    <div id="explainResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Extract Keywords -->
+            <section class="tool-section" id="keywords-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Extract Keywords</h2><p>Automatically index key concepts and definitions</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="keywordsDz">
+                        <input type="file" id="keywordsInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="keywordsFileInfo"></div>
+                    <div id="keywordsOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-primary" id="keywordsBtn" onclick="handleKeywords()">Index Keywords</button>
+                    </div>
+                    <div id="keywordsResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Generate Quiz -->
+            <section class="tool-section" id="quiz-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Generate True/False Quiz</h2><p>Generate learning validation questions</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="quizDz">
+                        <input type="file" id="quizInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="quizFileInfo"></div>
+                    <div id="quizOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group"><label class="form-label">Number of questions</label><input type="number" id="quizCount" class="form-input" value="10"></div>
+                        <button class="btn btn-primary" id="quizBtn" onclick="handleQuiz()">Generate Quiz</button>
+                    </div>
+                    <div id="quizResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Generate MCQ -->
+            <section class="tool-section" id="mcq-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Generate MCQs</h2><p>Create multiple-choice study assessments</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="mcqDz">
+                        <input type="file" id="mcqInput" accept=".pdf" hidden>
+                        <h3 class="dropzone-title">Drop PDF file here</h3><p class="dropzone-subtitle">or click to browse</p>
+                    </div>
+                    <div id="mcqFileInfo"></div>
+                    <div id="mcqOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group"><label class="form-label">Number of questions</label><input type="number" id="mcqCount" class="form-input" value="10"></div>
+                        <button class="btn btn-primary" id="mcqBtn" onclick="handleMcq()">Generate MCQs</button>
+                    </div>
+                    <div id="mcqResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Grammar Checker -->
+            <section class="tool-section" id="grammar-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>AI Grammar Check</h2><p>Check document or custom text syntax and spellings</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="form-group"><label class="form-label">Enter raw text directly</label><textarea id="grammarText" class="form-input" rows="4" placeholder="Or upload a PDF document below..."></textarea></div>
+                    <div class="dropzone" id="grammarFileDz"><input type="file" id="grammarFile" accept=".pdf" hidden><h3 class="dropzone-title">Or upload PDF</h3></div>
+                    <div id="grammarFileInfo"></div>
+                    <div id="grammarFileOpt" style="margin-top:1rem;"><button class="btn btn-primary" id="grammarBtn" onclick="handleGrammarCheck()">Check Grammar</button></div>
+                    <div id="grammarResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Improve Writing -->
+            <section class="tool-section" id="improve-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Improve Writing Quality</h2><p>Make content sound highly professional</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="form-group"><label class="form-label">Enter text directly</label><textarea id="improveText" class="form-input" rows="4"></textarea></div>
+                    <div class="dropzone" id="improveFileDz"><input type="file" id="improveFile" accept=".pdf" hidden><h3 class="dropzone-title">Or upload PDF</h3></div>
+                    <div id="improveFileInfo"></div>
+                    <div id="improveFileOpt" style="margin-top:1rem;"><button class="btn btn-primary" id="improveBtn" onclick="handleImproveWriting()">Improve Writing</button></div>
+                    <div id="improveResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Proofread -->
+            <section class="tool-section" id="proofread-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Proofread</h2><p>Comprehensive vocabulary and syntax corrections list</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="form-group"><label class="form-label">Text to proofread</label><textarea id="proofreadText" class="form-input" rows="4"></textarea></div>
+                    <div class="dropzone" id="proofreadFileDz"><input type="file" id="proofreadFile" accept=".pdf" hidden><h3 class="dropzone-title">Or upload PDF</h3></div>
+                    <div id="proofreadFileInfo"></div>
+                    <div id="proofreadFileOpt" style="margin-top:1rem;"><button class="btn btn-primary" id="proofreadResultBtn" onclick="handleProofread()">Proofread</button></div>
+                    <div id="proofreadResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Translate -->
+            <section class="tool-section" id="translate-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Translate Document</h2><p>Translate content into 30+ foreign languages</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="form-group"><label class="form-label">Text to translate</label><textarea id="translateText" class="form-input" rows="4"></textarea></div>
+                    <div class="dropzone" id="translateFileDz"><input type="file" id="translateFile" accept=".pdf" hidden><h3 class="dropzone-title">Or upload PDF</h3></div>
+                    <div id="translateFileInfo"></div>
+                    <div id="translateFileOpt" style="margin-top:1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Target Language</label>
+                            <select id="translateLang" class="form-select">
+                                <option value="Spanish">Spanish</option><option value="French">French</option><option value="German">German</option><option value="Hindi">Hindi</option><option value="Chinese">Chinese</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" id="translateBtn" onclick="handleTranslate()">Translate</button>
+                    </div>
+                    <div id="translateResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Rewrite -->
+            <section class="tool-section" id="rewrite-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Rewrite Content</h2><p>Re-phrase or re-arrange writing styles</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="form-group"><label class="form-label">Text to rewrite</label><textarea id="rewriteText" class="form-input" rows="4"></textarea></div>
+                    <div class="dropzone" id="rewriteFileDz"><input type="file" id="rewriteFile" accept=".pdf" hidden><h3 class="dropzone-title">Or upload PDF</h3></div>
+                    <div id="rewriteFileInfo"></div>
+                    <div id="rewriteFileOpt" style="margin-top:1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Style Style</label>
+                            <select id="rewriteStyle" class="form-select">
+                                <option value="formal">Formal & Academic</option><option value="casual">Casual & Friendly</option><option value="marketing">Sales & Marketing copy</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" id="rewriteBtn" onclick="handleRewrite()">Rewrite</button>
+                    </div>
+                    <div id="rewriteResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Change Tone -->
+            <section class="tool-section" id="tone-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Change Tone</h2><p>Shift writing expression to sound Assertive, Empathetic, etc.</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="form-group"><label class="form-label">Text</label><textarea id="toneText" class="form-input" rows="4"></textarea></div>
+                    <div class="dropzone" id="toneFileDz"><input type="file" id="toneFile" accept=".pdf" hidden><h3 class="dropzone-title">Or upload PDF</h3></div>
+                    <div id="toneFileInfo"></div>
+                    <div id="toneFileOpt" style="margin-top:1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Choose Tone</label>
+                            <select id="toneSelect" class="form-select">
+                                <option value="professional">Professional</option><option value="friendly">Friendly</option><option value="assertive">Assertive</option><option value="empathetic">Empathetic</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" id="toneBtn" onclick="handleChangeTone()">Apply Tone</button>
+                    </div>
+                    <div id="toneResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Analyze Contract -->
+            <section class="tool-section" id="contract-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Analyze Contracts</h2><p>Extract risks, parties, key commitments and clauses</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="contractDz"><input type="file" id="contractInput" accept=".pdf" hidden><h3 class="dropzone-title">Upload Contract PDF</h3></div>
+                    <div id="contractFileInfo"></div>
+                    <div id="contractOptions" style="display:none; margin-top:1rem;"><button class="btn btn-primary" id="contractBtn" onclick="handleAnalyzeContract()">Analyze Contract</button></div>
+                    <div id="contractResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Read Invoice -->
+            <section class="tool-section" id="invoice-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Invoice OCR Analyzer</h2><p>Extract amounts, vendors, line items and taxes</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="invoiceDz"><input type="file" id="invoiceInput" accept=".pdf" hidden><h3 class="dropzone-title">Upload Invoice PDF</h3></div>
+                    <div id="invoiceFileInfo"></div>
+                    <div id="invoiceOptions" style="display:none; margin-top:1rem;"><button class="btn btn-primary" id="invoiceBtn" onclick="handleReadInvoice()">Read Invoice</button></div>
+                    <div id="invoiceResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Analyze Financials -->
+            <section class="tool-section" id="financial-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Analyze Financial Statements</h2><p>Summarise key ratios, trends and risks</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="financialDz"><input type="file" id="financialInput" accept=".pdf" hidden><h3 class="dropzone-title">Upload Statement PDF</h3></div>
+                    <div id="financialFileInfo"></div>
+                    <div id="financialOptions" style="display:none; margin-top:1rem;"><button class="btn btn-primary" id="financialBtn" onclick="handleAnalyzeFinancial()">Analyze Report</button></div>
+                    <div id="financialResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Review Legal Docs -->
+            <section class="tool-section" id="legal-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Review Legal Document</h2><p>Extract general obligations and issues (Informational purposes only)</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="legalDz"><input type="file" id="legalInput" accept=".pdf" hidden><h3 class="dropzone-title">Upload Legal PDF</h3></div>
+                    <div id="legalFileInfo"></div>
+                    <div id="legalOptions" style="display:none; margin-top:1rem;"><button class="btn btn-primary" id="legalBtn" onclick="handleReviewLegal()">Review Document</button></div>
+                    <div id="legalResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Assignment Helper -->
+            <section class="tool-section" id="assignment-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Assignment Helper</h2><p>Get helper answers and outlines based on PDF content</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="assignmentDz"><input type="file" id="assignmentInput" accept=".pdf" hidden><h3 class="dropzone-title">Upload PDF</h3></div>
+                    <div id="assignmentFileInfo"></div>
+                    <div id="assignmentOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group"><label class="form-label">Assignment Task Description</label><textarea id="assignmentTask" class="form-input" rows="3" placeholder="Explain how to solve..."></textarea></div>
+                        <button class="btn btn-primary" id="assignmentBtn" onclick="handleAssignment()">Get Answers Outline</button>
+                    </div>
+                    <div id="assignmentResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Research Assistant -->
+            <section class="tool-section" id="research-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Research Assistant</h2><p>Assemble thesis models, points lists and references citation lists</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="researchDz"><input type="file" id="researchInput" accept=".pdf" hidden><h3 class="dropzone-title">Upload PDF</h3></div>
+                    <div id="researchFileInfo"></div>
+                    <div id="researchOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group"><label class="form-label">Focus Topic (Optional)</label><input type="text" id="researchTopic" class="form-input"></div>
+                        <button class="btn btn-primary" id="researchBtn" onclick="handleResearch()">Synthesize Outline</button>
+                    </div>
+                    <div id="researchResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Cover Letter -->
+            <section class="tool-section" id="coverletter-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Cover Letter Writer</h2><p>Draft cover letters personalized to job postings and your resume PDF</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="coverLetterDz"><input type="file" id="coverLetterInput" accept=".pdf" hidden><h3 class="dropzone-title">Upload Resume PDF</h3></div>
+                    <div id="coverLetterFileInfo"></div>
+                    <div id="coverLetterOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group"><label class="form-label">Job Description text</label><textarea id="coverLetterJD" class="form-input" rows="3"></textarea></div>
+                        <button class="btn btn-primary" id="coverLetterBtn" onclick="handleCoverLetter()">Write Cover Letter</button>
+                    </div>
+                    <div id="coverLetterResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Interview Questions -->
+            <section class="tool-section" id="interview-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Interview Preparation</h2><p>Predict interview queries tailored to resume accomplishments</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="interviewDz"><input type="file" id="interviewInput" accept=".pdf" hidden><h3 class="dropzone-title">Upload Resume PDF</h3></div>
+                    <div id="interviewFileInfo"></div>
+                    <div id="interviewOptions" style="display:none; margin-top:1rem;"><button class="btn btn-primary" id="interviewBtn" onclick="handleInterview()">Generate Questions</button></div>
+                    <div id="interviewResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- ════════ PHASE 7: IMAGE TOOLS SECTIONS ════════ -->
+
+            <!-- Resize Image -->
+            <section class="tool-section" id="resize-img-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Resize Image Dimensions</h2><p>Change pixel bounds</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="resizeImgDz"><input type="file" id="resizeImgInput" accept="image/*" hidden><h3 class="dropzone-title">Upload Image</h3></div>
+                    <div id="resizeImgFileInfo"></div>
+                    <div id="resizeImgOptions" style="display:none; margin-top:1rem;">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div class="form-group"><label class="form-label">Width (px)</label><input type="number" id="resizeImgW" class="form-input" value="800"></div>
+                            <div class="form-group"><label class="form-label">Height (px)</label><input type="number" id="resizeImgH" class="form-input" value="600"></div>
+                        </div>
+                        <div class="form-group"><label style="display:flex; align-items:center; gap:8px"><input type="checkbox" id="resizeImgRatio" checked> Keep Aspect Ratio</label></div>
+                        <button class="btn btn-primary" id="resizeImgBtn" onclick="handleResizeImg()">Resize Image</button>
+                    </div>
+                    <div id="resizeImgResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Convert Format -->
+            <section class="tool-section" id="convert-img-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert Image Format</h2><p>Convert format between PNG, JPG, WebP, BMP, GIF, TIFF</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="convertImgDz"><input type="file" id="convertImgInput" accept="image/*" hidden><h3 class="dropzone-title">Upload Image</h3></div>
+                    <div id="convertImgFileInfo"></div>
+                    <div id="convertImgOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Target Format</label>
+                            <select id="convertImgFmt" class="form-select">
+                                <option value="png">PNG</option><option value="jpg">JPG (JPEG)</option><option value="webp">WebP</option><option value="bmp">BMP</option><option value="gif">GIF</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" id="convertImgBtn" onclick="handleConvertImg()">Convert Image</button>
+                    </div>
+                    <div id="convertImgResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Apply Filters -->
+            <section class="tool-section" id="filter-img-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Apply Filters</h2><p>Grayscale, Sepia, Blur, Brighten/Contrast adjust, etc.</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="filterImgDz"><input type="file" id="filterImgInput" accept="image/*" hidden><h3 class="dropzone-title">Upload Image</h3></div>
+                    <div id="filterImgFileInfo"></div>
+                    <div id="filterImgOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Select Effect</label>
+                            <select id="filterImgSelect" class="form-select">
+                                <option value="grayscale">Grayscale</option><option value="sepia">Sepia Tone</option><option value="blur">Soft Blur</option><option value="sharpen">Sharpen Details</option><option value="invert">Invert Colors</option><option value="brightness+">Brighten (+50%)</option><option value="contrast+">Increase Contrast</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" id="filterImgBtn" onclick="handleFilterImg()">Apply Filter</button>
+                    </div>
+                    <div id="filterImgResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Remove Background -->
+            <section class="tool-section" id="nobg-img-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Remove Image Background</h2><p>AI Background extraction tool (transparent alpha)</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="nobgImgDz"><input type="file" id="nobgImgInput" accept="image/*" hidden><h3 class="dropzone-title">Upload Image</h3></div>
+                    <div id="nobgImgFileInfo"></div>
+                    <div id="nobgImgOptions" style="display:none; margin-top:1rem;"><button class="btn btn-primary" id="nobgImgBtn" onclick="handleNoBgImg()">Remove Background</button></div>
+                    <div id="nobgImgResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Crop Image -->
+            <section class="tool-section" id="crop-img-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Crop Image</h2><p>Trim border dimensions of pixel arrays</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="cropImgDz"><input type="file" id="cropImgInput" accept="image/*" hidden><h3 class="dropzone-title">Upload Image</h3></div>
+                    <div id="cropImgFileInfo"></div>
+                    <div id="cropImgOptions" style="display:none; margin-top:1rem;">
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem">
+                            <div class="form-group"><label class="form-label">Left X (px)</label><input type="number" id="cropImgL" class="form-input" value="0"></div>
+                            <div class="form-group"><label class="form-label">Top Y (px)</label><input type="number" id="cropImgT" class="form-input" value="0"></div>
+                            <div class="form-group"><label class="form-label">Right X (px)</label><input type="number" id="cropImgR" class="form-input" value="800"></div>
+                            <div class="form-group"><label class="form-label">Bottom Y (px)</label><input type="number" id="cropImgB" class="form-input" value="600"></div>
+                        </div>
+                        <button class="btn btn-primary" id="cropImgBtn" onclick="handleCropImg()">Crop Image</button>
+                    </div>
+                    <div id="cropImgResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Rotate Image -->
+            <section class="tool-section" id="rotate-img-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Rotate Image</h2><p>Rotate image clockwise</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="rotateImgDz"><input type="file" id="rotateImgInput" accept="image/*" hidden><h3 class="dropzone-title">Upload Image</h3></div>
+                    <div id="rotateImgFileInfo"></div>
+                    <div id="rotateImgOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Angle</label>
+                            <select id="rotateImgAngle" class="form-select">
+                                <option value="90">90° Clockwise</option><option value="180">180°</option><option value="270">270° (90° CCW)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" id="rotateImgBtn" onclick="handleRotateImg()">Rotate Image</button>
+                    </div>
+                    <div id="rotateImgResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Flip Image -->
+            <section class="tool-section" id="flip-img-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Flip Image</h2><p>Reflect image mirrors</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="flipImgDz"><input type="file" id="flipImgInput" accept="image/*" hidden><h3 class="dropzone-title">Upload Image</h3></div>
+                    <div id="flipImgFileInfo"></div>
+                    <div id="flipImgOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Direction</label>
+                            <select id="flipImgDir" class="form-select"><option value="h">Horizontal Flip</option><option value="v">Vertical Flip</option></select>
+                        </div>
+                        <button class="btn btn-primary" id="flipImgBtn" onclick="handleFlipImg()">Flip Image</button>
+                    </div>
+                    <div id="flipImgResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Image Watermark -->
+            <section class="tool-section" id="wm-img-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Add Image Watermark</h2><p>Overlay a text watermark onto an image</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="wmImgDz"><input type="file" id="wmImgInput" accept="image/*" hidden><h3 class="dropzone-title">Upload Image</h3></div>
+                    <div id="wmImgFileInfo"></div>
+                    <div id="wmImgOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group"><label class="form-label">Watermark Text</label><input type="text" id="wmImgText" class="form-input" value="COPYRIGHT"></div>
+                        <div class="form-group"><label class="form-label">Opacity (0 - 255)</label><input type="number" id="wmImgOpacity" class="form-input" min="0" max="255" value="80"></div>
+                        <button class="btn btn-primary" id="wmImgBtn" onclick="handleWatermarkImg()">Add Watermark</button>
+                    </div>
+                    <div id="wmImgResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Image Thumbnail -->
+            <section class="tool-section" id="thumbnail-img-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Create Image Thumbnail</h2><p>Generate a smaller preview of your image</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="thumbImgDz"><input type="file" id="thumbImgInput" accept="image/*" hidden><h3 class="dropzone-title">Upload Image</h3></div>
+                    <div id="thumbImgFileInfo"></div>
+                    <div id="thumbImgOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group"><label class="form-label">Thumbnail Size (px)</label><input type="number" id="thumbImgSize" class="form-input" min="50" max="1000" value="200"></div>
+                        <button class="btn btn-primary" id="thumbImgBtn" onclick="handleThumbnailImg()">Create Thumbnail</button>
+                    </div>
+                    <div id="thumbImgResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Upscale Image -->
+            <section class="tool-section" id="upscale-img-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Upscale Image</h2><p>Enlarge your image dimensions (2x, 3x, 4x)</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="upscaleImgDz"><input type="file" id="upscaleImgInput" accept="image/*" hidden><h3 class="dropzone-title">Upload Image</h3></div>
+                    <div id="upscaleImgFileInfo"></div>
+                    <div id="upscaleImgOptions" style="display:none; margin-top:1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Scale Factor</label>
+                            <select id="upscaleImgScale" class="form-select">
+                                <option value="2">2x</option>
+                                <option value="3">3x</option>
+                                <option value="4">4x</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" id="upscaleImgBtn" onclick="handleUpscaleImg()">Upscale Image</button>
+                    </div>
+                    <div id="upscaleImgResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- ════════ PHASE 8: UTILITIES SECTIONS ════════ -->
+
+            <!-- QR Code Generator -->
+            <section class="tool-section" id="qr-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>QR Code Generator</h2><p>Convert text, phone numbers or links to QR codes</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="form-group"><label class="form-label">Enter QR Data</label><input type="text" id="qrData" class="form-input" placeholder="e.g. https://google.com"></div>
+                    <div class="form-group"><label class="form-label">QR size (px)</label><input type="number" id="qrSize" class="form-input" value="300"></div>
+                    <button class="btn btn-primary" id="qrBtn" onclick="handleGenerateQr()">Generate QR Code</button>
+                    <div id="qrResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Barcode Generator -->
+            <section class="tool-section" id="barcode-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Barcode Generator</h2><p>Generate Standard UPC/EAN or code128 barcodes</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="form-group"><label class="form-label">Barcode alphanumeric data</label><input type="text" id="bcData" class="form-input" placeholder="e.g. 123456789"></div>
+                    <div class="form-group">
+                        <label class="form-label">Barcode Standard Type</label>
+                        <select id="bcType" class="form-select">
+                            <option value="code128">Code 128 (Alphanumeric)</option><option value="ean13">EAN-13 (Numeric only)</option><option value="ean8">EAN-8 (Numeric only)</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="bcBtn" onclick="handleGenerateBarcode()">Generate Barcode</button>
+                    <div id="bcResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- PDF Metadata Edit -->
+            <section class="tool-section" id="meta-view-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Edit PDF Metadata tags</h2><p>Read or set Document title, author and keyword values</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="dropzone" id="metaViewDropzone"><input type="file" id="metaViewFileInput" accept=".pdf" hidden><h3 class="dropzone-title">Upload PDF</h3></div>
+                    <div id="metaViewFileInfo"></div>
+                    <div id="metaViewOptions" style="display:none; margin-top:1rem;">
+                        <button class="btn btn-secondary" id="metaViewBtn" onclick="handleViewMetadata()" style="margin-bottom:1rem">Read Existing Tags</button>
+                        <hr style="margin: 1rem 0; border:0; border-top:1px solid #ccc">
+                        <div class="form-group"><label class="form-label">Document Title</label><input type="text" id="metaTitle" class="form-input"></div>
+                        <div class="form-group"><label class="form-label">Author Name</label><input type="text" id="metaAuthor" class="form-input"></div>
+                        <div class="form-group"><label class="form-label">Subject</label><input type="text" id="metaSubject" class="form-input"></div>
+                        <div class="form-group"><label class="form-label">Keywords List</label><input type="text" id="metaKeywords" class="form-input"></div>
+                        <button class="btn btn-primary" id="metaViewSetBtn" onclick="handleSetMetadata()">Update Metadata Tags</button>
+                    </div>
+                    <div id="metaViewResult" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- Password Generator -->
+            <section class="tool-section" id="pass-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Password Generator</h2><p>Generate highly secure random passwords</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="form-group"><label class="form-label">Password Length</label><input type="number" id="passLength" class="form-input" value="16"></div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:1rem">
+                        <label style="display:flex; align-items:center; gap:8px"><input type="checkbox" id="passUpper" checked> Uppercase letters</label>
+                        <label style="display:flex; align-items:center; gap:8px"><input type="checkbox" id="passLower" checked> Lowercase letters</label>
+                        <label style="display:flex; align-items:center; gap:8px"><input type="checkbox" id="passDigits" checked> Numbers digits</label>
+                        <label style="display:flex; align-items:center; gap:8px"><input type="checkbox" id="passSpecial" checked> Special characters</label>
+                    </div>
+                    <button class="btn btn-primary" id="passBtn" onclick="handleGeneratePassword()">Generate Secure Password</button>
+                    <div id="passResult" style="display:none; margin-top:1rem;"></div>
+                </div>
+            </section>
+
+            <!-- Web to PDF -->
+            <section class="tool-section" id="web-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Convert Website URL to PDF</h2><p>Bake a clean PDF report version of any public webpage</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div class="form-group"><label class="form-label">Target URL Link</label><input type="url" id="webUrl" class="form-input" placeholder="e.g. https://news.ycombinator.com"></div>
+                    <button class="btn btn-primary" id="webBtn" onclick="handleWebToPdf()">Convert Webpage to PDF</button>
+                    <div id="webResult" style="display:none; margin-top:1rem;"></div>
+                </div>
+            </section>
+
+            <!-- Cloud connect -->
+            <section class="tool-section" id="cloud-tool" style="display:none;">
+                <div class="tool-panel-header">
+                    <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
+                    <div class="tool-panel-title"><h2>Connect Cloud Storage accounts</h2><p>Upload or fetch documents to OneDrive, Dropbox and Google Drive</p></div>
+                </div>
+                <div class="tool-panel-body">
+                    <div style="display:grid; grid-template-columns:1fr; gap:1rem; margin-top:1rem">
+                        <button class="btn btn-secondary" onclick="connectCloud('google')" style="justify-content:center; gap:8px">🤖 Connect Google Drive</button>
+                        <button class="btn btn-secondary" onclick="connectCloud('dropbox')" style="justify-content:center; gap:8px">📦 Connect Dropbox</button>
+                        <button class="btn btn-secondary" onclick="connectCloud('onedrive')" style="justify-content:center; gap:8px">☁️ Connect Microsoft OneDrive</button>
+                    </div>
+                </div>
+            </section>
+
             <!-- ════════ MY FILES ════════ -->
             <section class="tool-section" id="files-section" style="display:none;">
                 <div class="tool-panel-header">
@@ -914,6 +2805,7 @@
     </main>
 </div>
 
+    <script src="js/config.js"></script>
     <script src="js/app.js?v=3.0"></script>
     <script src="js/upload.js?v=3.0"></script>
     <script src="js/pdf-tools.js?v=3.0"></script>
@@ -921,8 +2813,50 @@
     <script src="js/summary.js?v=3.0"></script>
     <script src="js/resume.js?v=3.0"></script>
     <script src="js/flashcards.js?v=3.0"></script>
+    <script src="js/pdf-manage.js?v=1.0"></script>
+    <script src="js/convert.js?v=1.0"></script>
+    <script src="js/pdf-edit.js?v=1.0"></script>
+    <script src="js/pdf-text-editor.js?v=1.0"></script>
+    <script src="js/image-tools.js?v=1.0"></script>
+    <script src="js/utils-tools.js?v=1.0"></script>
+    <script src="js/ai-tools.js?v=1.0"></script>
 
     <script>
+        // Initialize tool-specific scripts if loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Delay or dynamic initialization on load
+            const initializers = [
+                // Phase 1
+                'initOrganize', 'initRotate', 'initDeletePages', 'initExtractPages',
+                'initDuplicatePages', 'initCrop', 'initRearrange',
+                // Phase 2
+                'initPdfToWord', 'initWordToPdf', 'initPdfToExcel', 'initExcelToPdf',
+                'initPdfToPptx', 'initPptxToPdf', 'initPdfToImage', 'initImageToPdf',
+                'initPdfToHtml', 'initHtmlToPdf', 'initPdfToText', 'initTextToPdf',
+                'initPdfToEpub', 'initEpubToPdf',
+                // Phase 3
+                'initAddText', 'initAddImage', 'initHighlight', 'initHeaderFooter', 'initPageNumbers', 'initWhiteout', 'initEditPdfText',
+                // Phase 4
+                'initLockPdf', 'initUnlockPdf', 'initWatermark', 'initFlatten', 'initRemoveMeta',
+                'initSign', 'initRedact',
+                // Phase 5
+                'initHandwriting', 'initExtractTables', 'initExtractImages', 'initMultilangOcr',
+                // Phase 6
+                'initExplainTool', 'initKeywordsTool', 'initQuizTool', 'initMcqTool',
+                'initAssignmentTool', 'initResearchTool', 'initCoverLetterTool', 'initInterviewTool',
+                // Phase 7
+                'initResizeImg', 'initThumbnailImg', 'initConvertImg', 'initFilterImg', 'initNoBgImg',
+                'initUpscaleImg', 'initCropImg', 'initRotateImg', 'initFlipImg', 'initWatermarkImg',
+                // Phase 8
+                'initPdfMeta'
+            ];
+            initializers.forEach(fn => {
+                if (typeof window[fn] === 'function') {
+                    try { window[fn](); } catch(e) { console.error('Failed to init:', fn, e); }
+                }
+            });
+        });
+
         // Load all files for the files section
         async function loadAllFiles() {
             const container = document.getElementById('allFilesList');
@@ -980,5 +2914,6 @@
             observer.observe(filesSectionEl, { attributes: true, attributeFilter: ['class', 'style'] });
         }
     </script>
+    <script src="js/feedback.js"></script>
 </body>
 </html>

@@ -148,3 +148,128 @@ def pdf_ocr():
 
     except Exception as e:
         return jsonify({'error': f'PDF OCR failed: {str(e)}'}), 500
+
+
+# ---------------------------------------------------------------------------
+# Phase 5 — Handwriting OCR (Gemini vision)
+# ---------------------------------------------------------------------------
+
+@ocr_bp.route('/handwriting', methods=['POST'])
+@jwt_required()
+def handwriting():
+    """Transcribe handwritten text from an image using Gemini vision."""
+    try:
+        _ensure_upload_dir()
+        user_id = get_jwt_identity()
+        if 'file' not in request.files:
+            return jsonify({'error': 'No image file provided'}), 400
+        file = request.files['file']
+        if not allowed_file(file.filename, IMAGE_EXTENSIONS):
+            return jsonify({'error': 'Image files only (PNG, JPG, etc.)'}), 400
+
+        from ai_modules.ocr_engine import handwriting_ocr
+        file_info = save_upload(file, UPLOAD_FOLDER)
+        result    = handwriting_ocr(file_info['file_path'])
+        save_history(user_id, '', 'handwriting_ocr', 'success',
+                     {'word_count': result.get('word_count', 0)})
+        return jsonify({'message': 'Handwriting transcribed', 'result': result}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---------------------------------------------------------------------------
+# Phase 5 — Extract Tables from PDF
+# ---------------------------------------------------------------------------
+
+@ocr_bp.route('/extract-tables', methods=['POST'])
+@jwt_required()
+def extract_tables():
+    """Extract all tables from a PDF into a structured JSON response."""
+    try:
+        _ensure_upload_dir()
+        user_id = get_jwt_identity()
+        if 'file' not in request.files:
+            return jsonify({'error': 'No PDF file provided'}), 400
+        file = request.files['file']
+        if not allowed_file(file.filename, {'pdf'}):
+            return jsonify({'error': 'Only PDF files allowed'}), 400
+
+        from ai_modules.ocr_engine import extract_tables_from_pdf
+        file_info = save_upload(file, UPLOAD_FOLDER)
+        tables    = extract_tables_from_pdf(file_info['file_path'])
+        save_history(user_id, '', 'extract_tables', 'success',
+                     {'table_count': len(tables)})
+        return jsonify({'message': f'{len(tables)} table(s) found', 'tables': tables}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# ---------------------------------------------------------------------------
+# Phase 5 — Extract Images from PDF
+# ---------------------------------------------------------------------------
+
+@ocr_bp.route('/extract-images', methods=['POST'])
+@jwt_required()
+def extract_images():
+    """Extract all embedded images from a PDF."""
+    try:
+        _ensure_upload_dir()
+        user_id = get_jwt_identity()
+        if 'file' not in request.files:
+            return jsonify({'error': 'No PDF file provided'}), 400
+        file = request.files['file']
+        if not allowed_file(file.filename, {'pdf'}):
+            return jsonify({'error': 'Only PDF files allowed'}), 400
+
+        from ai_modules.ocr_engine import extract_images_from_pdf
+        file_info = save_upload(file, UPLOAD_FOLDER)
+        images    = extract_images_from_pdf(file_info['file_path'], UPLOAD_FOLDER)
+
+        # Build download URLs
+        for img in images:
+            if 'filename' in img:
+                img['download_url'] = f'/ocr/download/{img["filename"]}'
+
+        save_history(user_id, '', 'extract_images', 'success',
+                     {'image_count': len(images)})
+        return jsonify({'message': f'{len(images)} image(s) extracted', 'images': images}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@ocr_bp.route('/download/<path:filename>')
+@jwt_required()
+def download(filename):
+    from flask import send_from_directory
+    try:
+        return send_from_directory(UPLOAD_FOLDER, filename, as_attachment=True)
+    except FileNotFoundError:
+        return jsonify({'error': 'File not found'}), 404
+
+
+# ---------------------------------------------------------------------------
+# Phase 5 — Multi-language OCR
+# ---------------------------------------------------------------------------
+
+@ocr_bp.route('/multilang-ocr', methods=['POST'])
+@jwt_required()
+def multilang():
+    """Run OCR with a specified language (Tesseract lang code)."""
+    try:
+        _ensure_upload_dir()
+        user_id = get_jwt_identity()
+        if 'file' not in request.files:
+            return jsonify({'error': 'No image file provided'}), 400
+        file = request.files['file']
+        lang = request.form.get('lang', 'eng')
+        if not allowed_file(file.filename, IMAGE_EXTENSIONS | {'pdf'}):
+            return jsonify({'error': 'Image or PDF files only'}), 400
+
+        from ai_modules.ocr_engine import multilang_ocr
+        file_info = save_upload(file, UPLOAD_FOLDER)
+        result    = multilang_ocr(file_info['file_path'], lang=lang)
+        save_history(user_id, '', 'multilang_ocr', 'success',
+                     {'lang': lang, 'word_count': result.get('word_count', 0)})
+        return jsonify({'message': f'OCR complete ({lang})', 'result': result}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500

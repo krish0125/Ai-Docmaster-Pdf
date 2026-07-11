@@ -331,3 +331,351 @@ def chat_history(file_id):
     except Exception as e:
         return jsonify({'error': f'Failed to fetch chat history: {str(e)}'}), 500
 
+
+# ═══════════════════════════════════════════════════════════════════
+# PHASE 6 — AI Tools (writing, QA, quiz, business, student)
+# ═══════════════════════════════════════════════════════════════════
+
+from ai_modules.ai_engines import (
+    explain_pdf, answer_question, extract_keywords,
+    generate_quiz, generate_mcq,
+    check_grammar, improve_writing, translate_text, rewrite_text,
+    change_tone, proofread,
+    analyze_contract, read_invoice, analyze_financial, review_legal,
+    assignment_helper, research_assistant, cite_sources,
+    generate_cover_letter, generate_interview_questions,
+)
+
+
+def _p6_route(action_fn, action_name, extra_args=None):
+    """Shared handler for simple PDF-text → AI-result routes."""
+    try:
+        _ensure_upload_dir()
+        user_id = get_jwt_identity()
+        file    = request.files.get('file')
+        file_id = request.form.get('file_id', '')
+        text, error = _get_pdf_text(file=file, file_id=file_id)
+        if error:
+            return jsonify({'error': error}), 400
+        if not text.strip():
+            return jsonify({'error': 'No text could be extracted from this PDF.'}), 400
+        kwargs = extra_args() if extra_args else {}
+        result = action_fn(text, **kwargs)
+        save_history(user_id, file_id or '', action_name, 'success', {})
+        return jsonify({'message': f'{action_name} complete', 'result': result}), 200
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@ai_bp.route('/explain', methods=['POST'])
+@jwt_required()
+def route_explain():
+    return _p6_route(explain_pdf, 'explain')
+
+
+@ai_bp.route('/answer-question', methods=['POST'])
+@jwt_required()
+def route_answer_question():
+    try:
+        _ensure_upload_dir()
+        user_id  = get_jwt_identity()
+        question = request.form.get('question', '').strip()
+        if not question:
+            return jsonify({'error': 'question is required'}), 400
+        file    = request.files.get('file')
+        file_id = request.form.get('file_id', '')
+        text, error = _get_pdf_text(file=file, file_id=file_id)
+        if error:
+            return jsonify({'error': error}), 400
+        result = answer_question(text, question)
+        save_history(user_id, file_id or '', 'answer_question', 'success', {'q': question[:100]})
+        return jsonify({'message': 'Question answered', 'result': result}), 200
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@ai_bp.route('/keywords', methods=['POST'])
+@jwt_required()
+def route_keywords():
+    return _p6_route(extract_keywords, 'keywords')
+
+
+@ai_bp.route('/quiz', methods=['POST'])
+@jwt_required()
+def route_quiz():
+    return _p6_route(generate_quiz, 'quiz',
+                     extra_args=lambda: {'count': int(request.form.get('count', 10))})
+
+
+@ai_bp.route('/mcq', methods=['POST'])
+@jwt_required()
+def route_mcq():
+    return _p6_route(generate_mcq, 'mcq',
+                     extra_args=lambda: {'count': int(request.form.get('count', 10))})
+
+
+@ai_bp.route('/check-grammar', methods=['POST'])
+@jwt_required()
+def route_check_grammar():
+    try:
+        _ensure_upload_dir()
+        user_id = get_jwt_identity()
+        # Accept either a PDF or raw text
+        raw_text = request.form.get('text', '')
+        if raw_text:
+            text = raw_text
+        else:
+            file    = request.files.get('file')
+            file_id = request.form.get('file_id', '')
+            text, error = _get_pdf_text(file=file, file_id=file_id)
+            if error:
+                return jsonify({'error': error}), 400
+        result = check_grammar(text)
+        save_history(user_id, '', 'check_grammar', 'success', {})
+        return jsonify({'message': 'Grammar checked', 'result': result}), 200
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@ai_bp.route('/improve-writing', methods=['POST'])
+@jwt_required()
+def route_improve_writing():
+    try:
+        _ensure_upload_dir()
+        user_id  = get_jwt_identity()
+        raw_text = request.form.get('text', '')
+        if raw_text:
+            text = raw_text
+        else:
+            file    = request.files.get('file')
+            file_id = request.form.get('file_id', '')
+            text, error = _get_pdf_text(file=file, file_id=file_id)
+            if error:
+                return jsonify({'error': error}), 400
+        result = improve_writing(text)
+        save_history(user_id, '', 'improve_writing', 'success', {})
+        return jsonify({'message': 'Writing improved', 'result': result}), 200
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@ai_bp.route('/translate', methods=['POST'])
+@jwt_required()
+def route_translate():
+    try:
+        _ensure_upload_dir()
+        user_id     = get_jwt_identity()
+        target_lang = request.form.get('lang', 'Spanish')
+        raw_text    = request.form.get('text', '')
+        if raw_text:
+            text = raw_text
+        else:
+            file    = request.files.get('file')
+            file_id = request.form.get('file_id', '')
+            text, error = _get_pdf_text(file=file, file_id=file_id)
+            if error:
+                return jsonify({'error': error}), 400
+        result = translate_text(text, target_lang)
+        save_history(user_id, '', 'translate', 'success', {'lang': target_lang})
+        return jsonify({'message': f'Translated to {target_lang}', 'result': result}), 200
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@ai_bp.route('/rewrite', methods=['POST'])
+@jwt_required()
+def route_rewrite():
+    try:
+        _ensure_upload_dir()
+        user_id  = get_jwt_identity()
+        style    = request.form.get('style', 'formal')
+        raw_text = request.form.get('text', '')
+        if raw_text:
+            text = raw_text
+        else:
+            file    = request.files.get('file')
+            file_id = request.form.get('file_id', '')
+            text, error = _get_pdf_text(file=file, file_id=file_id)
+            if error:
+                return jsonify({'error': error}), 400
+        result = rewrite_text(text, style)
+        save_history(user_id, '', 'rewrite', 'success', {'style': style})
+        return jsonify({'message': 'Rewritten', 'result': result}), 200
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@ai_bp.route('/change-tone', methods=['POST'])
+@jwt_required()
+def route_change_tone():
+    try:
+        _ensure_upload_dir()
+        user_id  = get_jwt_identity()
+        tone     = request.form.get('tone', 'professional')
+        raw_text = request.form.get('text', '')
+        if raw_text:
+            text = raw_text
+        else:
+            file    = request.files.get('file')
+            file_id = request.form.get('file_id', '')
+            text, error = _get_pdf_text(file=file, file_id=file_id)
+            if error:
+                return jsonify({'error': error}), 400
+        result = change_tone(text, tone)
+        save_history(user_id, '', 'change_tone', 'success', {'tone': tone})
+        return jsonify({'message': 'Tone changed', 'result': result}), 200
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@ai_bp.route('/proofread', methods=['POST'])
+@jwt_required()
+def route_proofread():
+    try:
+        _ensure_upload_dir()
+        user_id  = get_jwt_identity()
+        raw_text = request.form.get('text', '')
+        if raw_text:
+            text = raw_text
+        else:
+            file    = request.files.get('file')
+            file_id = request.form.get('file_id', '')
+            text, error = _get_pdf_text(file=file, file_id=file_id)
+            if error:
+                return jsonify({'error': error}), 400
+        result = proofread(text)
+        save_history(user_id, '', 'proofread', 'success', {})
+        return jsonify({'message': 'Proofreading complete', 'result': result}), 200
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@ai_bp.route('/analyze-contract', methods=['POST'])
+@jwt_required()
+def route_analyze_contract():
+    return _p6_route(analyze_contract, 'analyze_contract')
+
+
+@ai_bp.route('/read-invoice', methods=['POST'])
+@jwt_required()
+def route_read_invoice():
+    return _p6_route(read_invoice, 'read_invoice')
+
+
+@ai_bp.route('/analyze-financial', methods=['POST'])
+@jwt_required()
+def route_analyze_financial():
+    return _p6_route(analyze_financial, 'analyze_financial')
+
+
+@ai_bp.route('/review-legal', methods=['POST'])
+@jwt_required()
+def route_review_legal():
+    return _p6_route(review_legal, 'review_legal')
+
+
+@ai_bp.route('/assignment-helper', methods=['POST'])
+@jwt_required()
+def route_assignment_helper():
+    try:
+        _ensure_upload_dir()
+        user_id = get_jwt_identity()
+        task    = request.form.get('task', '').strip()
+        file    = request.files.get('file')
+        file_id = request.form.get('file_id', '')
+        text, error = _get_pdf_text(file=file, file_id=file_id)
+        if error:
+            return jsonify({'error': error}), 400
+        result = assignment_helper(text, task)
+        save_history(user_id, file_id or '', 'assignment_helper', 'success', {'task': task[:100]})
+        return jsonify({'message': 'Assignment help ready', 'result': result}), 200
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@ai_bp.route('/research-assistant', methods=['POST'])
+@jwt_required()
+def route_research_assistant():
+    try:
+        _ensure_upload_dir()
+        user_id = get_jwt_identity()
+        topic   = request.form.get('topic', '')
+        file    = request.files.get('file')
+        file_id = request.form.get('file_id', '')
+        text, error = _get_pdf_text(file=file, file_id=file_id)
+        if error:
+            return jsonify({'error': error}), 400
+        result = research_assistant(text, topic)
+        save_history(user_id, file_id or '', 'research_assistant', 'success', {'topic': topic[:100]})
+        return jsonify({'message': 'Research summary ready', 'result': result}), 200
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@ai_bp.route('/cite-sources', methods=['POST'])
+@jwt_required()
+def route_cite_sources():
+    try:
+        _ensure_upload_dir()
+        user_id = get_jwt_identity()
+        style   = request.form.get('style', 'APA')
+        file    = request.files.get('file')
+        file_id = request.form.get('file_id', '')
+        text, error = _get_pdf_text(file=file, file_id=file_id)
+        if error:
+            return jsonify({'error': error}), 400
+        result = cite_sources(text, style)
+        save_history(user_id, file_id or '', 'cite_sources', 'success', {'style': style})
+        return jsonify({'message': f'Citations formatted ({style})', 'result': result}), 200
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@ai_bp.route('/cover-letter', methods=['POST'])
+@jwt_required()
+def route_cover_letter():
+    try:
+        _ensure_upload_dir()
+        user_id     = get_jwt_identity()
+        job_desc    = request.form.get('job_description', '')
+        file        = request.files.get('file')
+        file_id     = request.form.get('file_id', '')
+        text, error = _get_pdf_text(file=file, file_id=file_id)
+        if error:
+            return jsonify({'error': error}), 400
+        result = generate_cover_letter(text, job_desc)
+        save_history(user_id, file_id or '', 'cover_letter', 'success', {})
+        return jsonify({'message': 'Cover letter generated', 'result': result}), 200
+    except GeminiAPIError as e:
+        return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@ai_bp.route('/interview-questions', methods=['POST'])
+@jwt_required()
+def route_interview_questions():
+    return _p6_route(generate_interview_questions, 'interview_questions')
+

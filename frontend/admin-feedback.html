@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI DocMaster Admin Panel - View user feedback and statistics">
+    <title>Admin Feedback | AI DocMaster</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .admin-page {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 20px;
+        }
+
+        .admin-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 5px 0;
+        }
+
+        /* Stats Cards */
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(30, 30, 46, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: var(--primary, #6C63FF);
+            margin: 10px 0;
+        }
+
+        .stat-stars {
+            font-size: 1.8rem;
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        /* Table/Card Layout */
+        .feedback-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .feedback-item {
+            background: rgba(30, 30, 46, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px;
+            padding: 24px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .feedback-item:hover {
+            border-color: rgba(108, 99, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .feedback-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding-bottom: 10px;
+        }
+
+        .feedback-user-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .feedback-user {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .feedback-date {
+            font-size: 0.8rem;
+            color: var(--text-muted, #a0aec0);
+        }
+
+        .feedback-rating-badge {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .feedback-stars-static {
+            color: #FFD700;
+            font-size: 1.1rem;
+        }
+
+        .feedback-msg {
+            font-size: 0.95rem;
+            color: #e2e8f0;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary, #6C63FF);
+        }
+
+        .feedback-meta-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.8rem;
+            color: var(--text-muted, #a0aec0);
+        }
+
+        .meta-tag {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .meta-tag svg {
+            color: var(--primary);
+        }
+
+        /* Pagination */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        /* Access Denied Card */
+        .denied-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            text-align: center;
+        }
+
+        .denied-icon {
+            font-size: 4rem;
+            color: var(--danger, #ff4d4d);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body style="background: var(--bg-primary);">
+    <div class="admin-page" id="adminContent" style="display:none;">
+        <header class="admin-header">
+            <div class="admin-title">
+                <a href="dashboard.html" class="btn-back-link" style="margin-bottom: 10px; display: inline-flex;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back to Dashboard
+                </a>
+                <h1>User Feedback Board</h1>
+                <p class="text-secondary">Administrative analytics and feedback dashboard</p>
+            </div>
+            <button type="button" class="btn btn-outline" id="refreshBtn">Refresh Data</button>
+        </header>
+
+        <!-- Stats Overview -->
+        <section class="stats-summary">
+            <div class="stat-card">
+                <h3>Average Score</h3>
+                <div class="stat-value" id="avgRating">0.0</div>
+                <div class="stat-stars" id="avgStars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <p class="text-muted">Aggregate rating metric</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Entries</h3>
+                <div class="stat-value" id="totalFeedback">0</div>
+                <p class="text-muted">All-time reviews count</p>
+            </div>
+        </section>
+
+        <!-- Feedback Entries -->
+        <section class="feedback-section">
+            <h2 style="margin-bottom: 20px; font-size: 1.4rem;">Recent Submissions</h2>
+            <div class="feedback-list" id="feedbackList">
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading entries...</p>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container" id="pagination">
+                <button type="button" class="btn btn-outline" id="prevPageBtn" disabled>Previous</button>
+                <span class="text-secondary" id="pageNumber">Page 1 of 1</span>
+                <button type="button" class="btn btn-outline" id="nextPageBtn" disabled>Next</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Access Denied Panel -->
+    <div class="admin-page" id="accessDeniedPanel" style="display:none;">
+        <div class="denied-container">
+            <div class="denied-icon">&#9888;</div>
+            <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 10px;">Access Denied</h1>
+            <p class="text-secondary" style="margin-bottom: 30px; max-width: 450px;">This panel is restricted to system administrators. Please sign in with an administrative account to view user feedback.</p>
+            <a href="dashboard.html" class="btn btn-primary">Return to Dashboard</a>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/app.js?v=3.0"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Require login
+            if (!requireAuth()) return;
+
+            const adminContent = document.getElementById('adminContent');
+            const deniedPanel = document.getElementById('accessDeniedPanel');
+            const feedbackList = document.getElementById('feedbackList');
+            const pageNumText = document.getElementById('pageNumber');
+            const prevBtn = document.getElementById('prevPageBtn');
+            const nextBtn = document.getElementById('nextPageBtn');
+            const refreshBtn = document.getElementById('refreshBtn');
+
+            const avgRating = document.getElementById('avgRating');
+            const avgStars = document.getElementById('avgStars');
+            const totalFeedback = document.getElementById('totalFeedback');
+
+            let currentPage = 1;
+            const limit = 10;
+            let totalPages = 1;
+
+            async function loadFeedback(page = 1) {
+                feedbackList.innerHTML = `
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <p>Fetching entries...</p>
+                    </div>
+                `;
+
+                try {
+                    const data = await apiFetch(`/feedback?page=${page}&limit=${limit}`);
+                    if (!data) {
+                        // Redirected or unauthorized
+                        deniedPanel.style.display = 'block';
+                        return;
+                    }
+
+                    // Render page Content
+                    deniedPanel.style.display = 'none';
+                    adminContent.style.display = 'block';
+
+                    // Update stats
+                    const stats = data.stats || { average_rating: 0.0, total_count: 0 };
+                    avgRating.textContent = stats.average_rating.toFixed(2);
+                    totalFeedback.textContent = stats.total_count;
+                    
+                    // Render stars rating
+                    const starCount = Math.round(stats.average_rating);
+                    avgStars.innerHTML = '&#9733;'.repeat(starCount) + '&#9734;'.repeat(5 - starCount);
+
+                    // Render Entries
+                    const feedbackItems = data.feedback || [];
+                    if (feedbackItems.length === 0) {
+                        feedbackList.innerHTML = '<div class="empty-state"><p>No feedback entries found</p></div>';
+                        pageNumText.textContent = `Page 1 of 1`;
+                        prevBtn.disabled = true;
+                        nextBtn.disabled = true;
+                        return;
+                    }
+
+                    feedbackList.innerHTML = feedbackItems.map(item => {
+                        const starsStr = '&#9733;'.repeat(item.rating) + '&#9734;'.repeat(5 - item.rating);
+                        const dateStr = item.created_at ? new Date(item.created_at).toLocaleString() : 'N/A';
+                        const userText = item.user_id ? `User: ${item.user_id}` : 'Anonymous';
+                        
+                        return `
+                            <div class="feedback-item">
+                                <div class="feedback-item-header">
+                                    <div class="feedback-user-info">
+                                        <span class="feedback-user">${userText}</span>
+                                        <span class="feedback-date">${dateStr}</span>
+                                    </div>
+                                    <div class="feedback-rating-badge">
+                                        <span class="feedback-stars-static">${starsStr}</span>
+                                    </div>
+                                </div>
+                                ${item.message ? `<div class="feedback-msg">${escapeHtml(item.message)}</div>` : ''}
+                                <div class="feedback-meta-details">
+                                    <span class="meta-tag">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                                        Page: ${item.page || 'index.html'}
+                                    </span>
+                                    <span class="meta-tag" title="${escapeHtml(item.user_agent || '')}">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+                                        UA: ${escapeHtml((item.user_agent || '').substring(0, 45))}...
+                                    </span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+
+                    // Update pagination state
+                    const totalCount = data.total || 0;
+                    totalPages = Math.ceil(totalCount / limit) || 1;
+                    currentPage = page;
+
+                    pageNumText.textContent = `Page ${currentPage} of ${totalPages}`;
+                    prevBtn.disabled = currentPage <= 1;
+                    nextBtn.disabled = currentPage >= totalPages;
+
+                } catch (err) {
+                    console.error('[Admin] Load feedback error:', err);
+                    if (err.message && err.message.includes('403')) {
+                        deniedPanel.style.display = 'block';
+                    } else {
+                        feedbackList.innerHTML = `<div class="empty-state"><p>Error fetching reviews: ${err.message}</p></div>`;
+                    }
+                }
+            }
+
+            // Bind Actions
+            prevBtn.addEventListener('click', () => {
+                if (currentPage > 1) loadFeedback(currentPage - 1);
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentPage < totalPages) loadFeedback(currentPage + 1);
+            });
+
+            refreshBtn.addEventListener('click', () => {
+                loadFeedback(currentPage);
+            });
+
+            // Initial load
+            await loadFeedback(1);
+        });
+    </script>
+</body>
+</html>

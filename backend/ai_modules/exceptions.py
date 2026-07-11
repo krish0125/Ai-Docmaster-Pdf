@@ -32,39 +32,39 @@ def parse_gemini_error(e: Exception, model_name: str = "") -> GeminiAPIError:
         return GeminiAPIError(
             message="Invalid Gemini API key. Please check your API key in the configuration.",
             error_type="invalid_key",
-            status_code=401
+            status_code=503
         )
     elif "403" in error_msg:
         return GeminiAPIError(
             message="Gemini API access forbidden. Ensure the Generative Language API is enabled.",
             error_type="forbidden",
-            status_code=403
+            status_code=503
         )
     elif "429" in error_msg or "RESOURCE_EXHAUSTED" in error_msg:
         return GeminiAPIError(
             message="Gemini API quota exceeded (Rate Limit). Please wait a minute or configure your own API key in the profile settings.",
             error_type="quota_exceeded",
-            status_code=429
+            status_code=503
         )
     elif "404" in error_msg or "not found" in error_msg.lower():
         model_part = f" for model '{model_name}'" if model_name else ""
         return GeminiAPIError(
             message=f"Gemini model not found or invalid{model_part}.",
             error_type="model_not_found",
-            status_code=404
+            status_code=503
         )
     elif "timeout" in error_msg.lower() or "connect" in error_msg.lower() or "host" in error_msg.lower():
         return GeminiAPIError(
             message="Connection to Gemini API timed out or could not be established. Check your internet connection.",
             error_type="timeout",
-            status_code=408
+            status_code=503
         )
     else:
         # Fallback to general API error or network
         return GeminiAPIError(
             message=f"Gemini API call failed: {error_msg}",
             error_type="network",
-            status_code=500
+            status_code=503
         )
 
 def call_gemini_with_retry(client, model: str, contents, **kwargs):
@@ -102,7 +102,7 @@ def call_gemini_with_retry(client, model: str, contents, **kwargs):
                 raise GeminiAPIError(
                     message="Gemini API rate limit reached — please wait a minute and try again.",
                     error_type="quota_exceeded",
-                    status_code=429
+                    status_code=503
                 )
             else:
                 raise parse_gemini_error(e, model_name=model)

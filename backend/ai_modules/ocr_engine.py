@@ -190,3 +190,129 @@ def extract_text_from_pdf_image(pdf_path: str) -> str:
         return '\n\n'.join(ocr_texts) if ocr_texts else 'No text could be extracted from this PDF.'
     except Exception as e:
         return f'OCR extraction failed: {str(e)}'
+
+
+# ---------------------------------------------------------------------------
+# Phase 5 extensions
+# ---------------------------------------------------------------------------
+
+def handwriting_ocr(image_path: str) -> dict:
+    """Recognise handwritten text using Gemini vision (no Tesseract needed)."""
+    try:
+        from ai_modules.chat_engine import get_client
+        import base64, pathlib
+
+        from ai_modules.exceptions import call_gemini_with_retry
+        client = get_client()
+        if client is None:
+            raise RuntimeError("Gemini API client not initialized.")
+            
+        data   = pathlib.Path(image_path).read_bytes()
+        b64    = base64.b64encode(data).decode()
+        ext    = image_path.rsplit('.', 1)[-1].lower()
+        mime   = 'image/jpeg' if ext in ('jpg', 'jpeg') else f'image/{ext}'
+
+        response = call_gemini_with_retry(
+            client=client,
+            model='gemini-2.5-flash',
+            contents=[{
+                'parts': [
+                    {'inline_data': {'mime_type': mime, 'data': b64}},
+                    {'text': (
+                        'This is a handwritten document. Please transcribe every word '
+                        'exactly as written, preserving line breaks. '
+                        'Return ONLY the transcription — no commentary.'
+                    )},
+                ]
+            }]
+        )
+        text = response.text.strip() if response.text else ''
+        return {'text': text, 'word_count': len(text.split()), 'method': 'gemini-vision'}
+    except Exception as e:
+        return {'text': '', 'word_count': 0, 'error': str(e)}
+
+
+def extract_tables_from_pdf(pdf_path: str) -> list[dict]:
+    """Extract all tables from a PDF using pdfplumber.
+    Returns list of {page, table_index, headers, rows}.
+    """
+    try:
+        import pdfplumber
+    except ImportError:
+        return [{'error': 'pdfplumber not installed'}]
+
+    results = []
+    with pdfplumber.open(pdf_path) as pdf:
+        for page_num, page in enumerate(pdf.pages, start=1):
+            tables = page.extract_tables()
+            for ti, table in enumerate(tables, start=1):
+                if not table:
+                    continue
+                headers = [str(c) if c else '' for c in table[0]]
+                rows    = [[str(c) if c else '' for c in row] for row in table[1:]]
+                results.append({
+                    'page': page_num,
+                    'table_index': ti,
+                    'headers': headers,
+                    'rows': rows,
+                    'row_count': len(rows),
+                    'col_count': len(headers),
+                })
+    return results
+
+
+def extract_images_from_pdf(pdf_path: str, output_dir: str) -> list[dict]:
+    """Extract embedded images from a PDF using PyMuPDF (fitz).
+    Saves images to *output_dir* and returns list of {filename, page, index, size}.
+    """
+    try:
+        import fitz  # PyMuPDF
+    except ImportError:
+        return [{'error': 'PyMuPDF not installed. Run: pip install PyMuPDF'}]
+
+    import uuid, os
+    os.makedirs(output_dir, exist_ok=True)
+    results = []
+
+    doc = fitz.open(pdf_path)
+    for page_num in range(len(doc)):
+        page  = doc[page_num]
+        images = page.get_images(full=True)
+        for img_idx, img_info in enumerate(images):
+            xref = img_info[0]
+            base = doc.extract_image(xref)
+            ext  = base['ext']
+            data = base['image']
+            fname = f"img_p{page_num+1}_{img_idx+1}_{uuid.uuid4().hex[:8]}.{ext}"
+            fpath = os.path.join(output_dir, fname)
+            with open(fpath, 'wb') as f:
+                f.write(data)
+            results.append({
+                'filename': fname,
+                'page': page_num + 1,
+                'index': img_idx + 1,
+                'size': len(data),
+                'format': ext,
+            })
+    doc.close()
+    return results
+
+
+def multilang_ocr(image_path: str, lang: str = 'eng') -> dict:
+    """Run Tesseract OCR with an explicit language code.
+    *lang* follows Tesseract format: 'eng', 'fra', 'deu', 'spa', 'hin', 'chi_sim', etc.
+    """
+    if not _TESSERACT_AVAILABLE:
+        return {'text': '', 'confidence': 0, 'word_count': 0,
+                'error': 'Tesseract not available'}
+    try:
+        from PIL import Image as PILImage
+        img = PILImage.open(image_path)
+        text = pytesseract.image_to_string(img, lang=lang).strip()
+        data = pytesseract.image_to_data(img, lang=lang, output_type=pytesseract.Output.DICT)
+        confs = [int(c) for c in data['conf'] if int(c) > 0]
+        avg   = sum(confs) / len(confs) if confs else 0
+        return {'text': text, 'confidence': round(avg, 2),
+                'word_count': len(text.split()), 'lang': lang}
+    except Exception as e:
+        return {'text': '', 'confidence': 0, 'word_count': 0, 'error': str(e)}

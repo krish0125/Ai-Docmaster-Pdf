@@ -179,3 +179,235 @@ def compress_pdf(file_path: str, output_path: str) -> dict:
         'compressed_size': compressed_size,
         'reduction_percent': round(reduction, 2),
     }
+
+
+# ---------------------------------------------------------------------------
+# Organize / Reorder pages
+# ---------------------------------------------------------------------------
+
+def organize_pdf(file_path: str, page_order: list[int], output_path: str) -> str:
+    """Reorder pages according to *page_order* (1-indexed list).
+
+    Example: [3, 1, 2] puts page 3 first, then 1, then 2.
+    Returns the output file path.
+    """
+    reader = PdfReader(file_path)
+    total = len(reader.pages)
+    writer = PdfWriter()
+
+    for page_num in page_order:
+        idx = page_num - 1  # convert to 0-indexed
+        if 0 <= idx < total:
+            writer.add_page(reader.pages[idx])
+
+    os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
+    with open(output_path, 'wb') as f:
+        writer.write(f)
+    writer.close()
+    return output_path
+
+
+# ---------------------------------------------------------------------------
+# Rotate pages
+# ---------------------------------------------------------------------------
+
+def rotate_pdf(file_path: str, rotation: int, pages: list[int] | None,
+               output_path: str) -> str:
+    """Rotate *pages* (1-indexed) by *rotation* degrees (90, 180, or 270).
+
+    If *pages* is None or empty, all pages are rotated.
+    Returns the output file path.
+    """
+    if rotation not in (90, 180, 270):
+        raise ValueError(f'Invalid rotation {rotation}. Must be 90, 180, or 270.')
+
+    reader = PdfReader(file_path)
+    writer = PdfWriter()
+    total = len(reader.pages)
+
+    # Normalise to 0-indexed set; empty means all pages
+    target = set()
+    if pages:
+        for p in pages:
+            idx = p - 1
+            if 0 <= idx < total:
+                target.add(idx)
+    else:
+        target = set(range(total))
+
+    for idx, page in enumerate(reader.pages):
+        if idx in target:
+            page.rotate(rotation)
+        writer.add_page(page)
+
+    os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
+    with open(output_path, 'wb') as f:
+        writer.write(f)
+    writer.close()
+    return output_path
+
+
+# ---------------------------------------------------------------------------
+# Delete pages
+# ---------------------------------------------------------------------------
+
+def delete_pages(file_path: str, pages_to_delete: list[int],
+                 output_path: str) -> str:
+    """Delete the specified pages (1-indexed) from the PDF.
+
+    Returns the output file path.
+    """
+    reader = PdfReader(file_path)
+    total = len(reader.pages)
+    writer = PdfWriter()
+
+    # Build 0-indexed set of pages to remove
+    delete_set = set()
+    for p in pages_to_delete:
+        idx = p - 1
+        if 0 <= idx < total:
+            delete_set.add(idx)
+
+    for idx, page in enumerate(reader.pages):
+        if idx not in delete_set:
+            writer.add_page(page)
+
+    if len(writer.pages) == 0:
+        raise ValueError('All pages would be deleted — at least one page must remain.')
+
+    os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
+    with open(output_path, 'wb') as f:
+        writer.write(f)
+    writer.close()
+    return output_path
+
+
+# ---------------------------------------------------------------------------
+# Extract pages (single-output version of split)
+# ---------------------------------------------------------------------------
+
+def extract_pages(file_path: str, pages: list[int], output_path: str) -> str:
+    """Extract specific pages (1-indexed) into a single output PDF.
+
+    Unlike split_pdf which produces one file per range group, this
+    always produces exactly one output file.
+    Returns the output file path.
+    """
+    reader = PdfReader(file_path)
+    total = len(reader.pages)
+    writer = PdfWriter()
+
+    for p in pages:
+        idx = p - 1
+        if 0 <= idx < total:
+            writer.add_page(reader.pages[idx])
+
+    if len(writer.pages) == 0:
+        raise ValueError('No valid page numbers provided.')
+
+    os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
+    with open(output_path, 'wb') as f:
+        writer.write(f)
+    writer.close()
+    return output_path
+
+
+# ---------------------------------------------------------------------------
+# Duplicate pages
+# ---------------------------------------------------------------------------
+
+def duplicate_pages(file_path: str, pages: list[int], output_path: str) -> str:
+    """Append duplicates of *pages* (1-indexed) to the end of the PDF.
+
+    Returns the output file path with the duplicated pages appended.
+    """
+    reader = PdfReader(file_path)
+    total = len(reader.pages)
+    writer = PdfWriter()
+
+    # First, copy all original pages
+    for page in reader.pages:
+        writer.add_page(page)
+
+    # Then append duplicates of the requested pages
+    for p in pages:
+        idx = p - 1
+        if 0 <= idx < total:
+            writer.add_page(reader.pages[idx])
+
+    os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
+    with open(output_path, 'wb') as f:
+        writer.write(f)
+    writer.close()
+    return output_path
+
+
+# ---------------------------------------------------------------------------
+# Crop pages
+# ---------------------------------------------------------------------------
+
+def crop_pdf(file_path: str, left: float, bottom: float, right: float,
+             top: float, pages: list[int] | None, output_path: str) -> str:
+    """Crop pages by adjusting the MediaBox (PDF user-space units, 1 pt = 1/72 in).
+
+    *left*, *bottom*, *right*, *top* are expressed as **percentages** (0-100)
+    of the original page dimensions, which makes this device-agnostic.
+
+    If *pages* is None or empty, all pages are cropped.
+    Returns the output file path.
+    """
+    reader = PdfReader(file_path)
+    total = len(reader.pages)
+    writer = PdfWriter()
+
+    target = set(range(total)) if not pages else {p - 1 for p in pages if 0 <= p - 1 < total}
+
+    for idx, page in enumerate(reader.pages):
+        if idx in target:
+            mb = page.mediabox
+            w = float(mb.width)
+            h = float(mb.height)
+            new_left   = mb.left   + w * (left   / 100.0)
+            new_bottom = mb.bottom + h * (bottom / 100.0)
+            new_right  = mb.left   + w * (right  / 100.0)
+            new_top    = mb.bottom + h * (top    / 100.0)
+            page.mediabox.left   = new_left
+            page.mediabox.bottom = new_bottom
+            page.mediabox.right  = new_right
+            page.mediabox.top    = new_top
+        writer.add_page(page)
+
+    os.makedirs(os.path.dirname(output_path) or '.', exist_ok=True)
+    with open(output_path, 'wb') as f:
+        writer.write(f)
+    writer.close()
+    return output_path
+
+
+# ---------------------------------------------------------------------------
+# Rearrange (drag-and-drop new order)
+# ---------------------------------------------------------------------------
+
+def rearrange_pdf(file_path: str, new_order: list[int], output_path: str) -> str:
+    """Rearrange all pages into the given *new_order* (1-indexed permutation).
+
+    This is an alias of organize_pdf with stricter validation: the length of
+    *new_order* must equal the total number of pages and must be a permutation.
+    Returns the output file path.
+    """
+    reader = PdfReader(file_path)
+    total = len(reader.pages)
+
+    if len(new_order) != total:
+        raise ValueError(
+            f'new_order has {len(new_order)} entries but the PDF has {total} pages. '
+            'Provide exactly one entry per page.'
+        )
+
+    # validate it is a permutation of 1..total
+    if sorted(new_order) != list(range(1, total + 1)):
+        raise ValueError(
+            f'new_order must be a permutation of pages 1 to {total}.'
+        )
+
+    return organize_pdf(file_path, new_order, output_path)

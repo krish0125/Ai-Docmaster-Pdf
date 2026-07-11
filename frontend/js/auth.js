@@ -4,7 +4,7 @@
 
 console.log('🚀 [AI DocMaster] auth.js loaded - Version 3.0');
 
-const API_BASE = 'http://127.0.0.1:5001';
+const API_BASE = API_BASE_URL;
 
 // ── Check if already logged in ──
 document.addEventListener('DOMContentLoaded', () => {

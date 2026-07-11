@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /merge-pdf.html
+Allow: /split-pdf.html
+Allow: /compress-pdf.html
+Allow: /ocr-pdf.html
+Allow: /summarize-pdf.html
+Allow: /chat-pdf.html
+Allow: /ai-resume-builder.html
+Allow: /pdf-to-word.html
+Allow: /css/
+Allow: /js/
+
+# Disallow authenticated app directories & feedback routes
+Disallow: /dashboard.html
+Disallow: /admin-feedback.html
+Disallow: /chat.html
+Disallow: /result.html
+Disallow: /upload.html
+Disallow: /login.html
+
+Sitemap: http://localhost:5500/sitemap.xml

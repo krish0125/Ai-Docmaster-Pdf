@@ -18,4 +18,24 @@ class Config:
 
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
     MAX_CONTENT_LENGTH = int(os.getenv('MAX_CONTENT_LENGTH', 52428800))  # 50MB
-    ALLOWED_EXTENSIONS = {'pdf', 'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff'}
+    ALLOWED_EXTENSIONS = {
+        # PDF
+        'pdf',
+        # Images
+        'png', 'jpg', 'jpeg', 'gif', 'bmp', 'tiff', 'tif', 'webp',
+        # Office
+        'docx', 'doc', 'xlsx', 'xls', 'pptx', 'ppt',
+        # Text / markup
+        'txt', 'html', 'htm', 'md',
+        # eBook
+        'epub',
+        # Archives
+        'zip',
+    }
+    # Poppler binaries for pdf2image (Windows: set path in .env)
+    POPPLER_PATH = os.getenv('POPPLER_PATH', None)
+
+    FLASK_DEBUG = os.getenv('FLASK_DEBUG', '0') == '1'
+    ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'admin@aidocmaster.com')
+    ALLOWED_CORS_ORIGINS = os.getenv('ALLOWED_CORS_ORIGINS', '')
+

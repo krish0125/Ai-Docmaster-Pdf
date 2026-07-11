@@ -28,16 +28,22 @@ def get_current_user() -> dict | None:
 
 
 def admin_required(fn):
-    """Decorator that requires the current user to have role == 'admin'.
-    Must be used AFTER @jwt_required().
+    """Decorator that requires the current user to have role == 'admin'
+    or match Config.ADMIN_EMAIL. Must be used AFTER @jwt_required().
     """
     @wraps(fn)
     def wrapper(*args, **kwargs):
+        from config import Config
         verify_jwt_in_request()
         user = get_current_user()
         if user is None:
             return jsonify({'error': 'User not found'}), 404
-        if user.get('role') != 'admin':
+            
+        is_admin_email = False
+        if user.get('email') and getattr(Config, 'ADMIN_EMAIL', None):
+            is_admin_email = user.get('email').lower().strip() == Config.ADMIN_EMAIL.lower().strip()
+            
+        if user.get('role') != 'admin' and not is_admin_email:
             return jsonify({'error': 'Admin privileges required'}), 403
         return fn(*args, **kwargs)
     return wrapper

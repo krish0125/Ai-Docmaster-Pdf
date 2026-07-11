@@ -1,0 +1,499 @@
+[
+  {
+    "tool": "Upload PDF",
+    "route": "/pdf/upload",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Merge PDFs",
+    "route": "/pdf/merge",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Split PDF",
+    "route": "/pdf/split",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Compress PDF",
+    "route": "/pdf/compress",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Rotate PDF",
+    "route": "/pdf/rotate",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Delete Pages",
+    "route": "/pdf/delete-pages",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Extract Pages",
+    "route": "/pdf/extract-pages",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Duplicate Pages",
+    "route": "/pdf/duplicate-pages",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Crop PDF",
+    "route": "/pdf/crop",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Rearrange Pages",
+    "route": "/pdf/rearrange",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Organize Pages",
+    "route": "/pdf/organize",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "PDF to Word",
+    "route": "/convert/pdf-to-word",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Word to PDF",
+    "route": "/convert/word-to-pdf",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "PDF to Excel",
+    "route": "/convert/pdf-to-excel",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Excel to PDF",
+    "route": "/convert/excel-to-pdf",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "PDF to PPTX",
+    "route": "/convert/pdf-to-pptx",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "PDF to Image",
+    "route": "/convert/pdf-to-image",
+    "status": "fail",
+    "error": "HTTP 500",
+    "cause": "{\n  \"error\": \"pdf2image is not installed. Run: pip install pdf2image\\nAlso install Poppler: https://github.com/oschwartz10612/poppler-windows/releases\"\n}\n"
+  },
+  {
+    "tool": "PDF to HTML",
+    "route": "/convert/pdf-to-html",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "PDF to Text",
+    "route": "/convert/pdf-to-text",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "PDF to EPUB",
+    "route": "/convert/pdf-to-epub",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Image to PDF",
+    "route": "/convert/image-to-pdf",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Text to PDF",
+    "route": "/convert/text-to-pdf",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "EPUB to PDF",
+    "route": "/convert/epub-to-pdf",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Add Text Overlay",
+    "route": "/edit/add-text",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Add Image Stamp",
+    "route": "/edit/add-image",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Highlight Area",
+    "route": "/edit/highlight",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Header & Footer",
+    "route": "/edit/header-footer",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Page Numbers",
+    "route": "/edit/page-numbers",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Whiteout area",
+    "route": "/edit/whiteout",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Lock PDF",
+    "route": "/security/lock",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Watermark PDF",
+    "route": "/security/watermark",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Flatten PDF",
+    "route": "/security/flatten",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Remove Metadata",
+    "route": "/security/remove-metadata",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Digital Stamp Signature",
+    "route": "/security/sign",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Redaction",
+    "route": "/security/redact",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Standard OCR",
+    "route": "/ocr/extract",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Handwriting OCR",
+    "route": "/ocr/handwriting",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Extract Tables",
+    "route": "/ocr/extract-tables",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Extract Images",
+    "route": "/ocr/extract-images",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Multilingual OCR",
+    "route": "/ocr/multilang-ocr",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Explain PDF",
+    "route": "/ai/explain",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Keywords Indexing",
+    "route": "/ai/keywords",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Generate Quiz",
+    "route": "/ai/quiz",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Generate MCQ",
+    "route": "/ai/mcq",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Grammar Check",
+    "route": "/ai/check-grammar",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Improve Writing",
+    "route": "/ai/improve-writing",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Proofread Document",
+    "route": "/ai/proofread",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Translate",
+    "route": "/ai/translate",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Rewrite",
+    "route": "/ai/rewrite",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Change Tone",
+    "route": "/ai/change-tone",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Analyze Contract",
+    "route": "/ai/analyze-contract",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API call failed: [Errno 11001] getaddrinfo failed\",\n  \"error_type\": \"network\"\n}\n"
+  },
+  {
+    "tool": "Read Invoice",
+    "route": "/ai/read-invoice",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API call failed: [Errno 11001] getaddrinfo failed\",\n  \"error_type\": \"network\"\n}\n"
+  },
+  {
+    "tool": "Analyze Financials",
+    "route": "/ai/analyze-financial",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API call failed: [Errno 11001] getaddrinfo failed\",\n  \"error_type\": \"network\"\n}\n"
+  },
+  {
+    "tool": "Review Legal Docs",
+    "route": "/ai/review-legal",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Assignment Helper",
+    "route": "/ai/assignment-helper",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Research Assistant",
+    "route": "/ai/research-assistant",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Cite Sources",
+    "route": "/ai/cite-sources",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Cover Letter Writer",
+    "route": "/ai/cover-letter",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Interview Preparation",
+    "route": "/ai/interview-questions",
+    "status": "fail",
+    "error": "HTTP 503",
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+  },
+  {
+    "tool": "Resize Image",
+    "route": "/image/resize",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Convert Format",
+    "route": "/image/convert-format",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Apply Filters",
+    "route": "/image/filter",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Remove Background",
+    "route": "/image/remove-background",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Crop Image",
+    "route": "/image/crop",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Rotate Image",
+    "route": "/image/rotate",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Flip Image",
+    "route": "/image/flip",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Image Watermark",
+    "route": "/image/watermark",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "QR Code Generator",
+    "route": "/utils/qr",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Barcode Generator",
+    "route": "/utils/barcode",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "PDF Metadata View",
+    "route": "/utils/pdf-metadata",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  },
+  {
+    "tool": "Password Generator",
+    "route": "/utils/password",
+    "status": "pass",
+    "error": "",
+    "cause": ""
+  }
+]
