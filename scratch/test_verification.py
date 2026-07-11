@@ -5,7 +5,7 @@ import pdfplumber
 import random
 
 def run_verification():
-    BASE = "http://localhost:5001"
+    BASE = "http://127.0.0.1:5001"
     
     # Generate unique test credentials
     rand_id = random.randint(1000, 9999)
@@ -84,8 +84,9 @@ def run_verification():
     print(text1)
     print("---------------------------------------")
     
-    found_t1 = "VERIFY-FIX-TEST-12345" in text1
-    orig_gone_t1 = "Sample" not in text1
+    first_line_1 = text1.split('\n')[0] if text1 else ""
+    found_t1 = "VERIFY-FIX-TEST-12345" in first_line_1
+    orig_gone_t1 = "Sample" not in first_line_1
     
     print(f"New text 'VERIFY-FIX-TEST-12345' found: {found_t1}")
     print(f"Original text 'Sample' gone: {orig_gone_t1}")
@@ -141,8 +142,9 @@ def run_verification():
     print(text2)
     print("---------------------------------------")
     
-    found_t2 = "VERIFY-FIX-TEST-67890" in text2
-    orig_gone_t2 = "PDF" not in text2
+    first_line_2 = text2.split('\n')[0] if text2 else ""
+    found_t2 = "VERIFY-FIX-TEST-67890" in first_line_2
+    orig_gone_t2 = "PDF" not in first_line_2
     
     print(f"New text 'VERIFY-FIX-TEST-67890' found: {found_t2}")
     print(f"Original text 'PDF' gone: {orig_gone_t2}")

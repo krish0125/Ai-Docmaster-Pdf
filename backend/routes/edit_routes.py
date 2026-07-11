@@ -208,9 +208,13 @@ def route_edit_pdf_text():
                 return "Times-Roman"
             return base + suffix
 
-        # Apply edits page by page
+        # Apply edits page by page (grouped)
+        edits_by_page = {}
         for edit in edits:
-            page_index = int(edit.get('page_index', 0))
+            p_idx = int(edit.get('page_index', 0))
+            edits_by_page.setdefault(p_idx, []).append(edit)
+
+        for page_index, page_edits in edits_by_page.items():
             if page_index < 0 or page_index >= len(doc):
                 continue
             
@@ -218,72 +222,163 @@ def route_edit_pdf_text():
             page_width = page.rect.width
             page_height = page.rect.height
             
-            # Convert percentage coordinates to PDF points
-            x = float(edit.get('x', 0)) * page_width
-            y = float(edit.get('y', 0)) * page_height
-            w = float(edit.get('width', 0)) * page_width
-            h = float(edit.get('height', 0)) * page_height
+            # Retrieve original page structure for text reflow matching
+            page_dict = page.get_text("rawdict")
             
-            rect = fitz.Rect(x, y, x + w, y + h)
-            edit_type = edit.get('type', 'edit')
+            redact_rects = []
+            text_insertions = []
             
-            # 1. For replacements, redact the original bounding box to delete the original text run
-            if edit_type == 'edit':
-                # Add a redaction annotation with a white fill color to clean/remove original text
-                page.add_redact_annot(rect, fill=(1, 1, 1))
-                page.apply_redactions()
-            
-            # 2. Draw the new text inside the bounding box
-            text = edit.get('text', '')
-            font_family = edit.get('font_family', 'Helvetica')
-            font_size = float(edit.get('font_size', 12))
-            bold = bool(edit.get('bold', False))
-            italic = bool(edit.get('italic', False))
-            font_name = map_font(font_family, bold, italic)
-            
-            # Color conversion from Hex to RGB Tuple
-            hex_color = edit.get('color', '#000000').lstrip('#')
-            if len(hex_color) == 6:
-                r = int(hex_color[0:2], 16) / 255.0
-                g = int(hex_color[2:4], 16) / 255.0
-                b = int(hex_color[4:6], 16) / 255.0
-                color = (r, g, b)
-            else:
-                color = (0, 0, 0)
+            for edit in page_edits:
+                # Convert percentage coordinates to PDF points
+                x = float(edit.get('x', 0)) * page_width
+                y = float(edit.get('y', 0)) * page_height
+                w = float(edit.get('width', 0)) * page_width
+                h = float(edit.get('height', 0)) * page_height
                 
-            # Alignment mapping (0=left, 1=center, 2=right)
-            align_str = edit.get('align', 'left').lower()
-            align_code = 0
-            if align_str == 'center':
-                align_code = 1
-            elif align_str == 'right':
-                align_code = 2
+                rect = fitz.Rect(x, y, x + w, y + h)
+                edit_type = edit.get('type', 'edit')
                 
-            # Calculate an expanded text bounding box to avoid clipping and wrapping failures in PyMuPDF's insert_textbox
-            extra_h = max(h, font_size * 2.0)
-            if edit_type == 'edit':
-                if align_code == 0:  # Left aligned
-                    # Expand width to the right margin of the page
-                    rect_text = fitz.Rect(x, y, max(x + w, page_width - 10.0), y + extra_h)
-                elif align_code == 1:  # Center aligned
-                    # Expand width symmetrically
-                    pad_w = 100.0
-                    new_x0 = max(0.0, x - pad_w / 2.0)
-                    new_x1 = min(page_width, x + w + pad_w / 2.0)
-                    rect_text = fitz.Rect(new_x0, y, new_x1, y + extra_h)
-                else:  # Right aligned (align_code == 2)
-                    # Expand width to the left margin
-                    rect_text = fitz.Rect(10.0, y, max(x + w, page_width - 10.0), y + extra_h)
-            else:
-                # For new user-added text boxes, keep their custom width but expand height for font line margins
-                rect_text = fitz.Rect(x, y, x + w, y + extra_h)
+                text = edit.get('text', '')
+                font_family = edit.get('font_family', 'Helvetica')
+                font_size = float(edit.get('font_size', 12))
+                bold = bool(edit.get('bold', False))
+                italic = bool(edit.get('italic', False))
+                font_name = map_font(font_family, bold, italic)
                 
-            if text:
-                # Add text box inside expanded rect_text
-                # insert_textbox returns chars NOT placed (>0 means text was clipped/dropped)
-                overflow = page.insert_textbox(rect_text, text, fontsize=font_size, fontname=font_name, color=color, align=align_code)
-                if overflow > 0:
-                    print(f'[edit_routes] WARNING: {overflow} char(s) not placed in textbox for edit id={edit.get("id", "?")}, page={page_index}. Box: {rect_text}')
+                # Color conversion from Hex to RGB Tuple
+                hex_color = edit.get('color', '#000000').lstrip('#')
+                if len(hex_color) == 6:
+                    r = int(hex_color[0:2], 16) / 255.0
+                    g = int(hex_color[2:4], 16) / 255.0
+                    b = int(hex_color[4:6], 16) / 255.0
+                    color = (r, g, b)
+                else:
+                    color = (0, 0, 0)
+                    
+                # Alignment mapping (0=left, 1=center, 2=right)
+                align_str = edit.get('align', 'left').lower()
+                align_code = 0
+                if align_str == 'center':
+                    align_code = 1
+                elif align_str == 'right':
+                    align_code = 2
+                    
+                extra_h = max(h, font_size * 3.0)
+                
+                if edit_type != 'edit':
+                    # For newly added text blocks, just place them as overlays
+                    rect_text = fitz.Rect(x, y, x + w, y + extra_h)
+                    text_insertions.append({
+                        "rect": rect_text,
+                        "text": text,
+                        "font_name": font_name,
+                        "font_size": font_size,
+                        "color": color,
+                        "align": align_code,
+                        "id": edit.get("id", "?")
+                    })
+                    continue
+                    
+                # For replacement edits, find the matching original span and reflow the text
+                best_span = None
+                max_overlap = 0.0
+                for block in page_dict.get("blocks", []):
+                    if "lines" not in block:
+                        continue
+                    for line in block["lines"]:
+                        for span in line["spans"]:
+                            span_rect = fitz.Rect(span["bbox"])
+                            intersect = rect & span_rect
+                            if not intersect.is_empty:
+                                area = intersect.get_area()
+                                if area > max_overlap:
+                                    max_overlap = area
+                                    best_span = span
+                                    
+                matched = False
+                if best_span is not None and "chars" in best_span:
+                    # Find characters inside/overlapping the edit rect
+                    target_indices = []
+                    for idx, char in enumerate(best_span["chars"]):
+                        c_rect = fitz.Rect(char["bbox"])
+                        cx = (c_rect.x0 + c_rect.x1) / 2.0
+                        cy = (c_rect.y0 + c_rect.y1) / 2.0
+                        if (rect.x0 - 1.0 <= cx <= rect.x1 + 1.0) and (rect.y0 - 2.0 <= cy <= rect.y1 + 2.0):
+                            target_indices.append(idx)
+                            
+                    if target_indices:
+                        i_start = min(target_indices)
+                        i_end = max(target_indices)
+                        
+                        left_text = "".join(best_span["chars"][i]["c"] for i in range(i_start))
+                        right_text = "".join(best_span["chars"][i]["c"] for i in range(i_end + 1, len(best_span["chars"])))
+                        
+                        new_line_text = left_text + text + right_text
+                        
+                        # Redact the entire span bounding box to erase the original line completely
+                        redact_rects.append(fitz.Rect(best_span["bbox"]))
+                        
+                        # Preserve original font size if default 12.0 font_size is passed
+                        draw_size = font_size
+                        if font_size == 12.0 and best_span.get("size"):
+                            draw_size = best_span["size"]
+                            
+                        # Use the start coordinates of the original span
+                        start_x = best_span["bbox"][0]
+                        start_y = best_span["bbox"][1]
+                        
+                        rect_text = fitz.Rect(start_x, start_y, page_width - 10.0, start_y + max(extra_h, draw_size * 3.0))
+                        
+                        text_insertions.append({
+                            "rect": rect_text,
+                            "text": new_line_text,
+                            "font_name": font_name,
+                            "font_size": draw_size,
+                            "color": color,
+                            "align": align_code,
+                            "id": edit.get("id", "?")
+                        })
+                        matched = True
+                        
+                if not matched:
+                    # Fallback to original local replacement behavior if no span matched
+                    redact_rects.append(rect)
+                    if align_code == 0:
+                        rect_text = fitz.Rect(x, y, max(x + w, page_width - 10.0), y + extra_h)
+                    elif align_code == 1:
+                        pad_w = 100.0
+                        rect_text = fitz.Rect(max(0.0, x - pad_w / 2.0), y, min(page_width, x + w + pad_w / 2.0), y + extra_h)
+                    else:
+                        rect_text = fitz.Rect(10.0, y, max(x + w, page_width - 10.0), y + extra_h)
+                        
+                    text_insertions.append({
+                        "rect": rect_text,
+                        "text": text,
+                        "font_name": font_name,
+                        "font_size": font_size,
+                        "color": color,
+                        "align": align_code,
+                        "id": edit.get("id", "?")
+                    })
+                    
+            # Apply all collected redactions for the page
+            for r_rect in redact_rects:
+                page.add_redact_annot(r_rect, fill=(1, 1, 1))
+            page.apply_redactions()
+            
+            # Draw all new/updated text boxes for the page
+            for item in text_insertions:
+                if item["text"]:
+                    overflow = page.insert_textbox(
+                        item["rect"],
+                        item["text"],
+                        fontsize=item["font_size"],
+                        fontname=item["font_name"],
+                        color=item["color"],
+                        align=item["align"]
+                    )
+                    if overflow < 0:
+                        print(f'[edit_routes] WARNING: Text did not fit in textbox by {-overflow} points for edit id={item["id"]}, page={page_index}. Box: {item["rect"]}')
                 
         # Save output PDF
         out_name = f"edited_text_{uuid.uuid4().hex}.pdf"

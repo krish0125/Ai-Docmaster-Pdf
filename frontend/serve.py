@@ -21,6 +21,7 @@ Proxies the following paths to http://localhost:5001:
 
 import http.server
 import socketserver
+import socket
 import mimetypes
 import os
 import urllib.request
@@ -162,9 +163,17 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
             print(f'[Proxy] {self.command} {self.path} → {args[1]}')
 
 
+class DualStackTCPServer(socketserver.TCPServer):
+    address_family = socket.AF_INET6
+
+    def server_bind(self):
+        self.socket.setsockopt(socket.IPPROTO_IPV6, socket.IPV6_V6ONLY, 0)
+        super().server_bind()
+
+
 if __name__ == '__main__':
-    socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(("", PORT), ProxyHandler) as httpd:
+    DualStackTCPServer.allow_reuse_address = True
+    with DualStackTCPServer(("::", PORT), ProxyHandler) as httpd:
         print("==================================================")
         print("  AI DocMaster Frontend Server + API Proxy Active")
         print(f"  Static files: http://localhost:{PORT}")
