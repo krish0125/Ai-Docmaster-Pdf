@@ -206,9 +206,7 @@ def _get_oauth():
             name='google',
             client_id=google_id,
             client_secret=google_secret,
-            access_token_url='https://oauth2.googleapis.com/token',
-            authorize_url='https://accounts.google.com/o/oauth2/auth',
-            api_base_url='https://www.googleapis.com/oauth2/v2/',
+            server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
             client_kwargs={'scope': 'openid email profile'},
         )
 
@@ -251,8 +249,10 @@ def google_callback():
     oauth = _get_oauth()
     try:
         token = oauth.google.authorize_access_token()
-        resp = oauth.google.get('userinfo')
-        user_info = resp.json()
+        user_info = token.get('userinfo')
+        if not user_info:
+            # Fallback to fetching userinfo endpoint manually if token doesn't have it
+            user_info = oauth.google.get('https://www.googleapis.com/oauth2/v2/userinfo', token=token).json()
         
         email = user_info.get('email')
         name = user_info.get('name') or user_info.get('given_name') or (email.split('@')[0] if email else 'Google User')
