@@ -227,10 +227,11 @@ def route_edit_pdf_text():
             rect = fitz.Rect(x, y, x + w, y + h)
             edit_type = edit.get('type', 'edit')
             
-            # 1. For replacements, white out the original bounding box
+            # 1. For replacements, redact the original bounding box to delete the original text run
             if edit_type == 'edit':
-                # Overlay a white rectangle to erase original text run
-                page.draw_rect(rect, color=(1, 1, 1), fill=(1, 1, 1), width=0)
+                # Add a redaction annotation with a white fill color to clean/remove original text
+                page.add_redact_annot(rect, fill=(1, 1, 1))
+                page.apply_redactions()
             
             # 2. Draw the new text inside the bounding box
             text = edit.get('text', '')

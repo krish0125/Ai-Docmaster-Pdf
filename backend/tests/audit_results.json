@@ -114,9 +114,9 @@
   {
     "tool": "PDF to Image",
     "route": "/convert/pdf-to-image",
-    "status": "fail",
-    "error": "HTTP 500",
-    "cause": "{\n  \"error\": \"pdf2image is not installed. Run: pip install pdf2image\\nAlso install Poppler: https://github.com/oschwartz10612/poppler-windows/releases\"\n}\n"
+    "status": "pass",
+    "error": "",
+    "cause": ""
   },
   {
     "tool": "PDF to HTML",
@@ -354,21 +354,21 @@
     "route": "/ai/analyze-contract",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API call failed: [Errno 11001] getaddrinfo failed\",\n  \"error_type\": \"network\"\n}\n"
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
   },
   {
     "tool": "Read Invoice",
     "route": "/ai/read-invoice",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API call failed: [Errno 11001] getaddrinfo failed\",\n  \"error_type\": \"network\"\n}\n"
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
   },
   {
     "tool": "Analyze Financials",
     "route": "/ai/analyze-financial",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API call failed: [Errno 11001] getaddrinfo failed\",\n  \"error_type\": \"network\"\n}\n"
+    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
   },
   {
     "tool": "Review Legal Docs",

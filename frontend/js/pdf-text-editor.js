@@ -447,6 +447,7 @@ function selectTextNode(node) {
 
 function deselectActiveNode() {
     if (editActiveNode) {
+        saveNodeState(editActiveNode);
         editActiveNode.classList.remove('focused');
         editActiveNode.removeAttribute('contenteditable');
         editActiveNode = null;
