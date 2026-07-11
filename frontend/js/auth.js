@@ -72,6 +72,21 @@ function initAuthPage() {
         signupForm.addEventListener('submit', handleSignup);
     }
 
+    // Google & GitHub OAuth navigation
+    const googleBtn = document.getElementById('googleLogin');
+    if (googleBtn) {
+        googleBtn.addEventListener('click', () => {
+            window.location.href = `${API_BASE}/auth/google/login`;
+        });
+    }
+
+    const githubBtn = document.getElementById('githubLogin');
+    if (githubBtn) {
+        githubBtn.addEventListener('click', () => {
+            window.location.href = `${API_BASE}/auth/github/login`;
+        });
+    }
+
     // Auto-switch tab if #signup is in the URL hash
     if (window.location.hash === '#signup') {
         const signupTab = document.getElementById('signupTab');

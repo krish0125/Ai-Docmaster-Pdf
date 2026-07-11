@@ -66,6 +66,40 @@ def json_create_user(name: str, email: str, password_hash: str) -> dict | None:
         return user_doc
 
 
+def json_create_oauth_user(name: str, email: str, provider: str, avatar_url: str = None) -> dict | None:
+    with _lock:
+        data = _load_data()
+        email_clean = email.lower().strip()
+        
+        # Check for existing user with the same email
+        for u in data['users']:
+            if u['email'] == email_clean:
+                updated = False
+                if 'oauth_provider' not in u or not u['oauth_provider']:
+                    u['oauth_provider'] = provider
+                    updated = True
+                if avatar_url and ('avatar_url' not in u or not u['avatar_url']):
+                    u['avatar_url'] = avatar_url
+                    updated = True
+                if updated:
+                    u['updated_at'] = datetime.now(timezone.utc).isoformat()
+                    _save_data(data)
+                return u
+                
+        user_doc = {
+            '_id': str(uuid.uuid4()),
+            'name': name,
+            'email': email_clean,
+            'oauth_provider': provider,
+            'avatar_url': avatar_url,
+            'created_at': datetime.now(timezone.utc).isoformat(),
+            'updated_at': datetime.now(timezone.utc).isoformat(),
+        }
+        data['users'].append(user_doc)
+        _save_data(data)
+        return user_doc
+
+
 def json_find_user_by_email(email: str) -> dict | None:
     with _lock:
         data = _load_data()

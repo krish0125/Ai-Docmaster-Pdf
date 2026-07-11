@@ -39,3 +39,13 @@ class Config:
     ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'admin@aidocmaster.com')
     ALLOWED_CORS_ORIGINS = os.getenv('ALLOWED_CORS_ORIGINS', '')
 
+    # OAuth – Google
+    GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')
+    GOOGLE_CLIENT_SECRET = os.getenv('GOOGLE_CLIENT_SECRET', '')
+    GOOGLE_REDIRECT_URI = os.getenv('GOOGLE_REDIRECT_URI', '')
+
+    # OAuth – GitHub
+    GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID', '')
+    GITHUB_CLIENT_SECRET = os.getenv('GITHUB_CLIENT_SECRET', '')
+    GITHUB_REDIRECT_URI = os.getenv('GITHUB_REDIRECT_URI', '')
+

@@ -9,7 +9,7 @@ from flask_jwt_extended import (
 )
 import bcrypt
 
-from database.models import create_user, find_user_by_email, find_user_by_id, update_user
+from database.models import create_user, find_user_by_email, find_user_by_id, update_user, create_oauth_user
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -184,3 +184,171 @@ def update_profile():
 
     except Exception as e:
         return jsonify({'error': f'Server error: {str(e)}'}), 500
+
+
+# ---------------------------------------------------------------------------
+# OAuth Integration
+# ---------------------------------------------------------------------------
+import os
+import json
+import urllib.parse
+from flask import redirect, current_app
+from authlib.integrations.flask_client import OAuth
+
+def _get_oauth():
+    """Create and return a configured OAuth registry bound to the current Flask app."""
+    oauth = OAuth(current_app._get_current_object())
+
+    google_id = os.getenv('GOOGLE_CLIENT_ID')
+    google_secret = os.getenv('GOOGLE_CLIENT_SECRET')
+    if google_id and google_secret:
+        oauth.register(
+            name='google',
+            client_id=google_id,
+            client_secret=google_secret,
+            access_token_url='https://oauth2.googleapis.com/token',
+            authorize_url='https://accounts.google.com/o/oauth2/auth',
+            api_base_url='https://www.googleapis.com/oauth2/v2/',
+            client_kwargs={'scope': 'openid email profile'},
+        )
+
+    github_id = os.getenv('GITHUB_CLIENT_ID')
+    github_secret = os.getenv('GITHUB_CLIENT_SECRET')
+    if github_id and github_secret:
+        oauth.register(
+            name='github',
+            client_id=github_id,
+            client_secret=github_secret,
+            access_token_url='https://github.com/login/oauth/access_token',
+            authorize_url='https://github.com/login/oauth/authorize',
+            api_base_url='https://api.github.com/',
+            client_kwargs={'scope': 'user:email'},
+        )
+    return oauth
+
+
+@auth_bp.route('/google/login')
+def google_login():
+    google_id = os.getenv('GOOGLE_CLIENT_ID')
+    google_secret = os.getenv('GOOGLE_CLIENT_SECRET')
+    if not (google_id and google_secret):
+        return jsonify({'error': 'Google OAuth is not configured on this server'}), 503
+
+    redirect_uri = os.getenv('GOOGLE_REDIRECT_URI')
+    if not redirect_uri:
+        return jsonify({'error': 'Google Redirect URI is not configured on this server'}), 503
+
+    oauth = _get_oauth()
+    return oauth.google.authorize_redirect(redirect_uri)
+
+
+
+@auth_bp.route('/google/callback')
+def google_callback():
+    if not (os.getenv('GOOGLE_CLIENT_ID') and os.getenv('GOOGLE_CLIENT_SECRET')):
+        return jsonify({'error': 'Google OAuth is not configured on this server'}), 503
+
+    oauth = _get_oauth()
+    try:
+        token = oauth.google.authorize_access_token()
+        resp = oauth.google.get('userinfo')
+        user_info = resp.json()
+        
+        email = user_info.get('email')
+        name = user_info.get('name') or user_info.get('given_name') or (email.split('@')[0] if email else 'Google User')
+        avatar_url = user_info.get('picture')
+        
+        if not email:
+            return jsonify({'error': 'Failed to retrieve email from Google'}), 400
+            
+        user = create_oauth_user(name, email, 'google', avatar_url)
+        if user is None:
+            return jsonify({'error': 'Database error creating or updating user'}), 500
+            
+        # Issue JWT access token
+        access_token = create_access_token(identity=str(user['_id']))
+        
+        user_data = {
+            'id': str(user['_id']),
+            'name': user['name'],
+            'email': user['email'],
+            'role': user.get('role', 'user'),
+            'avatar_url': user.get('avatar_url')
+        }
+        
+        fragment = f"token={access_token}&user={urllib.parse.quote(json.dumps(user_data))}"
+        redirect_url = f"http://localhost:5500/dashboard.html#{fragment}"
+        return redirect(redirect_url)
+        
+    except Exception as e:
+        return jsonify({'error': f'Google login failed: {str(e)}'}), 400
+
+
+@auth_bp.route('/github/login')
+def github_login():
+    github_id = os.getenv('GITHUB_CLIENT_ID')
+    github_secret = os.getenv('GITHUB_CLIENT_SECRET')
+    if not (github_id and github_secret):
+        return jsonify({'error': 'GitHub OAuth is not configured on this server'}), 503
+
+    redirect_uri = os.getenv('GITHUB_REDIRECT_URI')
+    if not redirect_uri:
+        return jsonify({'error': 'GitHub Redirect URI is not configured on this server'}), 503
+
+    oauth = _get_oauth()
+    return oauth.github.authorize_redirect(redirect_uri)
+
+
+@auth_bp.route('/github/callback')
+def github_callback():
+    if not (os.getenv('GITHUB_CLIENT_ID') and os.getenv('GITHUB_CLIENT_SECRET')):
+        return jsonify({'error': 'GitHub OAuth is not configured on this server'}), 503
+
+    oauth = _get_oauth()
+    try:
+        token = oauth.github.authorize_access_token()
+        
+        # Get user details
+        resp = oauth.github.get('user')
+        user_info = resp.json()
+        
+        # Get user email (including private ones)
+        email = user_info.get('email')
+        if not email:
+            emails_resp = oauth.github.get('user/emails')
+            if emails_resp.status_code == 200:
+                emails_data = emails_resp.json()
+                for entry in emails_data:
+                    if entry.get('primary') and entry.get('verified'):
+                        email = entry.get('email')
+                        break
+                if not email and emails_data:
+                    email = emails_data[0].get('email')
+                    
+        if not email:
+            return jsonify({'error': 'Failed to retrieve email from GitHub'}), 400
+            
+        name = user_info.get('name') or user_info.get('login') or email.split('@')[0]
+        avatar_url = user_info.get('avatar_url')
+        
+        user = create_oauth_user(name, email, 'github', avatar_url)
+        if user is None:
+            return jsonify({'error': 'Database error creating or updating user'}), 500
+            
+        # Issue JWT access token
+        access_token = create_access_token(identity=str(user['_id']))
+        
+        user_data = {
+            'id': str(user['_id']),
+            'name': user['name'],
+            'email': user['email'],
+            'role': user.get('role', 'user'),
+            'avatar_url': user.get('avatar_url')
+        }
+        
+        fragment = f"token={access_token}&user={urllib.parse.quote(json.dumps(user_data))}"
+        redirect_url = f"http://localhost:5500/dashboard.html#{fragment}"
+        return redirect(redirect_url)
+        
+    except Exception as e:
+        return jsonify({'error': f'GitHub login failed: {str(e)}'}), 400

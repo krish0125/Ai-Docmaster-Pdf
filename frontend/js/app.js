@@ -212,7 +212,29 @@ function getFileIcon(type) {
     return '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00D4FF" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
 }
 
+function handleOAuthCallback() {
+    const hash = window.location.hash;
+    if (hash && hash.includes('token=')) {
+        const params = new URLSearchParams(hash.substring(1));
+        const token = params.get('token');
+        const userStr = params.get('user');
+        if (token) {
+            localStorage.setItem('token', token);
+            if (userStr) {
+                try {
+                    localStorage.setItem('user', decodeURIComponent(userStr));
+                } catch (e) {
+                    console.error('Failed to parse OAuth user object:', e);
+                }
+            }
+            // Clear hash to clean up the URL bar
+            history.replaceState(null, document.title, window.location.pathname + window.location.search);
+        }
+    }
+}
+
 // ── Dashboard Initialization ──
+handleOAuthCallback();
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         if (!requireAuth()) return;
@@ -259,11 +281,21 @@ async function loadUserProfile() {
         if (nameEl) nameEl.textContent = u.name;
         if (welcomeEl) welcomeEl.textContent = u.name;
         if (welcomeTopbarEl) welcomeTopbarEl.textContent = u.name;
-        if (avatarEl) avatarEl.textContent = initial;
+
+        const setAvatar = (el) => {
+            if (!el) return;
+            if (u.avatar_url) {
+                el.innerHTML = `<img src="${u.avatar_url}" alt="${u.name}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`;
+            } else {
+                el.textContent = initial;
+            }
+        };
+
+        if (avatarEl) setAvatar(avatarEl);
 
         if (udropNameEl) udropNameEl.textContent = u.name;
         if (udropEmailEl) udropEmailEl.textContent = u.email || '';
-        if (udropAvatarEl) udropAvatarEl.textContent = initial;
+        if (udropAvatarEl) setAvatar(udropAvatarEl);
 
         const adminSection = document.getElementById('adminDropdownSection');
         if (adminSection) {
@@ -276,7 +308,7 @@ async function loadUserProfile() {
 
         if (pmNameEl) pmNameEl.textContent = u.name;
         if (pmEmailEl) pmEmailEl.textContent = u.email || '';
-        if (pmAvatarEl) pmAvatarEl.textContent = initial;
+        if (pmAvatarEl) setAvatar(pmAvatarEl);
     };
 
     updateUI(user);

@@ -29,6 +29,46 @@ def create_user(name: str, email: str, password_hash: str) -> dict | None:
         return None
 
 
+def create_oauth_user(name: str, email: str, provider: str, avatar_url: str = None) -> dict | None:
+    """Create an OAuth user or retrieve/update an existing user with the same email to prevent duplication."""
+    db = get_db()
+    email_clean = email.lower().strip()
+    
+    # Check for existing user with the same email
+    existing = find_user_by_email(email_clean)
+    if existing is not None:
+        user_id = str(existing['_id'])
+        update_fields = {}
+        if not existing.get('oauth_provider'):
+            update_fields['oauth_provider'] = provider
+        if avatar_url and not existing.get('avatar_url'):
+            update_fields['avatar_url'] = avatar_url
+            
+        if update_fields:
+            update_user(user_id, update_fields)
+            existing = find_user_by_id(user_id)
+        return existing
+        
+    if db is None:
+        return jdb.json_create_oauth_user(name, email_clean, provider, avatar_url)
+        
+    try:
+        user_doc = {
+            'name': name,
+            'email': email_clean,
+            'oauth_provider': provider,
+            'avatar_url': avatar_url,
+            'created_at': datetime.now(timezone.utc),
+            'updated_at': datetime.now(timezone.utc),
+        }
+        result = db.users.insert_one(user_doc)
+        user_doc['_id'] = result.inserted_id
+        return user_doc
+    except Exception as e:
+        print(f"[Models] create_oauth_user error: {e}")
+        return None
+
+
 def find_user_by_email(email: str) -> dict | None:
     """Find a user by email address."""
     db = get_db()

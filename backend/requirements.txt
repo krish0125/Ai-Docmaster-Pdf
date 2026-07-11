@@ -25,3 +25,5 @@ img2pdf
 python-docx
 fonttools
 openpyxl
+authlib==1.4.0
+
