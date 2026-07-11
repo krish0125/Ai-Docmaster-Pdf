@@ -258,9 +258,31 @@ def route_edit_pdf_text():
             elif align_str == 'right':
                 align_code = 2
                 
+            # Calculate an expanded text bounding box to avoid clipping and wrapping failures in PyMuPDF's insert_textbox
+            extra_h = max(h, font_size * 2.0)
+            if edit_type == 'edit':
+                if align_code == 0:  # Left aligned
+                    # Expand width to the right margin of the page
+                    rect_text = fitz.Rect(x, y, max(x + w, page_width - 10.0), y + extra_h)
+                elif align_code == 1:  # Center aligned
+                    # Expand width symmetrically
+                    pad_w = 100.0
+                    new_x0 = max(0.0, x - pad_w / 2.0)
+                    new_x1 = min(page_width, x + w + pad_w / 2.0)
+                    rect_text = fitz.Rect(new_x0, y, new_x1, y + extra_h)
+                else:  # Right aligned (align_code == 2)
+                    # Expand width to the left margin
+                    rect_text = fitz.Rect(10.0, y, max(x + w, page_width - 10.0), y + extra_h)
+            else:
+                # For new user-added text boxes, keep their custom width but expand height for font line margins
+                rect_text = fitz.Rect(x, y, x + w, y + extra_h)
+                
             if text:
-                # Add text box inside rect
-                page.insert_textbox(rect, text, fontsize=font_size, fontname=font_name, color=color, align=align_code)
+                # Add text box inside expanded rect_text
+                # insert_textbox returns chars NOT placed (>0 means text was clipped/dropped)
+                overflow = page.insert_textbox(rect_text, text, fontsize=font_size, fontname=font_name, color=color, align=align_code)
+                if overflow > 0:
+                    print(f'[edit_routes] WARNING: {overflow} char(s) not placed in textbox for edit id={edit.get("id", "?")}, page={page_index}. Box: {rect_text}')
                 
         # Save output PDF
         out_name = f"edited_text_{uuid.uuid4().hex}.pdf"

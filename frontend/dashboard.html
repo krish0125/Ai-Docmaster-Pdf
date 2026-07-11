@@ -408,16 +408,16 @@
 
                         <!-- Appearance -->
                         <div class="udrop-section-label">Appearance</div>
-                        <div class="udrop-item udrop-item-toggle" id="themeDropdownItem">
-                            <span class="udrop-item-icon udrop-icon-yellow">
+                        <button type="button" class="udrop-item udrop-item-toggle" id="themeDropdownItem" onclick="toggleTheme(event)">
+                            <span class="udrop-item-icon udrop-icon-yellow" style="pointer-events: none;">
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
                             </span>
-                            <span class="udrop-item-text">Light Mode</span>
-                            <label class="toggle-switch" onclick="toggleTheme(event)">
+                            <span class="udrop-item-text" style="pointer-events: none; text-align: left; margin-left: 0;">Light Mode</span>
+                            <span class="toggle-switch" style="pointer-events: none;">
                                 <input type="checkbox" id="themeToggleCheck">
                                 <span class="toggle-slider"></span>
-                            </label>
-                        </div>
+                            </span>
+                        </button>
 
                         <div class="udrop-divider"></div>
 

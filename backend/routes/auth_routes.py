@@ -122,6 +122,7 @@ def login():
                 'id': str(user['_id']),
                 'name': user['name'],
                 'email': user['email'],
+                'role': user.get('role', 'user'),
             },
         }), 200
 
@@ -144,6 +145,7 @@ def get_profile():
                 'id': str(user['_id']),
                 'name': user.get('name', ''),
                 'email': user.get('email', ''),
+                'role': user.get('role', 'user'),
                 'created_at': str(user.get('created_at', '')),
             },
         }), 200
