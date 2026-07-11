@@ -33,7 +33,6 @@ def _save(file):
 
 
 @image_bp.route('/download/<path:filename>')
-@jwt_required()
 def download(filename):
     try: return send_from_directory(UPLOAD_FOLDER, filename, as_attachment=True)
     except FileNotFoundError: return jsonify({'error': 'File not found'}), 404

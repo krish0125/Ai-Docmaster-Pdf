@@ -70,7 +70,6 @@ def _dl_url(filename: str) -> str:
 # ── Download ────────────────────────────────────────────────────────────────
 
 @convert_bp.route('/download/<path:filename>')
-@jwt_required()
 def download(filename):
     try:
         return send_from_directory(UPLOAD_FOLDER, filename, as_attachment=True)

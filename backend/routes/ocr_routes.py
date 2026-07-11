@@ -238,7 +238,6 @@ def extract_images():
 
 
 @ocr_bp.route('/download/<path:filename>')
-@jwt_required()
 def download(filename):
     from flask import send_from_directory
     try:
