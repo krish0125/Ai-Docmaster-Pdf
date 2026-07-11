@@ -440,24 +440,6 @@
 
                         <div class="udrop-divider"></div>
 
-                        <!-- API Settings -->
-                        <div class="udrop-section-label">API Configuration</div>
-                        <div style="padding: 6px 16px 12px 16px;">
-                            <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 6px; display: flex; justify-content: space-between;">
-                                <span>Gemini API Key</span>
-                                <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--primary); text-decoration: none;">Get Key ↗</a>
-                            </div>
-                            <div style="position: relative; display: flex; align-items: center;">
-                                <input type="password" id="geminiApiKeyInput" placeholder="Paste your API key here..." style="width: 100%; padding: 8px 32px 8px 10px; font-size: 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: var(--text-primary); transition: border-color 0.2s;" oninput="saveGeminiKey()">
-                                <button type="button" onclick="toggleKeyVisibility(event)" style="position: absolute; right: 8px; background: none; border: none; cursor: pointer; color: var(--text-muted); display: flex; align-items: center; justify-content: center; padding: 0;">
-                                    <svg id="eyeIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                                </button>
-                            </div>
-                            <div id="keyStatusMsg" style="font-size: 10px; color: var(--text-muted); margin-top: 4px;">Using default server API key</div>
-                        </div>
-
-                        <div class="udrop-divider"></div>
-
                         <!-- Help & Legal -->
                         <div class="udrop-section-label">Legal & Support</div>
                         <button type="button" class="udrop-item" onclick="showPolicyModal('privacy')">
@@ -597,6 +579,19 @@
                         <div class="admin-log-item"><span>Database</span><span id="adminDbStatus">MongoDB</span></div>
                         <div class="admin-log-item"><span>AI Engine</span><span style="color:#22C55E">Gemini 2.0 Flash</span></div>
                         <div class="admin-log-item"><span>Version</span><span>AI DocMaster v2.1</span></div>
+                    </div>
+                    <div class="admin-log-section" style="margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem;">
+                        <h5 style="margin-bottom:0.75rem;font-size:13px;color:#6B7280;text-transform:uppercase;letter-spacing:.05em;display:flex;justify-content:space-between;width:100%;align-items:center;">
+                            <span>API Configuration</span>
+                            <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#3B82F6;text-decoration:none;font-size:11px;text-transform:none;letter-spacing:normal;">Get Key ↗</a>
+                        </h5>
+                        <div style="position:relative;display:flex;align-items:center;margin-top:0.5rem;width:100%;">
+                            <input type="password" id="geminiApiKeyInput" placeholder="Paste your API key here..." style="width:100%;padding:8px 32px 8px 10px;font-size:12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-secondary);color:var(--text-primary);transition:border-color 0.2s;" oninput="saveGeminiKey()">
+                            <button type="button" onclick="toggleKeyVisibility(event)" style="position:absolute;right:8px;background:none;border:none;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;justify-content:center;padding:0;">
+                                <svg id="eyeIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                        </div>
+                        <div id="keyStatusMsg" style="font-size:10px;color:var(--text-muted);margin-top:6px;">Using default server API key</div>
                     </div>
                 </div>
             </div>
