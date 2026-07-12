@@ -250,7 +250,8 @@ app = create_app()
 if __name__ == '__main__':
     print("=" * 50)
     print("  AI DocMaster Backend")
-    print("  http://localhost:5001")
+    port = int(os.environ.get('PORT', 5001))
+    print(f"  http://localhost:{port}")
     print("=" * 50)
-    app.run(debug=Config.FLASK_DEBUG, use_reloader=Config.FLASK_DEBUG, port=5001)
+    app.run(debug=Config.FLASK_DEBUG, use_reloader=Config.FLASK_DEBUG, host='0.0.0.0', port=port)
 
