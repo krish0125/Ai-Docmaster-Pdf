@@ -284,133 +284,133 @@
     "route": "/ai/explain",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Keywords Indexing",
     "route": "/ai/keywords",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Generate Quiz",
     "route": "/ai/quiz",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Generate MCQ",
     "route": "/ai/mcq",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Grammar Check",
     "route": "/ai/check-grammar",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Improve Writing",
     "route": "/ai/improve-writing",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Proofread Document",
     "route": "/ai/proofread",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Translate",
     "route": "/ai/translate",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Rewrite",
     "route": "/ai/rewrite",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Change Tone",
     "route": "/ai/change-tone",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Analyze Contract",
     "route": "/ai/analyze-contract",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Read Invoice",
     "route": "/ai/read-invoice",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Analyze Financials",
     "route": "/ai/analyze-financial",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Review Legal Docs",
     "route": "/ai/review-legal",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Assignment Helper",
     "route": "/ai/assignment-helper",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Research Assistant",
     "route": "/ai/research-assistant",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Cite Sources",
     "route": "/ai/cite-sources",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Cover Letter Writer",
     "route": "/ai/cover-letter",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Interview Preparation",
     "route": "/ai/interview-questions",
     "status": "fail",
     "error": "HTTP 503",
-    "cause": "{\n  \"error\": \"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\n  \"error_type\": \"quota_exceeded\"\n}\n"
+    "cause": "{\"error\":\"Gemini API rate limit reached \\u2014 please wait a minute and try again.\",\"error_type\":\"quota_exceeded\"}\n"
   },
   {
     "tool": "Resize Image",

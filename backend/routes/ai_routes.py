@@ -1,6 +1,8 @@
 """AI routes — summarisation, chat-with-PDF, resume analysis, study notes."""
 
 import os
+import time
+from functools import wraps
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -21,6 +23,34 @@ from database.models import (
 )
 
 ai_bp = Blueprint('ai', __name__)
+
+# Simple in-memory per-user rate limit: 20 requests / hour per user
+USER_RATE_LIMITS = {}
+
+def rate_limit_ai(limit=20, period=3600):
+    def decorator(f):
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            try:
+                user_id = get_jwt_identity()
+            except Exception:
+                user_id = None
+            if not user_id:
+                return f(*args, **kwargs)
+            
+            now = time.time()
+            timestamps = USER_RATE_LIMITS.setdefault(user_id, [])
+            timestamps[:] = [t for t in timestamps if now - t < period]
+            
+            if len(timestamps) >= limit:
+                return jsonify({
+                    'error': f'Rate limit exceeded. Maximum {limit} requests per hour for AI features.'
+                }), 429
+                
+            timestamps.append(now)
+            return f(*args, **kwargs)
+        return wrapped
+    return decorator
 
 UPLOAD_FOLDER = Config.UPLOAD_FOLDER
 
@@ -72,6 +102,7 @@ def _get_pdf_text(file=None, file_id=None) -> tuple[str, str | None]:
 
 @ai_bp.route('/summary', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def summary():
     """Generate a summary of a PDF file."""
     try:
@@ -116,6 +147,7 @@ def summary():
 
 @ai_bp.route('/chat', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def chat():
     """Chat / ask questions about a PDF document."""
     try:
@@ -188,6 +220,7 @@ def chat():
 
 @ai_bp.route('/resume-analyze', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def resume_analyze():
     """Analyze a resume PDF for ATS compatibility."""
     try:
@@ -231,6 +264,7 @@ def resume_analyze():
 
 @ai_bp.route('/notes', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def notes():
     """Generate study / exam notes from a PDF."""
     try:
@@ -271,6 +305,7 @@ def notes():
 
 @ai_bp.route('/flashcards', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def flashcards():
     """Generate study flashcards from a PDF."""
     try:
@@ -352,6 +387,15 @@ def _p6_route(action_fn, action_name, extra_args=None):
     try:
         _ensure_upload_dir()
         user_id = get_jwt_identity()
+        
+        # In-memory per-user rate limit check (20 requests / hour per user)
+        now = time.time()
+        timestamps = USER_RATE_LIMITS.setdefault(user_id, [])
+        timestamps[:] = [t for t in timestamps if now - t < 3600]
+        if len(timestamps) >= 20:
+            return jsonify({'error': 'Rate limit exceeded. Maximum 20 requests per hour for AI features.'}), 429
+        timestamps.append(now)
+
         file    = request.files.get('file')
         file_id = request.form.get('file_id', '')
         text, error = _get_pdf_text(file=file, file_id=file_id)
@@ -377,6 +421,7 @@ def route_explain():
 
 @ai_bp.route('/answer-question', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def route_answer_question():
     try:
         _ensure_upload_dir()
@@ -420,6 +465,7 @@ def route_mcq():
 
 @ai_bp.route('/check-grammar', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def route_check_grammar():
     try:
         _ensure_upload_dir()
@@ -445,6 +491,7 @@ def route_check_grammar():
 
 @ai_bp.route('/improve-writing', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def route_improve_writing():
     try:
         _ensure_upload_dir()
@@ -469,6 +516,7 @@ def route_improve_writing():
 
 @ai_bp.route('/translate', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def route_translate():
     try:
         _ensure_upload_dir()
@@ -494,6 +542,7 @@ def route_translate():
 
 @ai_bp.route('/rewrite', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def route_rewrite():
     try:
         _ensure_upload_dir()
@@ -519,6 +568,7 @@ def route_rewrite():
 
 @ai_bp.route('/change-tone', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def route_change_tone():
     try:
         _ensure_upload_dir()
@@ -544,6 +594,7 @@ def route_change_tone():
 
 @ai_bp.route('/proofread', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def route_proofread():
     try:
         _ensure_upload_dir()
@@ -592,6 +643,7 @@ def route_review_legal():
 
 @ai_bp.route('/assignment-helper', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def route_assignment_helper():
     try:
         _ensure_upload_dir()
@@ -613,6 +665,7 @@ def route_assignment_helper():
 
 @ai_bp.route('/research-assistant', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def route_research_assistant():
     try:
         _ensure_upload_dir()
@@ -634,6 +687,7 @@ def route_research_assistant():
 
 @ai_bp.route('/cite-sources', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def route_cite_sources():
     try:
         _ensure_upload_dir()
@@ -655,6 +709,7 @@ def route_cite_sources():
 
 @ai_bp.route('/cover-letter', methods=['POST'])
 @jwt_required()
+@rate_limit_ai()
 def route_cover_letter():
     try:
         _ensure_upload_dir()

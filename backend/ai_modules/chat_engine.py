@@ -42,12 +42,15 @@ def get_client():
     if not key:
         return None
 
+    from google.genai import types
+    http_opts = types.HttpOptions(timeout=10000)
+
     # If it is a request-specific key, return a fresh client instance to prevent caching issues
     if key != Config.GEMINI_API_KEY:
-        return genai.Client(api_key=key)
+        return genai.Client(api_key=key, http_options=http_opts)
 
     if _client is None:
-        _client = genai.Client(api_key=Config.GEMINI_API_KEY)
+        _client = genai.Client(api_key=Config.GEMINI_API_KEY, http_options=http_opts)
     return _client
 
 

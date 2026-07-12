@@ -13,7 +13,7 @@ def _client():
     return get_client()
 
 
-def _ask(prompt: str, max_tokens: int = 8192) -> str:
+def _ask(prompt: str, max_tokens: int = 8192, response_json: bool = False) -> str:
     """Send a single-turn prompt to Gemini and return the text response."""
     from ai_modules.exceptions import call_gemini_with_retry, parse_gemini_error
     client = _client()
@@ -21,12 +21,16 @@ def _ask(prompt: str, max_tokens: int = 8192) -> str:
         from ai_modules.exceptions import GeminiAPIError
         raise GeminiAPIError("Gemini API client not initialized. Configure GEMINI_API_KEY in .env.", status_code=503)
 
+    config = {'max_output_tokens': max_tokens}
+    if response_json:
+        config['response_mime_type'] = 'application/json'
+
     try:
         response = call_gemini_with_retry(
             client=client,
             model='gemini-2.5-flash',
             contents=[{'parts': [{'text': prompt}]}],
-            config={'max_output_tokens': max_tokens}
+            config=config
         )
         return (response.text or '').strip()
     except Exception as e:
@@ -78,7 +82,8 @@ def extract_keywords(text: str) -> list[dict]:
     """Extract key terms and their definitions from the document."""
     raw = _ask(
         f"Extract the 15 most important keywords/terms from this document.\n"
-        f"Return ONLY a JSON array where each item has 'term' and 'definition'.\n\n{text[:7000]}"
+        f"Return ONLY a JSON array where each item has 'term' and 'definition'.\n\n{text[:7000]}",
+        response_json=True
     )
     result = _parse_json(raw)
     if isinstance(result, list):
@@ -95,7 +100,8 @@ def generate_quiz(text: str, count: int = 10) -> list[dict]:
     raw = _ask(
         f"Create {count} true/false quiz questions from this document.\n"
         "Return ONLY a JSON array. Each item: {\"question\": \"...\", \"answer\": true/false, \"explanation\": \"...\"}.\n\n"
-        f"{text[:7000]}"
+        f"{text[:7000]}",
+        response_json=True
     )
     result = _parse_json(raw)
     return result if isinstance(result, list) else [{'error': str(result)}]
@@ -108,7 +114,8 @@ def generate_mcq(text: str, count: int = 10) -> list[dict]:
         "Return ONLY a JSON array. Each item: "
         "{\"question\": \"...\", \"options\": [\"A)...\",\"B)...\",\"C)...\",\"D)...\"], "
         "\"correct\": \"A\", \"explanation\": \"...\"}.\n\n"
-        f"{text[:7000]}"
+        f"{text[:7000]}",
+        response_json=True
     )
     result = _parse_json(raw)
     return result if isinstance(result, list) else [{'error': str(result)}]
@@ -123,7 +130,8 @@ def check_grammar(text: str) -> dict:
     raw = _ask(
         "Check the grammar and spelling in the following text.\n"
         "Return ONLY JSON: {\"corrected\": \"...\", \"issues\": [{\"original\": \"...\", \"suggestion\": \"...\"}]}.\n\n"
-        f"{text[:6000]}"
+        f"{text[:6000]}",
+        response_json=True
     )
     result = _parse_json(raw)
     return result if isinstance(result, dict) else {'corrected': text, 'issues': []}
@@ -157,7 +165,8 @@ def proofread(text: str) -> dict:
     raw = _ask(
         "Proofread the following text and list all corrections.\n"
         "Return ONLY JSON: {\"proofread_text\": \"...\", \"corrections\": [\"description of each fix\"]}.\n\n"
-        f"{text[:6000]}"
+        f"{text[:6000]}",
+        response_json=True
     )
     result = _parse_json(raw)
     return result if isinstance(result, dict) else {'proofread_text': text, 'corrections': []}
@@ -173,7 +182,8 @@ def analyze_contract(text: str) -> dict:
         "Analyze this contract document and extract:\n"
         "Return ONLY JSON: {\"parties\": [], \"key_clauses\": [], \"obligations\": [], "
         "\"risks\": [], \"termination\": \"\", \"summary\": \"\"}.\n\n"
-        f"{text[:8000]}"
+        f"{text[:8000]}",
+        response_json=True
     )
     result = _parse_json(raw)
     return result if isinstance(result, dict) else {'summary': str(result)}
@@ -185,7 +195,8 @@ def read_invoice(text: str) -> dict:
         "Extract all data from this invoice. "
         "Return ONLY JSON: {\"vendor\": \"\", \"invoice_number\": \"\", \"date\": \"\", "
         "\"due_date\": \"\", \"line_items\": [], \"subtotal\": \"\", \"tax\": \"\", \"total\": \"\"}.\n\n"
-        f"{text[:6000]}"
+        f"{text[:6000]}",
+        response_json=True
     )
     result = _parse_json(raw)
     return result if isinstance(result, dict) else {'raw': str(result)}
@@ -197,7 +208,8 @@ def analyze_financial(text: str) -> dict:
         "Analyze this financial document. "
         "Return ONLY JSON: {\"key_metrics\": {}, \"trends\": [], \"risks\": [], "
         "\"opportunities\": [], \"summary\": \"\"}.\n\n"
-        f"{text[:8000]}"
+        f"{text[:8000]}",
+        response_json=True
     )
     result = _parse_json(raw)
     return result if isinstance(result, dict) else {'summary': str(result)}
@@ -209,7 +221,8 @@ def review_legal(text: str) -> dict:
         "Review this legal document (NOT legal advice — for informational purposes only).\n"
         "Return ONLY JSON: {\"document_type\": \"\", \"key_points\": [], "
         "\"potential_issues\": [], \"summary\": \"\", \"disclaimer\": \"This is not legal advice.\"}.\n\n"
-        f"{text[:8000]}"
+        f"{text[:8000]}",
+        response_json=True
     )
     result = _parse_json(raw)
     return result if isinstance(result, dict) else {'summary': str(result)}
@@ -236,7 +249,7 @@ def research_assistant(text: str, topic: str = '') -> dict:
         "\"supporting_evidence\": [], \"conclusions\": [], \"further_reading\": []}.\n\n"
         f"{text[:7000]}"
     )
-    raw = _ask(prompt)
+    raw = _ask(prompt, response_json=True)
     result = _parse_json(raw)
     return result if isinstance(result, dict) else {'summary': str(result)}
 
@@ -246,7 +259,8 @@ def cite_sources(text: str, style: str = 'APA') -> list[str]:
     raw = _ask(
         f"Find all references/sources in this document and format them as {style} citations.\n"
         "Return ONLY a JSON array of citation strings.\n\n"
-        f"{text[:6000]}"
+        f"{text[:6000]}",
+        response_json=True
     )
     result = _parse_json(raw)
     return result if isinstance(result, list) else [str(result)]
@@ -265,7 +279,8 @@ def generate_interview_questions(resume_text: str) -> list[str]:
     raw = _ask(
         "Generate 15 likely interview questions for a candidate with this resume.\n"
         "Return ONLY a JSON array of question strings.\n\n"
-        f"{resume_text[:4000]}"
+        f"{resume_text[:4000]}",
+        response_json=True
     )
     result = _parse_json(raw)
     return result if isinstance(result, list) else [str(result)]

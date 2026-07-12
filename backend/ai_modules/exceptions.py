@@ -70,8 +70,8 @@ def parse_gemini_error(e: Exception, model_name: str = "") -> GeminiAPIError:
 def call_gemini_with_retry(client, model: str, contents, **kwargs):
     """Call generate_content with exponential backoff on 429 and 5xx errors."""
     import time
-    max_retries = 3
-    wait_time = 2  # initial wait in seconds
+    max_retries = 2
+    wait_time = 1.5  # initial wait in seconds
     
     for attempt in range(max_retries + 1):
         try:

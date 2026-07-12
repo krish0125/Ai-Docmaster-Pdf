@@ -71,16 +71,23 @@ def word_to_pdf(docx_path: str, upload_folder: str) -> tuple[str, str]:
 
     # Attempt 2: LibreOffice headless
     import subprocess
-    result = subprocess.run(
-        ['soffice', '--headless', '--convert-to', 'pdf', '--outdir',
-         upload_folder, docx_path],
-        capture_output=True, timeout=60
-    )
-    if result.returncode != 0:
+    try:
+        result = subprocess.run(
+            ['soffice', '--headless', '--convert-to', 'pdf', '--outdir',
+             upload_folder, docx_path],
+            capture_output=True, timeout=60
+        )
+        if result.returncode != 0:
+            raise RuntimeError(
+                "Word-to-PDF conversion failed. Install Microsoft Word (docx2pdf) "
+                "or LibreOffice (soffice in PATH). "
+                f"LibreOffice error: {result.stderr.decode()[:200]}"
+            )
+    except Exception as e:
         raise RuntimeError(
             "Word-to-PDF conversion failed. Install Microsoft Word (docx2pdf) "
             "or LibreOffice (soffice in PATH). "
-            f"LibreOffice error: {result.stderr.decode()[:200]}"
+            f"LibreOffice details: {str(e)}"
         )
 
     # LibreOffice writes to the outdir with the same base name
