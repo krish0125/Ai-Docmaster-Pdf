@@ -172,8 +172,8 @@ class DualStackTCPServer(socketserver.TCPServer):
 
 
 if __name__ == '__main__':
-    DualStackTCPServer.allow_reuse_address = True
-    with DualStackTCPServer(("::", PORT), ProxyHandler) as httpd:
+    # Use IPv4 loopback to avoid DualStackTCPServer crashes on Windows
+    with http.server.ThreadingHTTPServer(("127.0.0.1", PORT), ProxyHandler) as httpd:
         print("==================================================")
         print("  AI DocMaster Frontend Server + API Proxy Active")
         print(f"  Static files: http://localhost:{PORT}")

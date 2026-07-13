@@ -7,7 +7,7 @@ def run(playwright):
     
     # Check if frontend is up
     try:
-        page.goto("http://localhost:5500/login.html")
+        page.goto("http://127.0.0.1:5500/login.html")
     except Exception as e:
         print(f"Failed to load frontend: {e}")
         return

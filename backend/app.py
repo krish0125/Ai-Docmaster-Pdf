@@ -35,15 +35,7 @@ def create_app() -> Flask:
 
     # ── CORS ───────────────────────────────────────────────────────────
     cors_origins = Config.ALLOWED_CORS_ORIGINS
-    if cors_origins:
-        origins_list = [o.strip() for o in cors_origins.split(',') if o.strip()]
-    else:
-        origins_list = [
-            "http://127.0.0.1:5500",
-            "http://localhost:5500",
-            "http://127.0.0.1:5501",
-            "http://localhost:5501"
-        ]
+    origins_list = [o.strip() for o in cors_origins.split(',') if o.strip()]
     CORS(
         app,
         origins=origins_list,
@@ -103,13 +95,13 @@ def create_app() -> Flask:
             'service': 'AI DocMaster Backend',
         }
 
-        # Check MongoDB
+        # Check TiDB Database
         try:
             from database.db import get_db
-            db = get_db()
-            status['mongodb'] = 'connected' if db is not None else 'unavailable'
+            session = get_db()
+            status['database'] = 'connected' if session is not None else 'unavailable'
         except Exception:
-            status['mongodb'] = 'unavailable'
+            status['database'] = 'unavailable'
 
         # Check Gemini
         status['gemini_configured'] = bool(Config.GEMINI_API_KEY)
@@ -187,6 +179,11 @@ def create_app() -> Flask:
     def internal_error(error):
         return jsonify({'error': 'Internal server error'}), 500
 
+    @app.teardown_appcontext
+    def shutdown_session(exception=None):
+        from database.db import close_db
+        close_db(exception)
+
     _run_startup_checks()
 
     return app
@@ -198,16 +195,16 @@ def _run_startup_checks():
     print("  AI DocMaster Startup Self-Check")
     print("=" * 60)
 
-    # 1. Check MongoDB
+    # 1. Check TiDB
     try:
         from database.db import get_db
-        db = get_db()
-        if db is not None:
-            print("[Startup Check] MongoDB: CONNECTED")
+        session = get_db()
+        if session is not None:
+            print("[Startup Check] TiDB Database: CONNECTED")
         else:
-            print("[Startup Check] MongoDB: WARNING - Unreachable (graceful mode)")
+            print("[Startup Check] TiDB Database: WARNING - Unreachable (graceful JSON mode)")
     except Exception as e:
-        print(f"[Startup Check] MongoDB: ERROR - {e}")
+        print(f"[Startup Check] TiDB Database: ERROR - {e}")
 
     # 2. Check Gemini key
     key = Config.GEMINI_API_KEY

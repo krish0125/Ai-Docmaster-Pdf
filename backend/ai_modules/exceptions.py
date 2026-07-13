@@ -70,8 +70,8 @@ def parse_gemini_error(e: Exception, model_name: str = "") -> GeminiAPIError:
 def call_gemini_with_retry(client, model: str, contents, **kwargs):
     """Call generate_content with exponential backoff on 429 and 5xx errors."""
     import time
-    max_retries = 2
-    wait_time = 1.5  # initial wait in seconds
+    max_retries = 3
+    wait_time = 3.0  # initial wait in seconds
     
     for attempt in range(max_retries + 1):
         try:
@@ -94,13 +94,13 @@ def call_gemini_with_retry(client, model: str, contents, **kwargs):
                       f"{'429 Rate Limit' if is_429 else '5xx Server Error'}. "
                       f"Waiting {wait_time}s before retrying...", file=sys.stderr)
                 time.sleep(wait_time)
-                wait_time *= 2  # exponential backoff: 2s -> 4s -> 8s
+                wait_time *= 2  # exponential backoff: 3s -> 6s -> 12s
                 continue
             
             # If we run out of retries, or it's a non-retryable error
             if is_429:
                 raise GeminiAPIError(
-                    message="Gemini API rate limit reached — please wait a minute and try again.",
+                    message="AI service is busy, please try again in a few seconds.",
                     error_type="quota_exceeded",
                     status_code=503
                 )

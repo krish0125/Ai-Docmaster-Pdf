@@ -18,21 +18,23 @@ NEW_PASSWORD = "demo123456"
 
 def reset_password():
     try:
-        from pymongo import MongoClient
-        client = MongoClient(Config.MONGO_URI, serverSelectionTimeoutMS=3000)
-        client.admin.command('ping')
-        db = client[Config.MONGO_DB_NAME]
-        
-        user = db.users.find_one({'email': EMAIL.lower().strip()})
+        from database.db import get_db
+        from database.models import User
+        session = get_db()
+        if session is None:
+            raise Exception("Database session unavailable")
+            
+        user = session.query(User).filter(User.email == EMAIL.lower().strip()).first()
         if user is None:
             print(f"No user found with email: {EMAIL}")
             return
         
         pw_hash = bcrypt.hashpw(NEW_PASSWORD.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-        db.users.update_one({'email': EMAIL.lower().strip()}, {'$set': {'password': pw_hash}})
+        user.password = pw_hash
+        session.commit()
         print(f"[OK] Password for {EMAIL} reset to: {NEW_PASSWORD}")
     except Exception as e:
-        print(f"MongoDB unavailable: {e}")
+        print(f"TiDB unavailable: {e}")
         # Try JSON DB fallback
         import json
         db_file = os.path.join(_BACKEND_DIR, 'database', 'local_db.json')
@@ -54,7 +56,7 @@ def reset_password():
             else:
                 print(f"User not found in JSON DB either.")
         else:
-            print("No local_db.json found. MongoDB must be used.")
+            print("No local_db.json found. Database must be used.")
 
 if __name__ == '__main__':
     reset_password()

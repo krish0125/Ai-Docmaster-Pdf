@@ -35,14 +35,19 @@ def _save(file):
 
 
 def _get_tokens(user_id: str, provider: str) -> dict | None:
-    """Retrieve stored OAuth tokens for a user/provider from MongoDB."""
+    """Retrieve stored OAuth tokens for a user/provider from TiDB."""
     try:
         from database.db import get_db
-        db = get_db()
-        if db is None:
+        from database.models import OAuthToken, _parse_id
+        session = get_db()
+        if session is None:
             return None
-        record = db['oauth_tokens'].find_one({'user_id': user_id, 'provider': provider})
-        return record
+            
+        uid = _parse_id(user_id)
+        if uid is None: return None
+            
+        record = session.query(OAuthToken).filter(OAuthToken.user_id == uid, OAuthToken.provider == provider).first()
+        return record.to_dict() if record else None
     except Exception:
         return None
 
@@ -50,14 +55,24 @@ def _get_tokens(user_id: str, provider: str) -> dict | None:
 def _save_tokens(user_id: str, provider: str, tokens: dict):
     try:
         from database.db import get_db
-        db = get_db()
-        if db is None:
+        from database.models import OAuthToken, _parse_id
+        session = get_db()
+        if session is None:
             return
-        db['oauth_tokens'].update_one(
-            {'user_id': user_id, 'provider': provider},
-            {'$set': {**tokens, 'user_id': user_id, 'provider': provider}},
-            upsert=True
-        )
+            
+        uid = _parse_id(user_id)
+        if uid is None: return
+            
+        record = session.query(OAuthToken).filter(OAuthToken.user_id == uid, OAuthToken.provider == provider).first()
+        if not record:
+            record = OAuthToken(user_id=uid, provider=provider)
+            session.add(record)
+            
+        for k, v in tokens.items():
+            if hasattr(record, k):
+                setattr(record, k, v)
+                
+        session.commit()
     except Exception:
         pass
 

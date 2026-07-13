@@ -10,8 +10,17 @@ class Config:
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'jwt-dev-secret')
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=24)
 
-    MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
-    MONGO_DB_NAME = os.getenv('MONGO_DB_NAME', 'ai_docmaster')
+    TIDB_HOST = os.getenv('TIDB_HOST', '')
+    TIDB_PORT = os.getenv('TIDB_PORT', '4000')
+    TIDB_USER = os.getenv('TIDB_USER', '')
+    TIDB_PASSWORD = os.getenv('TIDB_PASSWORD', '')
+    TIDB_DB_NAME = os.getenv('TIDB_DB_NAME', 'ai_docmaster')
+    
+    import certifi
+    SQLALCHEMY_DATABASE_URI = (
+        f"mysql+pymysql://{TIDB_USER}:{TIDB_PASSWORD}@{TIDB_HOST}:{TIDB_PORT}/"
+        f"{TIDB_DB_NAME}?ssl_ca={certifi.where()}"
+    )
 
     GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
     TESSERACT_PATH = os.getenv('TESSERACT_PATH', r'C:\Program Files\Tesseract-OCR\tesseract.exe')
@@ -37,7 +46,7 @@ class Config:
 
     FLASK_DEBUG = os.getenv('FLASK_DEBUG', '0') == '1'
     ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'admin@aidocmaster.com')
-    ALLOWED_CORS_ORIGINS = os.getenv('ALLOWED_CORS_ORIGINS', '')
+    ALLOWED_CORS_ORIGINS = os.getenv('ALLOWED_CORS_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000')
 
     # OAuth – Google
     GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')

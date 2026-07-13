@@ -1,4 +1,4 @@
-"""Thread-safe JSON file-based database fallback when MongoDB is unavailable."""
+"""Thread-safe JSON file-based database fallback when Database is unavailable."""
 
 import os
 import json

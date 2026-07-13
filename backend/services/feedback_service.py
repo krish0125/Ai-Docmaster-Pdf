@@ -1,23 +1,26 @@
 import os
 import json
 from datetime import datetime, timezone
+from sqlalchemy import func
 from database.db import get_db
+from database.models import Feedback
+import database.json_db as jdb
 
 # Fallback JSON file path
 FEEDBACK_JSON = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'database', 'feedback.json')
 
-def save_feedback(user_id: str | None, rating: int, message: str | None, page: str | None, user_agent: str | None) -> dict | None:
-    db = get_db()
-    feedback_doc = {
-        'user_id': user_id,
-        'rating': rating,
-        'message': message,
-        'page': page,
-        'user_agent': user_agent,
-        'created_at': datetime.now(timezone.utc)
-    }
+def _parse_id(id_str):
+    if not id_str:
+        return None
+    try:
+        return int(id_str)
+    except ValueError:
+        return None
 
-    if db is None:
+def save_feedback(user_id: str | None, rating: int, message: str | None, page: str | None, user_agent: str | None) -> dict | None:
+    session = get_db()
+
+    if session is None:
         # Save to local JSON fallback
         try:
             entries = []
@@ -25,10 +28,15 @@ def save_feedback(user_id: str | None, rating: int, message: str | None, page: s
                 with open(FEEDBACK_JSON, 'r', encoding='utf-8') as f:
                     entries = json.load(f)
             
-            # Serialize datetime
-            doc_serialized = feedback_doc.copy()
-            doc_serialized['created_at'] = feedback_doc['created_at'].isoformat()
-            doc_serialized['_id'] = str(len(entries) + 1)
+            doc_serialized = {
+                'user_id': user_id,
+                'rating': rating,
+                'message': message,
+                'page': page,
+                'user_agent': user_agent,
+                'created_at': datetime.now(timezone.utc).isoformat(),
+                '_id': str(len(entries) + 1)
+            }
             
             entries.append(doc_serialized)
             with open(FEEDBACK_JSON, 'w', encoding='utf-8') as f:
@@ -39,18 +47,28 @@ def save_feedback(user_id: str | None, rating: int, message: str | None, page: s
             return None
 
     try:
-        result = db.feedback.insert_one(feedback_doc)
-        feedback_doc['_id'] = result.inserted_id
-        return feedback_doc
+        uid = _parse_id(user_id) if user_id else None
+        f = Feedback(
+            user_id=uid,
+            rating=rating,
+            message=message,
+            page=page,
+            user_agent=user_agent
+        )
+        session.add(f)
+        session.commit()
+        session.refresh(f)
+        return f.to_dict()
     except Exception as e:
-        print(f"[FeedbackService] MongoDB insert error: {e}")
+        session.rollback()
+        print(f"[FeedbackService] TiDB insert error: {e}")
         return None
 
 def get_feedback_list(page: int = 1, limit: int = 10) -> tuple[list[dict], int]:
-    db = get_db()
+    session = get_db()
     skip = (page - 1) * limit
 
-    if db is None:
+    if session is None:
         try:
             if not os.path.isfile(FEEDBACK_JSON):
                 return [], 0
@@ -65,22 +83,22 @@ def get_feedback_list(page: int = 1, limit: int = 10) -> tuple[list[dict], int]:
             return [], 0
 
     try:
-        total = db.feedback.count_documents({})
-        cursor = db.feedback.find().sort('created_at', -1).skip(skip).limit(limit)
+        total = session.query(func.count(Feedback.id)).scalar()
+        feedbacks = session.query(Feedback).order_by(Feedback.created_at.desc()).offset(skip).limit(limit).all()
         results = []
-        for doc in cursor:
-            doc['_id'] = str(doc['_id'])
+        for f in feedbacks:
+            doc = f.to_dict()
             if isinstance(doc.get('created_at'), datetime):
                 doc['created_at'] = doc['created_at'].isoformat()
             results.append(doc)
         return results, total
     except Exception as e:
-        print(f"[FeedbackService] MongoDB query error: {e}")
+        print(f"[FeedbackService] TiDB query error: {e}")
         return [], 0
 
 def get_feedback_stats() -> dict:
-    db = get_db()
-    if db is None:
+    session = get_db()
+    if session is None:
         try:
             if not os.path.isfile(FEEDBACK_JSON):
                 return {'average_rating': 0.0, 'total_count': 0}
@@ -95,22 +113,18 @@ def get_feedback_stats() -> dict:
             return {'average_rating': 0.0, 'total_count': 0}
 
     try:
-        pipeline = [
-            {
-                '$group': {
-                    '_id': None,
-                    'avg_rating': {'$avg': '$rating'},
-                    'count': {'$sum': 1}
-                }
-            }
-        ]
-        result = list(db.feedback.aggregate(pipeline))
-        if not result:
+        result = session.query(
+            func.avg(Feedback.rating).label('avg_rating'),
+            func.count(Feedback.id).label('count')
+        ).first()
+        
+        if not result or result.count == 0:
             return {'average_rating': 0.0, 'total_count': 0}
+            
         return {
-            'average_rating': round(result[0]['avg_rating'], 2),
-            'total_count': result[0]['count']
+            'average_rating': round(float(result.avg_rating), 2),
+            'total_count': result.count
         }
     except Exception as e:
-        print(f"[FeedbackService] MongoDB aggregation error: {e}")
+        print(f"[FeedbackService] TiDB aggregation error: {e}")
         return {'average_rating': 0.0, 'total_count': 0}

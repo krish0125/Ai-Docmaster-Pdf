@@ -112,7 +112,7 @@ def login():
         ):
             return jsonify({'error': 'Invalid email or password'}), 401
 
-        # Create JWT — identity is the user's ObjectId as a string
+        # Create JWT — identity is the user's ID as a string
         access_token = create_access_token(identity=str(user['_id']))
 
         return jsonify({
