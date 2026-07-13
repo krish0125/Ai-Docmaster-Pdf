@@ -1,7 +1,6 @@
 """Chat with PDF engine — powered by xAI Grok (openai SDK)."""
 
 from config import Config
-from services.pdf_service import count_tokens
 
 _client = None
 _OPENAI_AVAILABLE = False
@@ -21,7 +20,7 @@ def get_client():
     from flask import request
     try:
         if request:
-            key = request.headers.get('X-Grok-Key') or request.headers.get('X-Grok-Key')
+            key = request.headers.get('X-Grok-Key') or request.headers.get('X-Gemini-Key')
             if key and key.strip():
                 return openai.OpenAI(api_key=key.strip(), base_url="https://api.x.ai/v1")
     except RuntimeError:

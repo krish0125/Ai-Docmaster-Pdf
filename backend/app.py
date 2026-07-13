@@ -104,7 +104,7 @@ def create_app() -> Flask:
             status['database'] = 'unavailable'
 
         # Check Grok
-        status['gemini_configured'] = bool(Config.GEMINI_API_KEY)
+        status['grok_configured'] = bool(Config.GROK_API_KEY)
 
         # Check Tesseract
         tesseract_found = False
@@ -198,10 +198,10 @@ def _run_startup_checks():
         print(f"[Startup Check] TiDB Database: ERROR - {e}")
 
     # 2. Check Grok key
-    key = Config.GEMINI_API_KEY
+    key = Config.GROK_API_KEY
     if not key:
         print("[Startup Check] Grok API Key: WARNING - Missing (AI engines will fail)")
-    elif key in ('placeholder', 'your-gemini-api-key', 'dev-key'):
+    elif key in ('placeholder', 'your-grok-api-key', 'dev-key'):
         print("[Startup Check] Grok API Key: WARNING - Using default/placeholder key")
     else:
         print("[Startup Check] Grok API Key: CONFIGURED")

@@ -23,7 +23,7 @@ class Config:
         f"{TIDB_DB_NAME}?ssl_ca={certifi.where()}"
     )
 
-    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
+    GROK_API_KEY = os.getenv('GROK_API_KEY', '')
     TESSERACT_PATH = os.getenv('TESSERACT_PATH', r'C:\Program Files\Tesseract-OCR\tesseract.exe')
 
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')

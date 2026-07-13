@@ -1,318 +1,86 @@
-"""OCR engine — extract text from images using OpenCV pre-processing + Tesseract.
-
-Handles gracefully when Tesseract is not installed.
-"""
+"""Phase 5 OCR Engine — handles Tesseract for standard PDFs/Images and Grok Vision for handwriting."""
 
 import os
-
+import pytesseract
+from pdf2image import convert_from_path
+import cv2
 import numpy as np
-from PIL import Image
-
 from config import Config
 
-# ---------------------------------------------------------------------------
-# Tesseract availability check
-# ---------------------------------------------------------------------------
-_TESSERACT_AVAILABLE = False
+pytesseract.pytesseract.tesseract_cmd = Config.TESSERACT_PATH
 
-try:
-    import pytesseract
-    pytesseract.pytesseract.tesseract_cmd = Config.TESSERACT_PATH
-    # Quick check: does the binary actually exist?
-    if os.path.isfile(Config.TESSERACT_PATH):
-        _TESSERACT_AVAILABLE = True
-    else:
-        print(f"[OCR] Tesseract binary not found at {Config.TESSERACT_PATH}")
-except ImportError:
-    print("[OCR] pytesseract is not installed")
-    pytesseract = None  # type: ignore[assignment]
+def extract_text_from_image(image_path: str, lang: str = 'eng') -> str:
+    """Standard OCR using Tesseract for printed text."""
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"Image not found: {image_path}")
 
-try:
-    import cv2
-    _CV2_AVAILABLE = True
-except ImportError:
-    print("[OCR] opencv-python (cv2) is not installed")
-    cv2 = None  # type: ignore[assignment]
-    _CV2_AVAILABLE = False
+    img = cv2.imread(image_path)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # Denoise and threshold
+    gray = cv2.medianBlur(gray, 3)
+    gray = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+    
+    custom_config = r'--oem 3 --psm 6'
+    text = pytesseract.image_to_string(gray, lang=lang, config=custom_config)
+    return text.strip()
 
-
-# ---------------------------------------------------------------------------
-# Image pre-processing
-# ---------------------------------------------------------------------------
-
-def preprocess_image(image: np.ndarray) -> np.ndarray:
-    """Convert to grayscale → Gaussian blur → Otsu threshold.
-
-    Improves OCR accuracy on noisy / low-contrast images.
-    """
-    if image is None:
-        raise ValueError("Empty image passed to preprocess_image")
-
-    # Convert to grayscale if needed
-    if len(image.shape) == 3:
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    else:
-        gray = image
-
-    # Gaussian blur to reduce noise
-    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-
-    # Otsu's thresholding
-    _, thresh = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-    return thresh
-
-
-# ---------------------------------------------------------------------------
-# Core OCR
-# ---------------------------------------------------------------------------
-
-def extract_text_from_image(image_path: str) -> dict:
-    """Run OCR on a single image file.
-
-    Returns ``{text, confidence, word_count}`` or an error dict.
-    """
-    if not _TESSERACT_AVAILABLE:
-        return {
-            'text': '',
-            'confidence': 0,
-            'word_count': 0,
-            'error': (
-                'Tesseract OCR is not installed or not found at '
-                f'"{Config.TESSERACT_PATH}". Please install Tesseract and '
-                'set TESSERACT_PATH in your .env file.'
-            ),
-        }
-
-    if not os.path.isfile(image_path):
-        return {'text': '', 'confidence': 0, 'word_count': 0, 'error': 'Image file not found'}
-
-    try:
-        if _CV2_AVAILABLE:
-            # Use OpenCV for pre-processing
-            image = cv2.imread(image_path)
-            if image is None:
-                return {'text': '', 'confidence': 0, 'word_count': 0, 'error': 'Could not read image'}
-
-            processed = preprocess_image(image)
-
-            # OCR with confidence data
-            data = pytesseract.image_to_data(processed, output_type=pytesseract.Output.DICT)
-            confidences = [int(c) for c in data['conf'] if int(c) > 0]
-            avg_confidence = sum(confidences) / len(confidences) if confidences else 0
-
-            text = pytesseract.image_to_string(processed).strip()
-        else:
-            # Fallback: use PIL directly
-            pil_image = Image.open(image_path)
-            text = pytesseract.image_to_string(pil_image).strip()
-
-            data = pytesseract.image_to_data(pil_image, output_type=pytesseract.Output.DICT)
-            confidences = [int(c) for c in data['conf'] if int(c) > 0]
-            avg_confidence = sum(confidences) / len(confidences) if confidences else 0
-
-        word_count = len(text.split()) if text else 0
-
-        return {
-            'text': text,
-            'confidence': round(avg_confidence, 2),
-            'word_count': word_count,
-        }
-    except Exception as e:
-        return {'text': '', 'confidence': 0, 'word_count': 0, 'error': str(e)}
-
-
-# ---------------------------------------------------------------------------
-# Scanned PDF OCR
-# ---------------------------------------------------------------------------
-
-def extract_text_from_pdf_image(pdf_path: str) -> str:
-    """Extract text from a scanned / image-based PDF.
-
-    Strategy:
-      1. Try pdfplumber first (fast, works for digital PDFs).
-      2. If no text is found, convert each page to an image and OCR.
-    """
-    # --- Attempt text-layer extraction first ---
-    try:
-        import pdfplumber
-        texts: list[str] = []
-        with pdfplumber.open(pdf_path) as pdf:
-            for page in pdf.pages:
-                t = page.extract_text()
-                if t:
-                    texts.append(t)
-        if texts:
-            return '\n\n'.join(texts)
-    except Exception:
-        pass  # fall through to OCR
-
-    # --- OCR fallback ---
-    if not _TESSERACT_AVAILABLE:
-        return '[OCR unavailable] Tesseract is not installed.'
-
-    try:
-        from pypdf import PdfReader
-        from PIL import Image as PILImage
-        import io
-
-        reader = PdfReader(pdf_path)
-        ocr_texts: list[str] = []
-
-        for page_num, page in enumerate(reader.pages):
-            # Try to extract images embedded in the page
-            images_extracted = False
-            for image_key in page.images:
-                try:
-                    img_data = image_key.data
-                    pil_img = PILImage.open(io.BytesIO(img_data))
-                    # Convert to RGB if needed (e.g. CMYK)
-                    if pil_img.mode not in ('RGB', 'L'):
-                        pil_img = pil_img.convert('RGB')
-                    img_array = np.array(pil_img)
-
-                    if _CV2_AVAILABLE:
-                        processed = preprocess_image(img_array)
-                        text = pytesseract.image_to_string(processed)
-                    else:
-                        text = pytesseract.image_to_string(pil_img)
-
-                    if text.strip():
-                        ocr_texts.append(text.strip())
-                        images_extracted = True
-                except Exception:
-                    continue
-
-            if not images_extracted:
-                # If no images could be extracted, note it
-                ocr_texts.append(f'[Page {page_num + 1}: no extractable content]')
-
-        return '\n\n'.join(ocr_texts) if ocr_texts else 'No text could be extracted from this PDF.'
-    except Exception as e:
-        return f'OCR extraction failed: {str(e)}'
-
-
-# ---------------------------------------------------------------------------
-# Phase 5 extensions
-# ---------------------------------------------------------------------------
+def extract_text_from_pdf_image(pdf_path: str, lang: str = 'eng') -> str:
+    """Standard OCR for scanned PDFs by converting pages to images and using Tesseract."""
+    if not os.path.exists(pdf_path):
+        raise FileNotFoundError(f"PDF not found: {pdf_path}")
+        
+    pages = convert_from_path(pdf_path, 300)
+    full_text = []
+    
+    for page in pages:
+        img = np.array(page)
+        gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+        custom_config = r'--oem 3 --psm 6'
+        text = pytesseract.image_to_string(gray, lang=lang, config=custom_config)
+        full_text.append(text)
+        
+    return "\n\n".join(full_text).strip()
 
 def handwriting_ocr(image_path: str) -> dict:
     """Recognise handwritten text using Grok vision (no Tesseract needed)."""
-    try:
-        from ai_modules.chat_engine import get_client
-        import base64, pathlib
-
-        from ai_modules.exceptions import call_grok_with_retry
-        client = get_client()
-        if client is None:
-            raise RuntimeError("Grok API client not initialized.")
-            
-        data   = pathlib.Path(image_path).read_bytes()
-        b64    = base64.b64encode(data).decode()
-        ext    = image_path.rsplit('.', 1)[-1].lower()
-        mime   = 'image/jpeg' if ext in ('jpg', 'jpeg') else f'image/{ext}'
-
-        response = call_grok_with_retry(
-            client=client,
-            model='grok-2-latest',
-            contents=[{
-                'parts': [
-                    {'inline_data': {'mime_type': mime, 'data': b64}},
-                    {'text': (
-                        'This is a handwritten document. Please transcribe every word '
-                        'exactly as written, preserving line breaks. '
-                        'Return ONLY the transcription — no commentary.'
-                    )},
-                ]
-            }]
-        )
-        text = response.text.strip() if response.text else ''
-        return {'text': text, 'word_count': len(text.split()), 'method': 'grok-vision'}
-    except Exception as e:
-        return {'text': '', 'word_count': 0, 'error': str(e)}
-
-
-def extract_tables_from_pdf(pdf_path: str) -> list[dict]:
-    """Extract all tables from a PDF using pdfplumber.
-    Returns list of {page, table_index, headers, rows}.
-    """
-    try:
-        import pdfplumber
-    except ImportError:
-        return [{'error': 'pdfplumber not installed'}]
-
-    results = []
-    with pdfplumber.open(pdf_path) as pdf:
-        for page_num, page in enumerate(pdf.pages, start=1):
-            tables = page.extract_tables()
-            for ti, table in enumerate(tables, start=1):
-                if not table:
-                    continue
-                headers = [str(c) if c else '' for c in table[0]]
-                rows    = [[str(c) if c else '' for c in row] for row in table[1:]]
-                results.append({
-                    'page': page_num,
-                    'table_index': ti,
-                    'headers': headers,
-                    'rows': rows,
-                    'row_count': len(rows),
-                    'col_count': len(headers),
-                })
-    return results
-
-
-def extract_images_from_pdf(pdf_path: str, output_dir: str) -> list[dict]:
-    """Extract embedded images from a PDF using PyMuPDF (fitz).
-    Saves images to *output_dir* and returns list of {filename, page, index, size}.
-    """
-    try:
-        import fitz  # PyMuPDF
-    except ImportError:
-        return [{'error': 'PyMuPDF not installed. Run: pip install PyMuPDF'}]
-
-    import uuid, os
-    os.makedirs(output_dir, exist_ok=True)
-    results = []
-
-    doc = fitz.open(pdf_path)
-    for page_num in range(len(doc)):
-        page  = doc[page_num]
-        images = page.get_images(full=True)
-        for img_idx, img_info in enumerate(images):
-            xref = img_info[0]
-            base = doc.extract_image(xref)
-            ext  = base['ext']
-            data = base['image']
-            fname = f"img_p{page_num+1}_{img_idx+1}_{uuid.uuid4().hex[:8]}.{ext}"
-            fpath = os.path.join(output_dir, fname)
-            with open(fpath, 'wb') as f:
-                f.write(data)
-            results.append({
-                'filename': fname,
-                'page': page_num + 1,
-                'index': img_idx + 1,
-                'size': len(data),
-                'format': ext,
-            })
-    doc.close()
-    return results
-
-
-def multilang_ocr(image_path: str, lang: str = 'eng') -> dict:
-    """Run Tesseract OCR with an explicit language code.
-    *lang* follows Tesseract format: 'eng', 'fra', 'deu', 'spa', 'hin', 'chi_sim', etc.
-    """
-    if not _TESSERACT_AVAILABLE:
-        return {'text': '', 'confidence': 0, 'word_count': 0,
-                'error': 'Tesseract not available'}
-    try:
-        from PIL import Image as PILImage
-        img = PILImage.open(image_path)
-        text = pytesseract.image_to_string(img, lang=lang).strip()
-        data = pytesseract.image_to_data(img, lang=lang, output_type=pytesseract.Output.DICT)
-        confs = [int(c) for c in data['conf'] if int(c) > 0]
-        avg   = sum(confs) / len(confs) if confs else 0
-        return {'text': text, 'confidence': round(avg, 2),
-                'word_count': len(text.split()), 'lang': lang}
-    except Exception as e:
-        return {'text': '', 'confidence': 0, 'word_count': 0, 'error': str(e)}
+    import base64
+    from ai_modules.chat_engine import get_client
+    from ai_modules.exceptions import GrokAPIError, call_grok_with_retry
+    
+    client = get_client()
+    if not client:
+        raise GrokAPIError("Grok API client not initialized. Check GROK_API_KEY.", "invalid_key", 401)
+        
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"Image not found: {image_path}")
+        
+    with open(image_path, "rb") as image_file:
+        base64_image = base64.b64encode(image_file.read()).decode('utf-8')
+        
+    prompt = "Transcribe the handwritten text in this image perfectly. Maintain original formatting. Return ONLY the transcribed text, without markdown blocks or conversational fillers."
+    
+    messages = [
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": prompt},
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:image/jpeg;base64,{base64_image}"
+                    }
+                }
+            ]
+        }
+    ]
+    
+    response = call_grok_with_retry(
+        client=client,
+        model="grok-2-vision-1212",
+        messages=messages,
+        max_tokens=2048
+    )
+    
+    text = response.choices[0].message.content.strip()
+    return {"text": text, "method": "grok_vision"}

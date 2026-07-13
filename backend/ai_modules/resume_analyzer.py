@@ -76,7 +76,7 @@ OVERALL_ASSESSMENT:
 # Response parser
 # ---------------------------------------------------------------------------
 
-def _parse_gemini_response(response_text: str) -> dict:
+def _parse_grok_response(response_text: str) -> dict:
     """Parse the structured Grok response into a dict in a highly robust way."""
     result: dict = {
         'ats_score': 0,
@@ -228,7 +228,7 @@ def _fallback_analysis(resume_text: str, target_role: str) -> dict:
     return {
         'ats_score': score,
         'skills_found': found_skills,
-        'missing_skills': ['Unable to determine without AI analysis — configure GEMINI_API_KEY for full analysis'],
+        'missing_skills': ['Unable to determine without AI analysis — configure GROK_API_KEY for full analysis'],
         'suggestions': suggestions,
         'format_feedback': (
             f'Found {len(found_sections)} of {len(_RESUME_KEYWORDS)} common resume sections. '
@@ -238,7 +238,7 @@ def _fallback_analysis(resume_text: str, target_role: str) -> dict:
         'overall_rating': (
             f'Basic analysis score: {score}/100. '
             'This is a keyword-based estimate. '
-            'Set GEMINI_API_KEY in .env for a comprehensive AI-powered analysis.'
+            'Set GROK_API_KEY in .env for a comprehensive AI-powered analysis.'
         ),
         'method': 'keyword_fallback',
     }
@@ -269,7 +269,7 @@ def analyze_resume(resume_text: str, target_role: str = '') -> dict:
     client = _get_client()
     if client is None:
         raise GrokAPIError(
-            "Grok API client could not be initialized. Please configure GEMINI_API_KEY in your .env file.",
+            "Grok API client could not be initialized. Please configure GROK_API_KEY in your .env file.",
             error_type="invalid_key",
             status_code=401
         )
@@ -280,7 +280,7 @@ def analyze_resume(resume_text: str, target_role: str = '') -> dict:
         model='grok-2-latest',
         contents=prompt
     )
-    parsed = _parse_gemini_response(response.text)
+    parsed = _parse_grok_response(response.text)
     parsed['method'] = 'grok_ai'
     return parsed
 

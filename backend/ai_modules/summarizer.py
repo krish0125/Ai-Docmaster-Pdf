@@ -130,7 +130,7 @@ def generate_summary(text: str, mode: str = 'brief') -> dict:
     client = get_client()
     if client is None:
         raise GrokAPIError(
-            "Grok API client could not be initialized. Please configure GEMINI_API_KEY in your .env file.",
+            "Grok API client could not be initialized. Please configure GROK_API_KEY in your .env file.",
             error_type="invalid_key",
             status_code=401
         )
