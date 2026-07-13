@@ -214,7 +214,7 @@ def handwriting_ocr(image_path: str) -> dict:
 
         response = call_gemini_with_retry(
             client=client,
-            model='gemini-2.5-flash',
+            model='gemini-2.5-flash-lite',
             contents=[{
                 'parts': [
                     {'inline_data': {'mime_type': mime, 'data': b64}},

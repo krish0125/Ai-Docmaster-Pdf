@@ -54,7 +54,7 @@ def generate_flashcards(text: str) -> list:
 
     response = call_gemini_with_retry(
         client=client,
-        model='gemini-2.5-flash',
+        model='gemini-2.5-flash-lite',
         contents=prompt
     )
     resp_text = response.text.strip()

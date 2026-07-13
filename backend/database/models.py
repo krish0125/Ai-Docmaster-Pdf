@@ -324,7 +324,16 @@ def get_file_by_id(file_id: str) -> dict | None:
     if fid is None: return None
     try:
         f = session.query(File).filter(File.id == fid).first()
-        return f.to_dict() if f else None
+        if f:
+            d = f.to_dict()
+            # If R2 is configured and file is missing locally, restore it
+            import os
+            from services.file_service import download_from_r2
+            if not os.path.exists(d['file_path']):
+                os.makedirs(os.path.dirname(d['file_path']), exist_ok=True)
+                download_from_r2(d['filename'], d['file_path'])
+            return d
+        return None
     except Exception as e:
         print(f"[Models] get_file_by_id error: {e}")
         return None

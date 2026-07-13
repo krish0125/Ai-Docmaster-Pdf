@@ -43,17 +43,32 @@ def _ensure_dir():
     os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
+from services.file_service import upload_to_r2
+
 def _save_upload(file) -> str:
     """Save uploaded file; return full path."""
     _ensure_dir()
     safe_name = f"{uuid.uuid4().hex}_{file.filename}"
     path = os.path.join(UPLOAD_FOLDER, safe_name)
     file.save(path)
+    # R2 integration for input files
+    if upload_to_r2(path, safe_name):
+        try:
+            os.remove(path)
+        except Exception:
+            pass
     return path
 
 
 def _make_record(user_id, filename, original_name, file_type, file_path, action, meta=None):
-    size = os.path.getsize(file_path)
+    size = os.path.getsize(file_path) if os.path.exists(file_path) else 0
+    # Upload output to R2
+    if upload_to_r2(file_path, filename):
+        try:
+            os.remove(file_path)
+        except Exception:
+            pass
+            
     record = save_file_record(
         user_id=user_id, filename=filename,
         original_name=original_name, file_type=file_type,

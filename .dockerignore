@@ -1,0 +1,15 @@
+.env
+backend/uploads/
+scratch/
+backend/tests/fixtures/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+.git/
+.gitignore
+README.md

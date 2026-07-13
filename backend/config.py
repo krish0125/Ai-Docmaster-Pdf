@@ -9,6 +9,7 @@ class Config:
     SECRET_KEY = os.getenv('FLASK_SECRET_KEY', 'dev-secret-key')
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'jwt-dev-secret')
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=24)
+    FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:5500')
 
     TIDB_HOST = os.getenv('TIDB_HOST', '')
     TIDB_PORT = os.getenv('TIDB_PORT', '4000')

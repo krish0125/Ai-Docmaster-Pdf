@@ -167,7 +167,7 @@ def generate_summary(text: str, mode: str = 'brief') -> dict:
 
     response = call_gemini_with_retry(
         client=client,
-        model='gemini-2.5-flash',
+        model='gemini-2.5-flash-lite',
         contents=prompt
     )
     summary_text = response.text.strip()

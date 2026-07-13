@@ -126,7 +126,7 @@ def generate_response(context: str, question: str) -> str:
     """Low-level Gemini API call.
 
     Builds a prompt from *context* + *question*, sends it to
-    ``gemini-2.5-flash``, and returns the model's text response.
+    ``gemini-2.5-flash-lite``, and returns the model's text response.
     """
     client = get_client()
     if client is None:
@@ -153,7 +153,7 @@ def generate_response(context: str, question: str) -> str:
 
     response = call_gemini_with_retry(
         client=client,
-        model='gemini-2.5-flash',
+        model='gemini-2.5-flash-lite',
         contents=prompt
     )
     return response.text

@@ -25,7 +25,7 @@ AI-DocMaster/
 └── backend/              # Flask Backend Server
     ├── app.py            # Main server entrypoint & blueprint mapping
     ├── config.py         # Config variables
-    ├── database/         # MongoDB initialization and CRUD helpers
+    ├── database/         # TiDB initialization and CRUD helpers
     ├── middleware/       # JWT auth filters
     ├── routes/           # REST endpoints
     ├── services/         # PDF processing algorithms
@@ -36,7 +36,7 @@ AI-DocMaster/
 
 ### Prerequisites
 1. **Python 3.8+**
-2. **MongoDB** (local server running on port `27017` or MongoDB Atlas URI)
+2. **TiDB Cloud Database** (or any MySQL compatible server)
 3. **Tesseract OCR** system binary installed (on Windows: default is `C:\Program Files\Tesseract-OCR\tesseract.exe`)
 
 ### Backend Setup
@@ -50,9 +50,12 @@ AI-DocMaster/
    ```
 3. Copy the template env file or edit the `.env` file in the project root:
    ```env
-   # MongoDB Connection
-   MONGO_URI=mongodb://localhost:27017/
-   MONGO_DB_NAME=ai_docmaster
+   # TiDB Database Connection
+   TIDB_HOST=your-tidb-host.com
+   TIDB_PORT=4000
+   TIDB_USER=your_user
+   TIDB_PASSWORD=your_password
+   TIDB_DB_NAME=ai_docmaster
 
    # Gemini API Key (get from https://aistudio.google.com)
    GEMINI_API_KEY=your_gemini_api_key_here
@@ -79,11 +82,11 @@ AI-DocMaster/
 2. Navigate to `http://localhost:5500` or open the pages in your browser.
 
 
-* How To Run this projects step -->
+* How To Run this project:
 
-[1] --> .env
+[1] --> Create `.env` from `.env.example`
 [2] --> cd backend
 [3]  -> pip install -r requirements.txt
-[4]  -> pythonn app.pythonn
+[4]  -> python app.py
 [5]  -> go to frontend and click login.html and then right bottom click live server 
-[6]  -> open mongobd to show data in local server 27017 :
+[6]  -> Check TiDB dashboard to see your data.

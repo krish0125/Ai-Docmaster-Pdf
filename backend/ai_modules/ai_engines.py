@@ -28,7 +28,7 @@ def _ask(prompt: str, max_tokens: int = 8192, response_json: bool = False) -> st
     try:
         response = call_gemini_with_retry(
             client=client,
-            model='gemini-2.5-flash',
+            model='gemini-2.5-flash-lite',
             contents=[{'parts': [{'text': prompt}]}],
             config=config
         )
@@ -37,7 +37,7 @@ def _ask(prompt: str, max_tokens: int = 8192, response_json: bool = False) -> st
         from ai_modules.exceptions import GeminiAPIError
         if isinstance(e, GeminiAPIError):
             raise e
-        raise parse_gemini_error(e, model_name='gemini-2.5-flash')
+        raise parse_gemini_error(e, model_name='gemini-2.5-flash-lite')
 
 
 

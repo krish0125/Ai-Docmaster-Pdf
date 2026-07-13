@@ -107,7 +107,16 @@ def create_app() -> Flask:
         status['gemini_configured'] = bool(Config.GEMINI_API_KEY)
 
         # Check Tesseract
-        status['tesseract_found'] = os.path.isfile(Config.TESSERACT_PATH)
+        tesseract_found = False
+        if Config.TESSERACT_PATH and os.path.isfile(Config.TESSERACT_PATH):
+            tesseract_found = True
+        if not tesseract_found:
+            try:
+                res = subprocess.run(['tesseract', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+                tesseract_found = (res.returncode == 0)
+            except Exception:
+                pass
+        status['tesseract_found'] = tesseract_found
 
         # Check Poppler (for PDF-to-image)
         poppler_found = False
@@ -127,38 +136,20 @@ def create_app() -> Flask:
 
         # Check LibreOffice (for Office-to-PDF)
         soffice_found = False
-        common_soffice_paths = [
-            r'C:\Program Files\LibreOffice\program\soffice.exe',
-            r'C:\Program Files (x86)\LibreOffice\program\soffice.exe'
-        ]
-        for p in common_soffice_paths:
-            if os.path.isfile(p):
-                soffice_found = True
-                break
-        if not soffice_found:
-            try:
-                res = subprocess.run(['soffice', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                soffice_found = (res.returncode == 0)
-            except Exception:
-                pass
+        try:
+            res = subprocess.run(['soffice', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            soffice_found = (res.returncode == 0)
+        except Exception:
+            pass
         status['libreoffice_found'] = soffice_found
 
         # Check wkhtmltopdf (for HTML-to-PDF)
         wk_found = False
-        common_wk_paths = [
-            r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe',
-            r'C:\Program Files (x86)\wkhtmltopdf\bin\wkhtmltopdf.exe'
-        ]
-        for p in common_wk_paths:
-            if os.path.isfile(p):
-                wk_found = True
-                break
-        if not wk_found:
-            try:
-                res = subprocess.run(['wkhtmltopdf', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-                wk_found = (res.returncode == 0)
-            except Exception:
-                pass
+        try:
+            res = subprocess.run(['wkhtmltopdf', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            wk_found = (res.returncode == 0)
+        except Exception:
+            pass
         status['wkhtmltopdf_found'] = wk_found
 
         return jsonify(status), 200

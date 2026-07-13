@@ -43,6 +43,13 @@ def save_upload(file, upload_folder: str) -> dict:
     size = os.path.getsize(file_path)
     file_type = original_name.rsplit('.', 1)[1].lower() if '.' in original_name else 'unknown'
 
+    # Upload to R2, delete local if successful
+    if upload_to_r2(file_path, filename):
+        try:
+            os.remove(file_path)
+        except Exception:
+            pass
+
     return {
         'filename': filename,
         'original_name': original_name,
@@ -53,7 +60,9 @@ def save_upload(file, upload_folder: str) -> dict:
 
 
 def delete_file(file_path: str) -> bool:
-    """Delete a file from disk. Returns True if deleted, False otherwise."""
+    """Delete a file from disk and R2. Returns True if deleted, False otherwise."""
+    filename = os.path.basename(file_path)
+    delete_from_r2(filename)
     try:
         if os.path.exists(file_path):
             os.remove(file_path)
@@ -74,3 +83,64 @@ def get_file_size_formatted(size_bytes: int) -> str:
         return f"{size_bytes / (1024 * 1024):.1f} MB"
     else:
         return f"{size_bytes / (1024 * 1024 * 1024):.2f} GB"
+
+def get_s3_client():
+    """Return a boto3 client for Cloudflare R2 if configured."""
+    account_id = os.getenv('R2_ACCOUNT_ID')
+    access_key = os.getenv('R2_ACCESS_KEY_ID')
+    secret_key = os.getenv('R2_SECRET_ACCESS_KEY')
+    
+    if not (account_id and access_key and secret_key):
+        return None
+    try:
+        import boto3
+        from botocore.config import Config as BotoConfig
+        return boto3.client(
+            's3',
+            endpoint_url=f"https://{account_id}.r2.cloudflarestorage.com",
+            aws_access_key_id=access_key,
+            aws_secret_access_key=secret_key,
+            region_name='auto',
+            config=BotoConfig(signature_version='s3v4')
+        )
+    except ImportError:
+        return None
+
+def upload_to_r2(local_file_path: str, object_name: str) -> bool:
+    """Upload a local file to Cloudflare R2."""
+    s3 = get_s3_client()
+    bucket = os.getenv('R2_BUCKET_NAME')
+    if s3 is None or not bucket:
+        return False
+    try:
+        s3.upload_file(local_file_path, bucket, object_name)
+        return True
+    except Exception as e:
+        print(f"[R2] Upload error: {e}")
+        return False
+
+def download_from_r2(object_name: str, download_path: str) -> bool:
+    """Download a file from Cloudflare R2 to local disk."""
+    s3 = get_s3_client()
+    bucket = os.getenv('R2_BUCKET_NAME')
+    if s3 is None or not bucket:
+        return False
+    try:
+        s3.download_file(bucket, object_name, download_path)
+        return True
+    except Exception as e:
+        print(f"[R2] Download error: {e}")
+        return False
+
+def delete_from_r2(object_name: str) -> bool:
+    """Delete a file from Cloudflare R2."""
+    s3 = get_s3_client()
+    bucket = os.getenv('R2_BUCKET_NAME')
+    if s3 is None or not bucket:
+        return False
+    try:
+        s3.delete_object(Bucket=bucket, Key=object_name)
+        return True
+    except Exception as e:
+        print(f"[R2] Delete error: {e}")
+        return False

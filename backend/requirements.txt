@@ -29,3 +29,5 @@ fonttools
 openpyxl
 authlib==1.4.0
 
+
+boto3==1.34.0

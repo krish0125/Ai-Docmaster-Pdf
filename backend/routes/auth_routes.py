@@ -277,7 +277,8 @@ def google_callback():
         }
         
         fragment = f"token={access_token}&user={urllib.parse.quote(json.dumps(user_data))}"
-        redirect_url = f"http://localhost:5500/dashboard.html#{fragment}"
+        from config import Config
+        redirect_url = f"{Config.FRONTEND_URL}/dashboard.html#{fragment}"
         return redirect(redirect_url)
         
     except Exception as e:
@@ -347,7 +348,8 @@ def github_callback():
         }
         
         fragment = f"token={access_token}&user={urllib.parse.quote(json.dumps(user_data))}"
-        redirect_url = f"http://localhost:5500/dashboard.html#{fragment}"
+        from config import Config
+        redirect_url = f"{Config.FRONTEND_URL}/dashboard.html#{fragment}"
         return redirect(redirect_url)
         
     except Exception as e:
