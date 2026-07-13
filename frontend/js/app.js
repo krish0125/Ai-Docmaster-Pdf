@@ -44,9 +44,9 @@ async function apiFetch(endpoint, options = {}) {
         headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const customKey = localStorage.getItem('user_gemini_key');
+    const customKey = localStorage.getItem('user_grok_key');
     if (customKey) {
-        headers['X-Gemini-Key'] = customKey;
+        headers['X-Grok-Key'] = customKey;
     }
 
     if (!(options.body instanceof FormData)) {
@@ -254,7 +254,7 @@ function initDashboard() {
     loadRecentFiles();
     showSection('dashboard-home');
     initDropdown();
-    initGeminiKeyField();
+    initGrokKeyField();
     const savedTheme = localStorage.getItem('theme') || 'dark';
     setTheme(savedTheme);
 }
@@ -588,8 +588,8 @@ function uploadFileWithProgress(url, formData, onProgress) {
         const token = getToken();
         if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 
-        const customKey = localStorage.getItem('user_gemini_key');
-        if (customKey) xhr.setRequestHeader('X-Gemini-Key', customKey);
+        const customKey = localStorage.getItem('user_grok_key');
+        if (customKey) xhr.setRequestHeader('X-Grok-Key', customKey);
 
         xhr.upload.addEventListener('progress', (e) => {
             if (e.lengthComputable && onProgress) {
@@ -832,13 +832,13 @@ function showHelpModal() {
     showModal('helpModal');
 }
 
-// ── Gemini Key Management ──
-function initGeminiKeyField() {
-    const input = document.getElementById('geminiApiKeyInput');
+// ── Grok Key Management ──
+function initGrokKeyField() {
+    const input = document.getElementById('grokApiKeyInput');
     const msg = document.getElementById('keyStatusMsg');
     if (!input) return;
 
-    const savedKey = localStorage.getItem('user_gemini_key') || '';
+    const savedKey = localStorage.getItem('user_grok_key') || '';
     input.value = savedKey;
     
     if (msg) {
@@ -852,20 +852,20 @@ function initGeminiKeyField() {
     }
 }
 
-function saveGeminiKey() {
-    const input = document.getElementById('geminiApiKeyInput');
+function saveGrokKey() {
+    const input = document.getElementById('grokApiKeyInput');
     const msg = document.getElementById('keyStatusMsg');
     if (!input) return;
 
     const val = input.value.trim();
     if (val) {
-        localStorage.setItem('user_gemini_key', val);
+        localStorage.setItem('user_grok_key', val);
         if (msg) {
             msg.textContent = '✓ Custom client API key active';
             msg.style.color = '#22C55E';
         }
     } else {
-        localStorage.removeItem('user_gemini_key');
+        localStorage.removeItem('user_grok_key');
         if (msg) {
             msg.textContent = 'Using default server API key';
             msg.style.color = 'var(--text-muted)';
@@ -878,7 +878,7 @@ function toggleKeyVisibility(event) {
         event.stopPropagation();
         event.preventDefault();
     }
-    const input = document.getElementById('geminiApiKeyInput');
+    const input = document.getElementById('grokApiKeyInput');
     const icon = document.getElementById('eyeIcon');
     if (!input) return;
 

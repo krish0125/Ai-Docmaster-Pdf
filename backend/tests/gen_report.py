@@ -66,7 +66,7 @@ markdown += """
 ### 4. Deploy-Readiness Specifics
 - **Frontend Config**: FAIL - Still hardcoded to `http://localhost:5001`.
 - **Storage Status**: FAIL - Documented as local disk (`uploads/`), needs Render Persistent Disk.
-- **Rate Limiting**: PASS - `/ai/*` routes trigger 429 when threshold exceeded (or 503 from Gemini if upstream limit reached first).
+- **Rate Limiting**: PASS - `/ai/*` routes trigger 429 when threshold exceeded (or 503 from Grok if upstream limit reached first).
 - **Secrets/Env**: FAIL - `JWT_SECRET_KEY` is a placeholder.
 
 ### 5. Frontend Sanity

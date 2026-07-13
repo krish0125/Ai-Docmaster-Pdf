@@ -13,7 +13,7 @@ from ai_modules.summarizer import generate_summary
 from ai_modules.chat_engine import chat_with_pdf
 from ai_modules.resume_analyzer import analyze_resume
 from ai_modules.flashcard_engine import generate_flashcards
-from ai_modules.exceptions import GeminiAPIError
+from ai_modules.exceptions import GrokAPIError
 from database.models import (
     get_file_by_id,
     save_history,
@@ -135,7 +135,7 @@ def summary():
             'result': result,
         }), 200
 
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': f'Summary generation failed: {str(e)}'}), 500
@@ -208,7 +208,7 @@ def chat():
             'chat_id': chat_id,
         }), 200
 
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': f'Chat failed: {str(e)}'}), 500
@@ -252,7 +252,7 @@ def resume_analyze():
             'result': analysis,
         }), 200
 
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': f'Resume analysis failed: {str(e)}'}), 500
@@ -293,7 +293,7 @@ def notes():
             'result': result,
         }), 200
 
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': f'Notes generation failed: {str(e)}'}), 500
@@ -334,7 +334,7 @@ def flashcards():
             'cards': cards,
         }), 200
 
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': f'Flashcard generation failed: {str(e)}'}), 500
@@ -407,7 +407,7 @@ def _p6_route(action_fn, action_name, extra_args=None):
         result = action_fn(text, **kwargs)
         save_history(user_id, file_id or '', action_name, 'success', {})
         return jsonify({'message': f'{action_name} complete', 'result': result}), 200
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -437,7 +437,7 @@ def route_answer_question():
         result = answer_question(text, question)
         save_history(user_id, file_id or '', 'answer_question', 'success', {'q': question[:100]})
         return jsonify({'message': 'Question answered', 'result': result}), 200
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -483,7 +483,7 @@ def route_check_grammar():
         result = check_grammar(text)
         save_history(user_id, '', 'check_grammar', 'success', {})
         return jsonify({'message': 'Grammar checked', 'result': result}), 200
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -508,7 +508,7 @@ def route_improve_writing():
         result = improve_writing(text)
         save_history(user_id, '', 'improve_writing', 'success', {})
         return jsonify({'message': 'Writing improved', 'result': result}), 200
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -534,7 +534,7 @@ def route_translate():
         result = translate_text(text, target_lang)
         save_history(user_id, '', 'translate', 'success', {'lang': target_lang})
         return jsonify({'message': f'Translated to {target_lang}', 'result': result}), 200
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -560,7 +560,7 @@ def route_rewrite():
         result = rewrite_text(text, style)
         save_history(user_id, '', 'rewrite', 'success', {'style': style})
         return jsonify({'message': 'Rewritten', 'result': result}), 200
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -586,7 +586,7 @@ def route_change_tone():
         result = change_tone(text, tone)
         save_history(user_id, '', 'change_tone', 'success', {'tone': tone})
         return jsonify({'message': 'Tone changed', 'result': result}), 200
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -611,7 +611,7 @@ def route_proofread():
         result = proofread(text)
         save_history(user_id, '', 'proofread', 'success', {})
         return jsonify({'message': 'Proofreading complete', 'result': result}), 200
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -657,7 +657,7 @@ def route_assignment_helper():
         result = assignment_helper(text, task)
         save_history(user_id, file_id or '', 'assignment_helper', 'success', {'task': task[:100]})
         return jsonify({'message': 'Assignment help ready', 'result': result}), 200
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -679,7 +679,7 @@ def route_research_assistant():
         result = research_assistant(text, topic)
         save_history(user_id, file_id or '', 'research_assistant', 'success', {'topic': topic[:100]})
         return jsonify({'message': 'Research summary ready', 'result': result}), 200
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -701,7 +701,7 @@ def route_cite_sources():
         result = cite_sources(text, style)
         save_history(user_id, file_id or '', 'cite_sources', 'success', {'style': style})
         return jsonify({'message': f'Citations formatted ({style})', 'result': result}), 200
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -723,7 +723,7 @@ def route_cover_letter():
         result = generate_cover_letter(text, job_desc)
         save_history(user_id, file_id or '', 'cover_letter', 'success', {})
         return jsonify({'message': 'Cover letter generated', 'result': result}), 200
-    except GeminiAPIError as e:
+    except GrokAPIError as e:
         return jsonify({'error': e.message, 'error_type': e.error_type}), e.status_code
     except Exception as e:
         return jsonify({'error': str(e)}), 500

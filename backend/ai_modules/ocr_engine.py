@@ -197,24 +197,24 @@ def extract_text_from_pdf_image(pdf_path: str) -> str:
 # ---------------------------------------------------------------------------
 
 def handwriting_ocr(image_path: str) -> dict:
-    """Recognise handwritten text using Gemini vision (no Tesseract needed)."""
+    """Recognise handwritten text using Grok vision (no Tesseract needed)."""
     try:
         from ai_modules.chat_engine import get_client
         import base64, pathlib
 
-        from ai_modules.exceptions import call_gemini_with_retry
+        from ai_modules.exceptions import call_grok_with_retry
         client = get_client()
         if client is None:
-            raise RuntimeError("Gemini API client not initialized.")
+            raise RuntimeError("Grok API client not initialized.")
             
         data   = pathlib.Path(image_path).read_bytes()
         b64    = base64.b64encode(data).decode()
         ext    = image_path.rsplit('.', 1)[-1].lower()
         mime   = 'image/jpeg' if ext in ('jpg', 'jpeg') else f'image/{ext}'
 
-        response = call_gemini_with_retry(
+        response = call_grok_with_retry(
             client=client,
-            model='gemini-2.5-flash-lite',
+            model='grok-2-latest',
             contents=[{
                 'parts': [
                     {'inline_data': {'mime_type': mime, 'data': b64}},
@@ -227,7 +227,7 @@ def handwriting_ocr(image_path: str) -> dict:
             }]
         )
         text = response.text.strip() if response.text else ''
-        return {'text': text, 'word_count': len(text.split()), 'method': 'gemini-vision'}
+        return {'text': text, 'word_count': len(text.split()), 'method': 'grok-vision'}
     except Exception as e:
         return {'text': '', 'word_count': 0, 'error': str(e)}
 

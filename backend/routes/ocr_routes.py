@@ -151,13 +151,13 @@ def pdf_ocr():
 
 
 # ---------------------------------------------------------------------------
-# Phase 5 — Handwriting OCR (Gemini vision)
+# Phase 5 — Handwriting OCR (Grok vision)
 # ---------------------------------------------------------------------------
 
 @ocr_bp.route('/handwriting', methods=['POST'])
 @jwt_required()
 def handwriting():
-    """Transcribe handwritten text from an image using Gemini vision."""
+    """Transcribe handwritten text from an image using Grok vision."""
     try:
         _ensure_upload_dir()
         user_id = get_jwt_identity()

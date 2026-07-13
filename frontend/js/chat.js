@@ -108,9 +108,9 @@ async function uploadChatPdf(file) {
     try {
         const token = localStorage.getItem('token');
         const headers = { 'Authorization': `Bearer ${token}` };
-        const customKey = localStorage.getItem('user_gemini_key');
+        const customKey = localStorage.getItem('user_grok_key');
         if (customKey) {
-            headers['X-Gemini-Key'] = customKey;
+            headers['X-Grok-Key'] = customKey;
         }
 
         const res = await fetch(`${API_BASE_CHAT}/pdf/upload`, {
@@ -209,9 +209,9 @@ async function sendMessage(text) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         };
-        const customKey = localStorage.getItem('user_gemini_key');
+        const customKey = localStorage.getItem('user_grok_key');
         if (customKey) {
-            headers['X-Gemini-Key'] = customKey;
+            headers['X-Grok-Key'] = customKey;
         }
 
         const res = await fetch(`${API_BASE_CHAT}/ai/chat`, {
@@ -228,13 +228,13 @@ async function sendMessage(text) {
         } else {
             let errMsg = data.error || 'Unknown error';
             if (data.error_type === 'invalid_key') {
-                errMsg = 'Invalid Gemini API key. Please check your API key in the configuration.';
+                errMsg = 'Invalid Grok API key. Please check your API key in the configuration.';
             } else if (data.error_type === 'quota_exceeded') {
-                errMsg = 'Gemini API quota exceeded. Please wait a minute or set a personal API key in settings.';
+                errMsg = 'Grok API quota exceeded. Please wait a minute or set a personal API key in settings.';
             } else if (data.error_type === 'model_not_found') {
-                errMsg = 'Gemini model not found. Check if the model is valid and not deprecated.';
+                errMsg = 'Grok model not found. Check if the model is valid and not deprecated.';
             } else if (data.error_type === 'timeout' || data.error_type === 'network') {
-                errMsg = 'Network error: Cannot reach Gemini servers.';
+                errMsg = 'Network error: Cannot reach Grok servers.';
             }
             addBotMessage('Sorry, I encountered an error: ' + errMsg);
         }

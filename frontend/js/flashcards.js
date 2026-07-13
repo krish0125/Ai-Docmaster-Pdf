@@ -89,13 +89,13 @@ async function handleGenerateFlashcards(e) {
     } catch (err) {
         let errMsg = err.message || 'Unknown error';
         if (err.error_type === 'invalid_key') {
-            errMsg = 'Invalid Gemini API key. Please check your API key in the configuration.';
+            errMsg = 'Invalid Grok API key. Please check your API key in the configuration.';
         } else if (err.error_type === 'quota_exceeded') {
-            errMsg = 'Gemini API quota exceeded. Please wait a minute or set a personal API key.';
+            errMsg = 'Grok API quota exceeded. Please wait a minute or set a personal API key.';
         } else if (err.error_type === 'model_not_found') {
-            errMsg = 'Gemini model not found. Check if the model is valid and not deprecated.';
+            errMsg = 'Grok model not found. Check if the model is valid and not deprecated.';
         } else if (err.error_type === 'timeout' || err.error_type === 'network') {
-            errMsg = 'Network error: Cannot reach the backend or Gemini servers.';
+            errMsg = 'Network error: Cannot reach the backend or Grok servers.';
         }
         showToast('Flashcard generation failed: ' + errMsg, 'error');
     } finally {

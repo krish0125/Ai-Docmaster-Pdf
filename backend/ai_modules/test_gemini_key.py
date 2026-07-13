@@ -10,7 +10,7 @@ def test_key():
     client = genai.Client(api_key=api_key)
     try:
         response = client.models.generate_content(
-            model='gemini-2.5-flash-lite',
+            model='grok-2-latest',
             contents='say hello',
         )
         print('SUCCESS! Response:', response.text)
