@@ -13,18 +13,21 @@ except ImportError:
 
 def get_client():
     global _client
-    if _client is not None:
-        return _client
     if not _OPENAI_AVAILABLE:
         return None
     from flask import request
     try:
         if request:
-            key = request.headers.get('X-Grok-Key') or request.headers.get('X-Gemini-Key')
+            key = request.headers.get('X-Grok-Key')
             if key and key.strip():
+                # Request-specific custom key, return custom client without caching globally
                 return openai.OpenAI(api_key=key.strip(), base_url="https://api.x.ai/v1")
     except RuntimeError:
         pass
+    
+    # Otherwise return/cache the server-wide default client
+    if _client is not None:
+        return _client
     if Config.GROK_API_KEY:
         _client = openai.OpenAI(api_key=Config.GROK_API_KEY, base_url="https://api.x.ai/v1")
         return _client

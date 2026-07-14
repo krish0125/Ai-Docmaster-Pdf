@@ -26,16 +26,20 @@ def parse_grok_error(e: Exception, model_name: str = "") -> GrokAPIError:
         print(f"Code Property: {code}", file=sys.stderr)
     print("=" * 60, file=sys.stderr)
 
-    if isinstance(e, openai.AuthenticationError):
-        return GrokAPIError("Invalid Grok API key. Please check your API key.", "invalid_key", 503)
+    if "model not found" in error_msg.lower() or "invalid model" in error_msg.lower():
+        return GrokAPIError(f"Grok model not found or invalid: {model_name}. Details: {error_msg}", "model_not_found", 400)
+    elif isinstance(e, openai.AuthenticationError):
+        return GrokAPIError("Invalid Grok API key. Please check your API key.", "invalid_key", 401)
     elif isinstance(e, openai.PermissionDeniedError):
-        return GrokAPIError("Grok API access forbidden. Ensure you have credits.", "forbidden", 503)
+        return GrokAPIError("Grok API access forbidden. Ensure you have credits.", "forbidden", 403)
     elif isinstance(e, openai.RateLimitError):
-        return GrokAPIError("Grok API quota exceeded. Please wait a minute.", "quota_exceeded", 503)
+        return GrokAPIError("Grok API quota exceeded. Please wait a minute.", "quota_exceeded", 429)
     elif isinstance(e, openai.NotFoundError):
-        return GrokAPIError(f"Grok model not found or invalid: {model_name}.", "model_not_found", 503)
+        return GrokAPIError(f"Grok model not found or invalid: {model_name}.", "model_not_found", 404)
+    elif isinstance(e, openai.BadRequestError):
+        return GrokAPIError(f"Grok API bad request: {error_msg}", "bad_request", 400)
     elif isinstance(e, openai.APITimeoutError):
-        return GrokAPIError("Connection to Grok API timed out.", "timeout", 503)
+        return GrokAPIError("Connection to Grok API timed out.", "timeout", 504)
     else:
         return GrokAPIError(f"Grok API call failed: {error_msg}", "network", 503)
 

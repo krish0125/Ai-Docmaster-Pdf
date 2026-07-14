@@ -229,12 +229,14 @@ async function sendMessage(text) {
             let errMsg = data.error || 'Unknown error';
             if (data.error_type === 'invalid_key') {
                 errMsg = 'Invalid Grok API key. Please check your API key in the configuration.';
+            } else if (data.error_type === 'forbidden') {
+                errMsg = 'Grok API access forbidden. Please make sure your API key has active credits or licenses.';
             } else if (data.error_type === 'quota_exceeded') {
                 errMsg = 'Grok API quota exceeded. Please wait a minute or set a personal API key in settings.';
             } else if (data.error_type === 'model_not_found') {
-                errMsg = 'Grok model not found. Check if the model is valid and not deprecated.';
+                errMsg = `Grok model not found or invalid. (${data.error})`;
             } else if (data.error_type === 'timeout' || data.error_type === 'network') {
-                errMsg = 'Network error: Cannot reach Grok servers.';
+                errMsg = `Network or API error: ${data.error}`;
             }
             addBotMessage('Sorry, I encountered an error: ' + errMsg);
         }

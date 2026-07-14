@@ -30,7 +30,8 @@ def extract_text_from_pdf_image(pdf_path: str, lang: str = 'eng') -> str:
     if not os.path.exists(pdf_path):
         raise FileNotFoundError(f"PDF not found: {pdf_path}")
         
-    pages = convert_from_path(pdf_path, 300)
+    poppler_path = getattr(Config, 'POPPLER_PATH', None)
+    pages = convert_from_path(pdf_path, 300, poppler_path=poppler_path)
     full_text = []
     
     for page in pages:

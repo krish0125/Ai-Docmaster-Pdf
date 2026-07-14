@@ -70,6 +70,10 @@
     try {
       const token = localStorage.getItem('token');
       const headers = { Authorization: `Bearer ${token}` };
+      const customKey = localStorage.getItem('user_grok_key');
+      if (customKey && customKey.trim()) {
+        headers['X-Grok-Key'] = customKey.trim();
+      }
       const body = formData instanceof FormData ? formData : JSON.stringify(formData);
       if (!(formData instanceof FormData)) {
         headers['Content-Type'] = 'application/json';
