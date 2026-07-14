@@ -55,9 +55,9 @@ def generate_flashcards(text: str) -> list:
     response = call_grok_with_retry(
         client=client,
         model='grok-2-latest',
-        contents=prompt
+        messages=[{"role": "user", "content": prompt}]
     )
-    resp_text = response.text.strip()
+    resp_text = response.choices[0].message.content.strip()
     
     # Clean markdown code blocks if present
     resp_text = re.sub(r'^```(?:json)?\s*', '', resp_text, flags=re.IGNORECASE)

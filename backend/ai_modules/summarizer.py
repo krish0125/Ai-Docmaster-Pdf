@@ -168,9 +168,9 @@ def generate_summary(text: str, mode: str = 'brief') -> dict:
     response = call_grok_with_retry(
         client=client,
         model='grok-2-latest',
-        contents=prompt
+        messages=[{"role": "user", "content": prompt}]
     )
-    summary_text = response.text.strip()
+    summary_text = response.choices[0].message.content.strip()
     return {
         'summary': summary_text,
         'word_count': len(summary_text.split()),

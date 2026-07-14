@@ -278,9 +278,9 @@ def analyze_resume(resume_text: str, target_role: str = '') -> dict:
     response = call_grok_with_retry(
         client=client,
         model='grok-2-latest',
-        contents=prompt
+        messages=[{"role": "user", "content": prompt}]
     )
-    parsed = _parse_grok_response(response.text)
+    parsed = _parse_grok_response(response.choices[0].message.content)
     parsed['method'] = 'grok_ai'
     return parsed
 
