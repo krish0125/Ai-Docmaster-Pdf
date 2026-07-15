@@ -1,11 +1,20 @@
 FROM python:3.11-slim
 
 # Install system dependencies for PDF and Image processing, plus OCR
+# Note: wkhtmltopdf is no longer in Debian trixie repos, so we install it manually
 RUN apt-get update && apt-get install -y \
     poppler-utils \
     libreoffice \
-    wkhtmltopdf \
     tesseract-ocr \
+    wget \
+    xfonts-75dpi \
+    xfonts-base \
+    fontconfig \
+    libxrender1 \
+    libxext6 \
+    && wget -q https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
+    && apt-get install -y ./wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
+    && rm wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
