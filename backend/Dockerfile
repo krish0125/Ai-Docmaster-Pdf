@@ -35,4 +35,4 @@ EXPOSE 5001
 
 # Command to run the application using Gunicorn for production
 # Gunicorn binds to the PORT environment variable
-CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-5001} --workers 2 --timeout 120 app:app"]
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-5001} --workers 1 --timeout 120 app:app"]
