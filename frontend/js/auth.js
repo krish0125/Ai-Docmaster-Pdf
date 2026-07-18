@@ -229,7 +229,7 @@ async function handleLogin(e) {
     if (btn) { btn.classList.add('loading'); btn.disabled = true; }
 
     try {
-        const res = await fetch(`${API_BASE}/auth/login`, {
+        const res = await window.safeFetch(`${API_BASE}/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
@@ -285,7 +285,7 @@ async function handleSignup(e) {
     if (btn) { btn.classList.add('loading'); btn.disabled = true; }
 
     try {
-        const res = await fetch(`${API_BASE}/auth/signup`, {
+        const res = await window.safeFetch(`${API_BASE}/auth/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name, email, password })

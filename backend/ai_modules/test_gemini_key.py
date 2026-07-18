@@ -10,8 +10,8 @@ def test_key():
     client = genai.Client(api_key=api_key)
     try:
         response = client.models.generate_content(
-            model='grok-2-latest',
-            contents='say hello',
+            model='gemini-2.5-flash',
+            contents='Say "OK"',
         )
         print('SUCCESS! Response:', response.text)
     except Exception as e:

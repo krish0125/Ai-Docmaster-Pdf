@@ -23,7 +23,9 @@ class Config:
         f"{TIDB_DB_NAME}?ssl_ca={certifi.where()}"
     )
 
-    GROK_API_KEY = os.getenv('GROK_API_KEY', '')
+    GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
+    # Legacy: GROK_API_KEY kept temporarily for rollback reference only
+    GROK_API_KEY = os.getenv('GROK_API_KEY', '')  # TODO: remove after Render env vars updated
     TESSERACT_PATH = os.getenv('TESSERACT_PATH', r'C:\Program Files\Tesseract-OCR\tesseract.exe')
 
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
@@ -47,7 +49,7 @@ class Config:
 
     FLASK_DEBUG = os.getenv('FLASK_DEBUG', '0') == '1'
     ADMIN_EMAIL = os.getenv('ADMIN_EMAIL', 'admin@aidocmaster.com')
-    ALLOWED_CORS_ORIGINS = os.getenv('ALLOWED_CORS_ORIGINS', 'http://localhost:8000,http://127.0.0.1:8000')
+    ALLOWED_CORS_ORIGINS = os.getenv('ALLOWED_CORS_ORIGINS', 'http://localhost:5500,http://127.0.0.1:5500,http://localhost:8000,http://127.0.0.1:8000')
 
     # OAuth – Google
     GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID', '')

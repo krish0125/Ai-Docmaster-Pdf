@@ -1,4 +1,4 @@
-"""AI Summarizer — uses HuggingFace transformers (BART) when available,
+"""AI Summarizer — uses Google Gemini AI when available,
 otherwise falls back to a simple extractive approach based on word frequency.
 """
 
@@ -123,14 +123,14 @@ def generate_summary(text: str, mode: str = 'brief') -> dict:
 
     clean_text = text.strip()
 
-    # --- 1. Premium Grok AI Integration ---
-    from ai_modules.chat_engine import get_client
-    from ai_modules.exceptions import GrokAPIError, parse_grok_error, call_grok_with_retry
-    
+    # --- 1. Premium Gemini AI Integration ---
+    from ai_modules.chat_engine import get_client, MODEL
+    from ai_modules.exceptions import GeminiAPIError, parse_gemini_error, call_gemini_with_retry
+
     client = get_client()
     if client is None:
-        raise GrokAPIError(
-            "Grok API client could not be initialized. Please configure GROK_API_KEY in your .env file.",
+        raise GeminiAPIError(
+            "Gemini API client could not be initialized. Please configure GEMINI_API_KEY in your .env file.",
             error_type="invalid_key",
             status_code=401
         )
@@ -165,17 +165,18 @@ def generate_summary(text: str, mode: str = 'brief') -> dict:
             "Concise summary:"
         )
 
-    response = call_grok_with_retry(
+    contents = [{"role": "user", "parts": [{"text": prompt}]}]
+    response = call_gemini_with_retry(
         client=client,
-        model='grok-2-latest',
-        messages=[{"role": "user", "content": prompt}]
+        model=MODEL,
+        contents=contents,
     )
-    summary_text = response.choices[0].message.content.strip()
+    summary_text = response.text.strip()
     return {
         'summary': summary_text,
         'word_count': len(summary_text.split()),
         'mode': mode,
-        'method': 'grok_ai',
+        'method': 'gemini_ai',
     }
 
 

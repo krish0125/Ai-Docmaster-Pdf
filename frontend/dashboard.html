@@ -577,7 +577,7 @@
                         <h5 style="margin-bottom:0.75rem;font-size:13px;color:#6B7280;text-transform:uppercase;letter-spacing:.05em">System Info</h5>
                         <div class="admin-log-item"><span>Backend</span><span style="color:#22C55E">Running on port 5001</span></div>
                         <div class="admin-log-item"><span>Database</span><span id="adminDbStatus">MongoDB</span></div>
-                        <div class="admin-log-item"><span>AI Engine</span><span style="color:#22C55E">Grok 2.0 Flash</span></div>
+                        <div class="admin-log-item"><span>AI Engine</span><span style="color:#22C55E">Gemini 2.5 Flash Lite</span></div>
                         <div class="admin-log-item"><span>Version</span><span>AI DocMaster v2.1</span></div>
                     </div>
                     <div class="admin-log-section" style="margin-top:1rem;border-top:1px solid var(--border);padding-top:1rem;">
@@ -586,7 +586,7 @@
                             <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:#3B82F6;text-decoration:none;font-size:11px;text-transform:none;letter-spacing:normal;">Get Key ↗</a>
                         </h5>
                         <div style="position:relative;display:flex;align-items:center;margin-top:0.5rem;width:100%;">
-                            <input type="password" id="grokApiKeyInput" placeholder="Paste your API key here..." style="width:100%;padding:8px 32px 8px 10px;font-size:12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-secondary);color:var(--text-primary);transition:border-color 0.2s;" oninput="saveGrokKey()">
+                            <input type="password" id="geminiApiKeyInput" placeholder="Paste your API key here..." style="width:100%;padding:8px 32px 8px 10px;font-size:12px;border-radius:6px;border:1px solid var(--border);background:var(--bg-secondary);color:var(--text-primary);transition:border-color 0.2s;" oninput="saveGeminiKey()">
                             <button type="button" onclick="toggleKeyVisibility(event)" style="position:absolute;right:8px;background:none;border:none;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;justify-content:center;padding:0;">
                                 <svg id="eyeIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                             </button>
@@ -633,7 +633,7 @@
                         </div>
                         <div class="faq-item">
                             <div class="faq-q">What is Chat with PDF?</div>
-                            <div class="faq-a">Upload a PDF and ask questions about its content using Google Grok AI for intelligent answers.</div>
+                            <div class="faq-a">Upload a PDF and ask questions about its content using Google Gemini AI for intelligent answers.</div>
                         </div>
                         <div class="faq-item">
                             <div class="faq-q">How is my data stored?</div>
@@ -2073,7 +2073,7 @@
             <section class="tool-section" id="hw-ocr-tool" style="display:none;">
                 <div class="tool-panel-header">
                     <button type="button" class="tool-panel-back" onclick="showSection('dashboard-home')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg></button>
-                    <div class="tool-panel-title"><h2>Handwriting Transcription</h2><p>Transcribe handwritten document pages into digital text via Grok</p></div>
+                    <div class="tool-panel-title"><h2>Handwriting Transcription</h2><p>Transcribe handwritten document pages into digital text via Gemini</p></div>
                 </div>
                 <div class="tool-panel-body">
                     <div class="dropzone" id="hwDropzone">

@@ -293,7 +293,7 @@
             }
 
             try {
-                const res = await fetch(`${baseApiUrl}/feedback`, {
+                const res = await window.safeFetch(`${baseApiUrl}/feedback`, {
                     method: 'POST',
                     headers: headers,
                     body: JSON.stringify(payload)

@@ -46,9 +46,10 @@ def extract():
         file_info = save_upload(file, UPLOAD_FOLDER)
         result = extract_text_from_image(file_info['file_path'])
 
+        word_count = len(result.split()) if isinstance(result, str) else result.get('word_count', 0)
         save_history(user_id, '', 'ocr_extract', 'success',
                      {'original_name': file_info['original_name'],
-                      'word_count': result.get('word_count', 0)})
+                      'word_count': word_count})
 
         return jsonify({
             'message': 'Text extracted successfully',
@@ -71,10 +72,15 @@ def batch_extract():
         _ensure_upload_dir()
         user_id = get_jwt_identity()
 
-        if 'files' not in request.files:
+        if 'files' in request.files:
+            files = request.files.getlist('files')
+        elif 'files[]' in request.files:
+            files = request.files.getlist('files[]')
+        elif 'file' in request.files:
+            files = request.files.getlist('file')
+        else:
             return jsonify({'error': 'No image files provided'}), 400
 
-        files = request.files.getlist('files')
         if not files:
             return jsonify({'error': 'No files selected'}), 400
 
@@ -91,8 +97,12 @@ def batch_extract():
                 continue
 
             file_info = save_upload(file, UPLOAD_FOLDER)
-            result = extract_text_from_image(file_info['file_path'])
-            result['filename'] = file_info['original_name']
+            text_result = extract_text_from_image(file_info['file_path'])
+            result = {
+                'filename': file_info['original_name'],
+                'text': text_result,
+                'word_count': len(text_result.split())
+            }
             results.append(result)
 
         total_words = sum(r.get('word_count', 0) for r in results)
@@ -151,13 +161,13 @@ def pdf_ocr():
 
 
 # ---------------------------------------------------------------------------
-# Phase 5 — Handwriting OCR (Grok vision)
+# Phase 5 — Handwriting OCR (Gemini Vision)
 # ---------------------------------------------------------------------------
 
 @ocr_bp.route('/handwriting', methods=['POST'])
 @jwt_required()
 def handwriting():
-    """Transcribe handwritten text from an image using Grok vision."""
+    """Transcribe handwritten text from an image using Gemini Vision."""
     try:
         _ensure_upload_dir()
         user_id = get_jwt_identity()

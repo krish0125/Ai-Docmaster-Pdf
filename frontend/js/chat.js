@@ -108,12 +108,12 @@ async function uploadChatPdf(file) {
     try {
         const token = localStorage.getItem('token');
         const headers = { 'Authorization': `Bearer ${token}` };
-        const customKey = localStorage.getItem('user_grok_key');
+        const customKey = localStorage.getItem('user_gemini_key');
         if (customKey) {
-            headers['X-Grok-Key'] = customKey;
+            headers['X-Gemini-Key'] = customKey;
         }
 
-        const res = await fetch(`${API_BASE_CHAT}/pdf/upload`, {
+        const res = await window.safeFetch(`${API_BASE_CHAT}/pdf/upload`, {
             method: 'POST',
             headers: headers,
             body: formData
@@ -209,12 +209,12 @@ async function sendMessage(text) {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
         };
-        const customKey = localStorage.getItem('user_grok_key');
+        const customKey = localStorage.getItem('user_gemini_key');
         if (customKey) {
-            headers['X-Grok-Key'] = customKey;
+            headers['X-Gemini-Key'] = customKey;
         }
 
-        const res = await fetch(`${API_BASE_CHAT}/ai/chat`, {
+        const res = await window.safeFetch(`${API_BASE_CHAT}/ai/chat`, {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({ file_id: chatFileId, question: text })
@@ -227,15 +227,16 @@ async function sendMessage(text) {
             addBotMessage(data.response || data.answer || 'No response received');
         } else {
             let errMsg = data.error || 'Unknown error';
-            if (data.error_type === 'invalid_key') {
-                errMsg = 'Invalid Grok API key. Please check your API key in the configuration.';
-            } else if (data.error_type === 'forbidden') {
-                errMsg = 'Grok API access forbidden. Please make sure your API key has active credits or licenses.';
-            } else if (data.error_type === 'quota_exceeded') {
-                errMsg = 'Grok API quota exceeded. Please wait a minute or set a personal API key in settings.';
-            } else if (data.error_type === 'model_not_found') {
-                errMsg = `Grok model not found or invalid. (${data.error})`;
-            } else if (data.error_type === 'timeout' || data.error_type === 'network') {
+            let errType = data.error_type;
+            if (errType === 'invalid_key') {
+                errMsg = 'Invalid Gemini API key. Please check your API key in the configuration.';
+            } else if (errType === 'forbidden') {
+                errMsg = 'Gemini API access forbidden. Please make sure your API key has active credits or licenses.';
+            } else if (errType === 'quota_exceeded') {
+                errMsg = 'Gemini API quota exceeded. Please wait a minute or set a personal API key in settings.';
+            } else if (errType === 'model_not_found') {
+                errMsg = `Gemini model not found or invalid. (${data.error})`;
+            } else if (errType === 'timeout' || errType === 'network') {
                 errMsg = `Network or API error: ${data.error}`;
             }
             addBotMessage('Sorry, I encountered an error: ' + errMsg);
@@ -356,7 +357,7 @@ async function loadChatHistory(fileId) {
         const headers = { 'Authorization': `Bearer ${token}` };
 
         // 1. Fetch chat history messages
-        const res = await fetch(`${API_BASE_CHAT}/ai/chat-history/${fileId}`, {
+        const res = await window.safeFetch(`${API_BASE_CHAT}/ai/chat-history/${fileId}`, {
             headers: headers
         });
         const data = await res.json();
@@ -366,7 +367,7 @@ async function loadChatHistory(fileId) {
         }
 
         // 2. Fetch user's file list to match and load file details
-        const filesRes = await fetch(`${API_BASE_CHAT}/files/list`, {
+        const filesRes = await window.safeFetch(`${API_BASE_CHAT}/files/list`, {
             headers: headers
         });
         const filesData = await filesRes.json();

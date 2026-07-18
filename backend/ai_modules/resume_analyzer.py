@@ -1,12 +1,12 @@
-"""Resume Analyzer — uses Grok AI to provide ATS scoring and improvement
-suggestions.  Falls back to keyword-based analysis when Grok is unavailable.
+"""Resume Analyzer — uses Gemini AI to provide ATS scoring and improvement
+suggestions.  Falls back to keyword-based analysis when Gemini is unavailable.
 """
 
 import re
 from config import Config
 
 # ---------------------------------------------------------------------------
-# Grok client (reuses chat_engine's client)
+# Gemini client (reuses chat_engine's client)
 # ---------------------------------------------------------------------------
 _GENAI_AVAILABLE = False
 
@@ -27,7 +27,7 @@ def _get_client():
 # ---------------------------------------------------------------------------
 
 def get_analysis_prompt(resume_text: str, target_role: str) -> str:
-    """Build a comprehensive analysis prompt for Grok."""
+    """Build a comprehensive analysis prompt for Gemini."""
     role_clause = (
         f'The candidate is targeting the role of: {target_role}.'
         if target_role
@@ -76,8 +76,8 @@ OVERALL_ASSESSMENT:
 # Response parser
 # ---------------------------------------------------------------------------
 
-def _parse_grok_response(response_text: str) -> dict:
-    """Parse the structured Grok response into a dict in a highly robust way."""
+def _parse_gemini_response(response_text: str) -> dict:
+    """Parse the structured Gemini response into a dict in a highly robust way."""
     result: dict = {
         'ats_score': 0,
         'skills_found': [],
@@ -99,7 +99,7 @@ def _parse_grok_response(response_text: str) -> dict:
         if score_match:
             result['ats_score'] = min(100, max(0, int(score_match.group(1))))
         else:
-            result['ats_score'] = 75  # sensible default if parse fails but Grok succeeded
+            result['ats_score'] = 75  # sensible default if parse fails but Gemini succeeded
             
         # 2. Extract sections using split or robust boundary matches
         sections = [
@@ -199,7 +199,7 @@ _RESUME_KEYWORDS = {
 
 
 def _fallback_analysis(resume_text: str, target_role: str) -> dict:
-    """Basic keyword-based analysis when Grok is unavailable."""
+    """Basic keyword-based analysis when Gemini is unavailable."""
     text_lower = resume_text.lower()
     words = set(re.findall(r'\b[\w+#/.]+\b', text_lower))
 
@@ -228,17 +228,17 @@ def _fallback_analysis(resume_text: str, target_role: str) -> dict:
     return {
         'ats_score': score,
         'skills_found': found_skills,
-        'missing_skills': ['Unable to determine without AI analysis — configure GROK_API_KEY for full analysis'],
+        'missing_skills': ['Unable to determine without AI analysis — configure GEMINI_API_KEY for full analysis'],
         'suggestions': suggestions,
         'format_feedback': (
             f'Found {len(found_sections)} of {len(_RESUME_KEYWORDS)} common resume sections. '
             f'Detected {len(found_skills)} technical/soft skills. '
-            'For detailed format feedback, configure the Grok API key.'
+            'For detailed format feedback, configure the Gemini API key.'
         ),
         'overall_rating': (
             f'Basic analysis score: {score}/100. '
             'This is a keyword-based estimate. '
-            'Set GROK_API_KEY in .env for a comprehensive AI-powered analysis.'
+            'Set GEMINI_API_KEY in .env for a comprehensive AI-powered analysis.'
         ),
         'method': 'keyword_fallback',
     }
@@ -251,7 +251,7 @@ def _fallback_analysis(resume_text: str, target_role: str) -> dict:
 def analyze_resume(resume_text: str, target_role: str = '') -> dict:
     """Analyze a resume and return structured feedback.
 
-    Uses Grok when available; falls back to keyword matching otherwise.
+    Uses Gemini when available; falls back to keyword matching otherwise.
     """
     if not resume_text or not resume_text.strip():
         return {
@@ -264,24 +264,25 @@ def analyze_resume(resume_text: str, target_role: str = '') -> dict:
             'error': 'Empty resume text',
         }
 
-    from ai_modules.exceptions import GrokAPIError, parse_grok_error, call_grok_with_retry
+    from ai_modules.exceptions import GeminiAPIError, parse_gemini_error, call_gemini_with_retry
+    from ai_modules.chat_engine import get_client, MODEL
 
     client = _get_client()
     if client is None:
-        raise GrokAPIError(
-            "Grok API client could not be initialized. Please configure GROK_API_KEY in your .env file.",
+        raise GeminiAPIError(
+            "Gemini API client could not be initialized. Please configure GEMINI_API_KEY in your .env file.",
             error_type="invalid_key",
             status_code=401
         )
 
     prompt = get_analysis_prompt(resume_text, target_role)
-    response = call_grok_with_retry(
+    contents = [{"role": "user", "parts": [{"text": prompt}]}]
+
+    response = call_gemini_with_retry(
         client=client,
-        model='grok-2-latest',
-        messages=[{"role": "user", "content": prompt}]
+        model=MODEL,
+        contents=contents,
     )
-    parsed = _parse_grok_response(response.choices[0].message.content)
-    parsed['method'] = 'grok_ai'
+    parsed = _parse_gemini_response(response.text)
+    parsed['method'] = 'gemini_ai'
     return parsed
-
-

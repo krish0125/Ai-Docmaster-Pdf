@@ -1,23 +1,27 @@
-"""Phase 6 AI Modules — writing, quiz, translation, business (Powered by xAI Grok)."""
+"""Phase 6 AI Modules — writing, quiz, translation, business (Powered by Google Gemini)."""
 
-from ai_modules.chat_engine import get_client
-from ai_modules.exceptions import GrokAPIError, call_grok_with_retry
+from ai_modules.chat_engine import get_client, MODEL
+from ai_modules.exceptions import GeminiAPIError, call_gemini_with_retry
 
-def _ask(prompt: str, as_json: bool = False, model: str = 'grok-2-latest'):
+def _ask(prompt: str, as_json: bool = False, model: str = None):
+    if model is None:
+        model = MODEL
     client = get_client()
     if not client:
-        raise GrokAPIError("Grok API client not initialized. Check GROK_API_KEY.", "invalid_key", 401)
-    
-    kwargs = {
-        'client': client,
-        'model': model,
-        'messages': [{"role": "user", "content": prompt}],
-    }
+        raise GeminiAPIError("Gemini API client not initialized. Check GEMINI_API_KEY.", "invalid_key", 401)
+
+    contents = [{"role": "user", "parts": [{"text": prompt}]}]
+
+    kwargs = {}
     if as_json:
-        kwargs['response_format'] = {"type": "json_object"}
-        
-    response = call_grok_with_retry(**kwargs)
-    return response.choices[0].message.content.strip()
+        # google-genai 2.6.0 JSON mode: pass via GenerateContentConfig
+        from google.genai import types as genai_types
+        kwargs['config'] = genai_types.GenerateContentConfig(
+            response_mime_type="application/json"
+        )
+
+    response = call_gemini_with_retry(client=client, model=model, contents=contents, **kwargs)
+    return response.text.strip()
 
 def explain_pdf(text: str) -> dict:
     prompt = f"Explain this text like I am 5 years old.\n\nTEXT:\n{text[:10000]}"
@@ -39,28 +43,28 @@ def generate_quiz(text: str, count: int = 5) -> dict:
     prompt = (
         f"Generate {count} short-answer quiz questions and their answers from this text. "
         "Return ONLY a valid JSON object with a key 'questions' containing an array of objects "
-        "with 'question' and 'answer' keys.\n\nTEXT:\n{text[:10000]}"
+        f"with 'question' and 'answer' keys.\n\nTEXT:\n{text[:10000]}"
     )
     import json
     res = _ask(prompt, as_json=True)
     try:
         data = json.loads(res)
         return {'quiz': data.get('questions', [])}
-    except:
+    except Exception:
         return {'quiz': [{'question': 'Failed to parse JSON', 'answer': res}]}
 
 def generate_mcq(text: str, count: int = 5) -> dict:
     prompt = (
         f"Generate {count} multiple choice questions from this text. "
         "Return ONLY a valid JSON object with a key 'mcqs' containing an array of objects. "
-        "Each object must have 'question', 'options' (array of 4 strings), and 'correct_answer'.\n\nTEXT:\n{text[:10000]}"
+        f"Each object must have 'question', 'options' (array of 4 strings), and 'correct_answer'.\n\nTEXT:\n{text[:10000]}"
     )
     import json
     res = _ask(prompt, as_json=True)
     try:
         data = json.loads(res)
         return {'mcqs': data.get('mcqs', [])}
-    except:
+    except Exception:
         return {'mcqs': []}
 
 def check_grammar(text: str) -> dict:
@@ -109,7 +113,7 @@ def read_invoice(text: str) -> dict:
     try:
         data = json.loads(res)
         return {'invoice_data': data}
-    except:
+    except Exception:
         return {'invoice_data': {'error': 'Parse failed', 'raw': res}}
 
 def analyze_financial(text: str) -> dict:

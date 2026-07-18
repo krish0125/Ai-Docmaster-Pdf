@@ -70,15 +70,15 @@
     try {
       const token = localStorage.getItem('token');
       const headers = { Authorization: `Bearer ${token}` };
-      const customKey = localStorage.getItem('user_grok_key');
-      if (customKey && customKey.trim()) {
-        headers['X-Grok-Key'] = customKey.trim();
+      const customKey = localStorage.getItem('user_gemini_key');
+      if (customKey) {
+        headers['X-Gemini-Key'] = customKey.trim();
       }
       const body = formData instanceof FormData ? formData : JSON.stringify(formData);
       if (!(formData instanceof FormData)) {
         headers['Content-Type'] = 'application/json';
       }
-      const resp = await fetch(`${API_BASE_URL}/${prefix}/${endpoint}`, {
+      const resp = await window.safeFetch(`${API_BASE_URL}/${prefix}/${endpoint}`, {
         method: 'POST',
         headers,
         body
@@ -179,7 +179,7 @@
     if (btn) btn.disabled = true;
     try {
       const token = localStorage.getItem('token');
-      const resp = await fetch(`${API_BASE_URL}/utils/password`, {
+      const resp = await window.safeFetch(`${API_BASE_URL}/utils/password`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
@@ -212,7 +212,7 @@
   window.connectCloud = async function (provider) {
     try {
       const token = localStorage.getItem('token');
-      const resp = await fetch(`${API_BASE_URL}/productivity/${provider}/auth`, {
+      const resp = await window.safeFetch(`${API_BASE_URL}/productivity/${provider}/auth`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await resp.json();

@@ -1,4 +1,4 @@
-"""AI Flashcard engine — powered by Google Grok (google-genai SDK)."""
+"""AI Flashcard engine — powered by Google Gemini (google-genai SDK)."""
 
 import re
 import json
@@ -15,7 +15,7 @@ except ImportError:
 
 
 def get_client():
-    """Create / return the unified Grok client from chat_engine."""
+    """Create / return the unified Gemini client from chat_engine."""
     from ai_modules.chat_engine import get_client as _chat_get_client
     return _chat_get_client()
 
@@ -28,12 +28,13 @@ def generate_flashcards(text: str) -> list:
     if not text.strip():
         return []
 
-    from ai_modules.exceptions import GrokAPIError, parse_grok_error, call_grok_with_retry
+    from ai_modules.exceptions import GeminiAPIError, parse_gemini_error, call_gemini_with_retry
+    from ai_modules.chat_engine import MODEL
 
     client = get_client()
     if client is None:
-        raise GrokAPIError(
-            "Grok API client could not be initialized. Please configure GROK_API_KEY in your .env file.",
+        raise GeminiAPIError(
+            "Gemini API client could not be initialized. Please configure GEMINI_API_KEY in your .env file.",
             error_type="invalid_key",
             status_code=401
         )
@@ -52,12 +53,14 @@ def generate_flashcards(text: str) -> list:
         '[\n  {"question": "What is the main topic of the text?", "answer": "The text discusses X."}\n]'
     )
 
-    response = call_grok_with_retry(
+    contents = [{"role": "user", "parts": [{"text": prompt}]}]
+
+    response = call_gemini_with_retry(
         client=client,
-        model='grok-2-latest',
-        messages=[{"role": "user", "content": prompt}]
+        model=MODEL,
+        contents=contents,
     )
-    resp_text = response.choices[0].message.content.strip()
+    resp_text = response.text.strip()
     
     # Clean markdown code blocks if present
     resp_text = re.sub(r'^```(?:json)?\s*', '', resp_text, flags=re.IGNORECASE)
@@ -88,7 +91,7 @@ def generate_flashcards(text: str) -> list:
 
 
 def _generate_fallback_flashcards(text: str) -> list:
-    """Generate fallback flashcards by splitting sentences when Grok is unavailable."""
+    """Generate fallback flashcards by splitting sentences when Gemini is unavailable."""
     # Split text into paragraphs
     paragraphs = [p.strip() for p in text.split('\n\n') if len(p.strip()) > 30]
     if not paragraphs:

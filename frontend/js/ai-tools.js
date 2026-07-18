@@ -14,11 +14,11 @@
     try {
       const token = localStorage.getItem('token');
       const headers = { Authorization: `Bearer ${token}` };
-      const customKey = localStorage.getItem('user_grok_key');
-      if (customKey && customKey.trim()) {
-        headers['X-Grok-Key'] = customKey.trim();
+      const customKey = localStorage.getItem('user_gemini_key');
+      if (customKey) {
+        headers['X-Gemini-Key'] = customKey.trim();
       }
-      const resp  = await fetch(`${API_BASE_URL}/ai/${endpoint}`, {
+      const resp  = await window.safeFetch(`${API_BASE_URL}/ai/${endpoint}`, {
         method: 'POST',
         headers: headers,
         body: formData,

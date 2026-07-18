@@ -2,7 +2,7 @@
 
 Application factory pattern with blueprint registration, CORS, JWT, and
 error handlers.  The app starts and runs even when MongoDB, Tesseract, or
-Grok are not configured.
+Gemini are not configured.
 """
 
 import os
@@ -103,8 +103,8 @@ def create_app() -> Flask:
         except Exception:
             status['database'] = 'unavailable'
 
-        # Check Grok
-        status['grok_configured'] = bool(Config.GROK_API_KEY)
+        # Check Gemini
+        status['gemini_configured'] = bool(Config.GEMINI_API_KEY)
 
         # Check Tesseract
         tesseract_found = False
@@ -197,14 +197,14 @@ def _run_startup_checks():
     except Exception as e:
         print(f"[Startup Check] TiDB Database: ERROR - {e}")
 
-    # 2. Check Grok key
-    key = Config.GROK_API_KEY
+    # 2. Check Gemini key
+    key = Config.GEMINI_API_KEY
     if not key:
-        print("[Startup Check] Grok API Key: WARNING - Missing (AI engines will fail)")
-    elif key in ('placeholder', 'your-grok-api-key', 'dev-key'):
-        print("[Startup Check] Grok API Key: WARNING - Using default/placeholder key")
+        print("[Startup Check] Gemini API Key: WARNING - Missing (AI engines will fail)")
+    elif key in ('placeholder', 'your-gemini-api-key', 'dev-key'):
+        print("[Startup Check] Gemini API Key: WARNING - Using default/placeholder key")
     else:
-        print("[Startup Check] Grok API Key: CONFIGURED")
+        print("[Startup Check] Gemini API Key: CONFIGURED")
 
     # 3. Check Tesseract path
     if os.path.isfile(Config.TESSERACT_PATH):

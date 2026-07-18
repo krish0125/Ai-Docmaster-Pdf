@@ -90,7 +90,7 @@
     if (btn) { btn.disabled = true; btn.textContent = 'Converting…'; }
     try {
       const token = localStorage.getItem('token');
-      const resp  = await fetch(`${API_BASE_URL}/convert/${endpoint}`, {
+      const resp  = await window.safeFetch(`${API_BASE_URL}/convert/${endpoint}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData,

@@ -120,13 +120,13 @@ async function handleSummary(e) {
     } catch (err) {
         let errMsg = err.message || 'Unknown error';
         if (err.error_type === 'invalid_key') {
-            errMsg = 'Invalid Grok API key. Please check your API key in the configuration.';
+            errMsg = 'Invalid Gemini API key. Please check your API key in the configuration.';
         } else if (err.error_type === 'forbidden') {
-            errMsg = 'Grok API access forbidden. Please make sure your API key has active credits or licenses.';
+            errMsg = 'Gemini API access forbidden. Please make sure your API key has active credits or licenses.';
         } else if (err.error_type === 'quota_exceeded') {
-            errMsg = 'Grok API quota exceeded. Please wait a minute or set a personal API key.';
+            errMsg = 'Gemini API quota exceeded. Please wait a minute or set a personal API key.';
         } else if (err.error_type === 'model_not_found') {
-            errMsg = `Grok model not found or invalid. (${err.message})`;
+            errMsg = `Gemini model not found or invalid. (${err.message})`;
         } else if (err.error_type === 'timeout' || err.error_type === 'network') {
             errMsg = `Network or API error: ${err.message}`;
         }

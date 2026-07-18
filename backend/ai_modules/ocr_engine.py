@@ -1,4 +1,4 @@
-"""Phase 5 OCR Engine — handles Tesseract for standard PDFs/Images and Grok Vision for handwriting."""
+"""Phase 5 OCR Engine — handles Tesseract for standard PDFs/Images and Gemini Vision for handwriting."""
 
 import os
 import pytesseract
@@ -44,44 +44,98 @@ def extract_text_from_pdf_image(pdf_path: str, lang: str = 'eng') -> str:
     return "\n\n".join(full_text).strip()
 
 def handwriting_ocr(image_path: str) -> dict:
-    """Recognise handwritten text using Grok vision (no Tesseract needed)."""
+    """Recognise handwritten text using Gemini Vision multimodal (no Tesseract needed)."""
     import base64
     from ai_modules.chat_engine import get_client
-    from ai_modules.exceptions import GrokAPIError, call_grok_with_retry
-    
+    from ai_modules.exceptions import GeminiAPIError, call_gemini_with_retry
+
     client = get_client()
     if not client:
-        raise GrokAPIError("Grok API client not initialized. Check GROK_API_KEY.", "invalid_key", 401)
-        
+        raise GeminiAPIError("Gemini API client not initialized. Check GEMINI_API_KEY.", "invalid_key", 401)
+
     if not os.path.exists(image_path):
         raise FileNotFoundError(f"Image not found: {image_path}")
-        
+
+    # Detect MIME type from extension
+    ext = os.path.splitext(image_path)[1].lower()
+    mime_map = {'.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png',
+                '.gif': 'image/gif', '.bmp': 'image/bmp', '.webp': 'image/webp',
+                '.tiff': 'image/tiff', '.tif': 'image/tiff'}
+    mime_type = mime_map.get(ext, 'image/jpeg')
+
     with open(image_path, "rb") as image_file:
-        base64_image = base64.b64encode(image_file.read()).decode('utf-8')
-        
-    prompt = "Transcribe the handwritten text in this image perfectly. Maintain original formatting. Return ONLY the transcribed text, without markdown blocks or conversational fillers."
-    
-    messages = [
+        image_bytes = image_file.read()
+
+    prompt = (
+        "Transcribe the handwritten text in this image perfectly. "
+        "Maintain original formatting. Return ONLY the transcribed text, "
+        "without markdown blocks or conversational fillers."
+    )
+
+    # google-genai SDK multimodal: inline_data with bytes
+    contents = [
         {
             "role": "user",
-            "content": [
-                {"type": "text", "text": prompt},
+            "parts": [
                 {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": f"data:image/jpeg;base64,{base64_image}"
+                    "inline_data": {
+                        "mime_type": mime_type,
+                        "data": image_bytes,
                     }
-                }
-            ]
+                },
+                {"text": prompt},
+            ],
         }
     ]
-    
-    response = call_grok_with_retry(
+
+    response = call_gemini_with_retry(
         client=client,
-        model="grok-2-vision-1212",
-        messages=messages,
-        max_tokens=2048
+        model="gemini-2.5-flash",
+        contents=contents,
     )
-    
-    text = response.choices[0].message.content.strip()
-    return {"text": text, "method": "grok_vision"}
+
+    text = (response.text or "").strip()
+    return {"text": text, "method": "gemini_vision"}
+
+# ---------------------------------------------------------------------------
+# Phase 5 — Extraction utilities
+# ---------------------------------------------------------------------------
+
+def extract_tables_from_pdf(pdf_path: str) -> list:
+    import pdfplumber
+    tables = []
+    with pdfplumber.open(pdf_path) as pdf:
+        for i, page in enumerate(pdf.pages):
+            page_tables = page.extract_tables()
+            for tbl in page_tables:
+                tables.append({"page": i + 1, "data": tbl})
+    return tables
+
+def extract_images_from_pdf(pdf_path: str, output_dir: str) -> list:
+    import fitz # PyMuPDF
+    import os
+    import uuid
+    doc = fitz.open(pdf_path)
+    images = []
+    for i, page in enumerate(doc):
+        image_list = page.get_images(full=True)
+        for img_index, img in enumerate(image_list):
+            xref = img[0]
+            base_image = doc.extract_image(xref)
+            image_bytes = base_image["image"]
+            image_ext = base_image["ext"]
+            filename = f"extracted_{uuid.uuid4().hex[:8]}.{image_ext}"
+            file_path = os.path.join(output_dir, filename)
+            with open(file_path, "wb") as f:
+                f.write(image_bytes)
+            images.append({"page": i + 1, "filename": filename})
+    return images
+
+def multilang_ocr(file_path: str, lang: str = 'hin+eng') -> dict:
+    import os
+    ext = os.path.splitext(file_path)[1].lower()
+    if ext == '.pdf':
+        text = extract_text_from_pdf_image(file_path, lang=lang)
+    else:
+        text = extract_text_from_image(file_path, lang=lang)
+    return {"text": text, "lang_used": lang, "word_count": len(text.split())}

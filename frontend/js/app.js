@@ -44,9 +44,9 @@ async function apiFetch(endpoint, options = {}) {
         headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const customKey = localStorage.getItem('user_grok_key');
+    const customKey = localStorage.getItem('user_gemini_key');
     if (customKey) {
-        headers['X-Grok-Key'] = customKey;
+        headers['X-Gemini-Key'] = customKey;
     }
 
     if (!(options.body instanceof FormData)) {
@@ -54,7 +54,7 @@ async function apiFetch(endpoint, options = {}) {
     }
 
     try {
-        const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+        const res = await window.safeFetch(`${API_BASE}${endpoint}`, { ...options, headers });
 
         if (res.status === 401) {
             showToast('Session expired. Please login again.', 'error');
@@ -254,7 +254,7 @@ function initDashboard() {
     loadRecentFiles();
     showSection('dashboard-home');
     initDropdown();
-    initGrokKeyField();
+    initGeminiKeyField();
     const savedTheme = localStorage.getItem('theme') || 'dark';
     setTheme(savedTheme);
 }
@@ -386,7 +386,7 @@ async function loadRecentFiles() {
 async function downloadFile(fileId) {
     try {
         const token = getToken();
-        const res = await fetch(`${API_BASE}/files/download/${fileId}`, {
+        const res = await window.safeFetch(`${API_BASE}/files/download/${fileId}`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
@@ -588,8 +588,8 @@ function uploadFileWithProgress(url, formData, onProgress) {
         const token = getToken();
         if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 
-        const customKey = localStorage.getItem('user_grok_key');
-        if (customKey) xhr.setRequestHeader('X-Grok-Key', customKey);
+        const customKey = localStorage.getItem('user_gemini_key');
+        if (customKey) xhr.setRequestHeader('X-Gemini-Key', customKey);
 
         xhr.upload.addEventListener('progress', (e) => {
             if (e.lengthComputable && onProgress) {
@@ -832,13 +832,13 @@ function showHelpModal() {
     showModal('helpModal');
 }
 
-// ── Grok Key Management ──
-function initGrokKeyField() {
-    const input = document.getElementById('grokApiKeyInput');
+// ── Gemini Key Management ──
+function initGeminiKeyField() {
+    const input = document.getElementById('geminiApiKeyInput');
     const msg = document.getElementById('keyStatusMsg');
     if (!input) return;
 
-    const savedKey = localStorage.getItem('user_grok_key') || '';
+    const savedKey = localStorage.getItem('user_gemini_key') || '';
     input.value = savedKey;
     
     if (msg) {
@@ -852,20 +852,20 @@ function initGrokKeyField() {
     }
 }
 
-function saveGrokKey() {
-    const input = document.getElementById('grokApiKeyInput');
+function saveGeminiKey() {
+    const input = document.getElementById('geminiApiKeyInput');
     const msg = document.getElementById('keyStatusMsg');
     if (!input) return;
 
     const val = input.value.trim();
     if (val) {
-        localStorage.setItem('user_grok_key', val);
+        localStorage.setItem('user_gemini_key', val);
         if (msg) {
             msg.textContent = '✓ Custom client API key active';
             msg.style.color = '#22C55E';
         }
     } else {
-        localStorage.removeItem('user_grok_key');
+        localStorage.removeItem('user_gemini_key');
         if (msg) {
             msg.textContent = 'Using default server API key';
             msg.style.color = 'var(--text-muted)';
@@ -878,7 +878,7 @@ function toggleKeyVisibility(event) {
         event.stopPropagation();
         event.preventDefault();
     }
-    const input = document.getElementById('grokApiKeyInput');
+    const input = document.getElementById('geminiApiKeyInput');
     const icon = document.getElementById('eyeIcon');
     if (!input) return;
 

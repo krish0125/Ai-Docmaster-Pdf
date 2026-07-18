@@ -642,7 +642,7 @@ function applyPdfTextEdits() {
 
     const token = localStorage.getItem('token');
 
-    fetch(`${API_BASE_URL}/edit/edit-pdf-text`, {
+    window.safeFetch(`${API_BASE_URL}/edit/edit-pdf-text`, {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${token}`

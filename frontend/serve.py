@@ -27,6 +27,9 @@ import os
 import urllib.request
 import urllib.error
 
+# Disable system proxies for all urllib.request calls to avoid routing localhost through them
+opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+urllib.request.install_opener(opener)
 mimetypes.init()
 mimetypes.add_type('text/css', '.css')
 mimetypes.add_type('application/javascript', '.js')
@@ -160,7 +163,7 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
     def log_message(self, format, *args):
         # Suppress noisy static file logs, show proxy ones
         if self._should_proxy():
-            print(f'[Proxy] {self.command} {self.path} → {args[1]}')
+            print(f'[Proxy] {self.command} {self.path} -> {args[1]}')
 
 
 class DualStackTCPServer(socketserver.TCPServer):

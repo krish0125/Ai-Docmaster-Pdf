@@ -55,7 +55,7 @@
     if (btn) btn.disabled = true;
     try {
       const token = localStorage.getItem('token');
-      const resp = await fetch(`${API_BASE_URL}/image/${endpoint}`, {
+      const resp = await window.safeFetch(`${API_BASE_URL}/image/${endpoint}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
         body: formData
