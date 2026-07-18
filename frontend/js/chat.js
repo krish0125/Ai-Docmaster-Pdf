@@ -11,18 +11,10 @@ let chatMessages = [];
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        if (!localStorage.getItem('token')) {
-            window.location.href = 'login.html';
-            return;
-        }
         initChat();
     });
 } else {
-    if (!localStorage.getItem('token')) {
-        window.location.href = 'login.html';
-    } else {
-        initChat();
-    }
+    initChat();
 }
 
 function initChat() {

@@ -438,10 +438,7 @@ function initSidebar() {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             item.classList.add('active');
 
-            if (section === 'chat') {
-                window.location.href = 'chat.html';
-                return;
-            }
+            // No redirect, show the section
 
             showSection(section);
 
@@ -510,11 +507,7 @@ function initToolPanels() {
         card.addEventListener('click', () => {
             const tool = card.dataset.tool;
 
-            // Handle Chat redirection
-            if (tool === 'chat') {
-                window.location.href = 'chat.html';
-                return;
-            }
+            // No redirect, standard show section
 
             const section = document.getElementById(tool);
             if (section) {

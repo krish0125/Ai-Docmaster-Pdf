@@ -937,11 +937,18 @@ body .toast {
 }
 
 .dropzone-icon {
-  width: 64px;
-  height: 64px;
-  margin: 0 auto var(--space-4);
-  color: var(--primary);
-  opacity: 0.7;
+  width: 64px !important;
+  height: 64px !important;
+  min-width: 64px !important;
+  min-height: 64px !important;
+  max-width: 64px !important;
+  max-height: 64px !important;
+  margin: 0 auto var(--space-4) !important;
+  color: var(--primary) !important;
+  stroke: var(--primary) !important;
+  fill: none !important;
+  display: block !important;
+  opacity: 0.7 !important;
 }
 
 .dropzone-title {
