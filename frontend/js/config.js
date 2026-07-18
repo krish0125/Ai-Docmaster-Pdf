@@ -6,7 +6,7 @@ const API_BASE_URL = (window.location.hostname === 'localhost' || window.locatio
   ? ''   // same-origin proxy: serve.py forwards /auth /pdf /ocr /ai etc. → backend:5001
   : 'https://ai-docmaster-pdf-kk.onrender.com';
 
-if (API_BASE_URL.includes('https://ai-docmaster-pdf-kk.onrender.com')) {
+if (API_BASE_URL.includes('YOUR_RENDER_BACKEND_URL')) {
   console.warn("WARNING: API_BASE_URL is still using the placeholder 'YOUR_RENDER_BACKEND_URL'. AI tools will fail. Please update config.js with your actual deployed Render URL.");
 }
 
