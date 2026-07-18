@@ -4,7 +4,7 @@
 // In production (Render/Vercel etc.), set this to your deployed backend URL.
 const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
   ? ''   // same-origin proxy: serve.py forwards /auth /pdf /ocr /ai etc. → backend:5001
-  : 'https://YOUR_RENDER_BACKEND_URL.onrender.com';
+  : 'https://ai-docmaster-pdf-kk.onrender.com';
 
 if (API_BASE_URL.includes('YOUR_RENDER_BACKEND_URL')) {
   console.warn("WARNING: API_BASE_URL is still using the placeholder 'YOUR_RENDER_BACKEND_URL'. AI tools will fail. Please update config.js with your actual deployed Render URL.");
@@ -15,7 +15,7 @@ if (API_BASE_URL.includes('YOUR_RENDER_BACKEND_URL')) {
  * Catches network-level failures (e.g. CORS, offline, backend sleeping) 
  * and surfaces a user-friendly error instead of leaking TypeError.
  */
-window.safeFetch = async function(url, options) {
+window.safeFetch = async function (url, options) {
   try {
     const response = await fetch(url, options);
     return response;
