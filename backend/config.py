@@ -26,7 +26,7 @@ class Config:
     GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
     # Legacy: GROK_API_KEY kept temporarily for rollback reference only
     GROK_API_KEY = os.getenv('GROK_API_KEY', '')  # TODO: remove after Render env vars updated
-    TESSERACT_PATH = os.getenv('TESSERACT_PATH', r'C:\Program Files\Tesseract-OCR\tesseract.exe')
+    TESSERACT_PATH = os.getenv('TESSERACT_PATH', r'C:\Program Files\Tesseract-OCR\tesseract.exe' if os.name == 'nt' else 'tesseract')
 
     UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
     MAX_CONTENT_LENGTH = int(os.getenv('MAX_CONTENT_LENGTH', 52428800))  # 50MB
