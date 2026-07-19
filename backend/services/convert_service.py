@@ -51,43 +51,31 @@ def pdf_to_word(pdf_path: str, upload_folder: str) -> tuple[str, str]:
 
 
 def word_to_pdf(docx_path: str, upload_folder: str) -> tuple[str, str]:
-    """Convert a DOCX to PDF.
-
-    Tries docx2pdf first (requires Word on Windows), then falls back to
-    LibreOffice headless. Raises RuntimeError if neither is available.
+    """Convert a DOCX to PDF using LibreOffice headless.
+    
+    Raises RuntimeError if LibreOffice is unavailable.
     """
     output_name = f"converted_{uuid.uuid4().hex}.pdf"
     output_path = os.path.join(upload_folder, output_name)
     os.makedirs(upload_folder, exist_ok=True)
 
-    # Attempt 1: docx2pdf (Word must be installed)
-    try:
-        from docx2pdf import convert
-        convert(docx_path, output_path)
-        if os.path.isfile(output_path):
-            return output_name, output_path
-    except Exception as e:
-        print(f"[ConvertService] docx2pdf failed ({e}), trying LibreOffice...")
-
-    # Attempt 2: LibreOffice headless
     import subprocess
     try:
+        # 'libreoffice' is used on Linux; it usually works identically to 'soffice'.
         result = subprocess.run(
-            ['soffice', '--headless', '--convert-to', 'pdf', '--outdir',
+            ['libreoffice', '--headless', '--convert-to', 'pdf', '--outdir',
              upload_folder, docx_path],
             capture_output=True, timeout=60
         )
         if result.returncode != 0:
             raise RuntimeError(
-                "Word-to-PDF conversion failed. Install Microsoft Word (docx2pdf) "
-                "or LibreOffice (soffice in PATH). "
-                f"LibreOffice error: {result.stderr.decode()[:200]}"
+                "Word-to-PDF conversion failed. Ensure LibreOffice is installed. "
+                f"Error: {result.stderr.decode()[:200]}"
             )
     except Exception as e:
         raise RuntimeError(
-            "Word-to-PDF conversion failed. Install Microsoft Word (docx2pdf) "
-            "or LibreOffice (soffice in PATH). "
-            f"LibreOffice details: {str(e)}"
+            "Word-to-PDF conversion failed. Ensure LibreOffice is in PATH. "
+            f"Details: {str(e)}"
         )
 
     # LibreOffice writes to the outdir with the same base name

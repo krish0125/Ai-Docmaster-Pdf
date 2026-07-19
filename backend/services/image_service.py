@@ -141,14 +141,25 @@ def remove_background(image_path: str, upload_folder: str) -> tuple[str, str]:
     """
     fname, fpath = _out(upload_folder, '.png')
     try:
-        from rembg import remove
+        import gc
+        from rembg import remove, new_session
         from PIL import Image as PILImage
+        
         inp = PILImage.open(image_path)
-        out = remove(inp)
+        # Initialize session here; using default u2net, but explicitly so we can free it
+        session = new_session("u2net")
+        out = remove(inp, session=session)
         out.save(fpath)
+        
+        # Free memory immediately to avoid OOM on free tier
+        del session
+        del out
+        del inp
+        gc.collect()
+        
         return fname, fpath
-    except ImportError:
-        pass
+    except Exception as e:
+        print(f"[ImageService] rembg failed: {e}")
 
     # Fallback: flood-fill from corners (simple tolerance-based)
     img = Image.open(image_path).convert('RGBA')
