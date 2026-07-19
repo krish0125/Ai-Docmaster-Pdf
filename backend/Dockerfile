@@ -14,7 +14,8 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libpango-1.0-0 \
     libpangocairo-1.0-0 \
-    libgdk-pixbuf2.0-0 \
+    libgdk-pixbuf-2.0-0 \
+    libgdk-pixbuf-xlib-2.0-0 \
     libffi-dev \
     shared-mime-info \
     && wget -q https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
