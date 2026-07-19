@@ -38,6 +38,6 @@ pdfkit==1.0.0
 python-barcode==0.15.1
 python-pptx==0.6.23
 qrcode==7.4.2
-rembg==2.0.53
+rembg>=2.0.62
 weasyprint==61.0
 requests==2.31.0
